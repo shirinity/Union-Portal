@@ -1,40 +1,52 @@
 /* ===================================================================
    Nav structure, hash router, and the delegated interaction layer.
 
-   The site map is the one in "Union Admin Portal: Navigation Hierarchy
-   & Terminology" — 5 categories, with Chips & Credits as a standalone
-   top-level item and no left-nav entry for Club or Member Detail
-   (both are row-click only, which is the fix for ClubGG's two broken
-   nav items).
+   Based on "Union Admin Portal: Navigation Hierarchy & Terminology", with
+   category names shortened since (Activity History → Activity, Policing &
+   Restrictions → Restrictions) and Chips & Credits split into a club link
+   and a member link instead of one page with tabs.
+
+   Club Detail and Member Detail have no left-nav entry — both are row-click
+   only, which is the fix for ClubGG's two unopenable nav items.
    =================================================================== */
 
+/* Category headings are plain labels — not numbered, not collapsible, no
+   bullets on the links. Chips & Credits is a standalone link, not a
+   clickable category. */
 const NAV = [
   {
-    num: 1, title: 'Activity History', items: [
+    title: 'Activity', items: [
       { label: 'Clubs', route: 'activity/clubs' },
       { label: 'Members', route: 'activity/members' }
     ]
   },
   {
-    num: 2, title: 'Policing & Restrictions', items: [
-      { label: 'Club Stop Limits', route: 'policing/club-stop-limits' },
-      { label: 'Club Restrict Game & Access', route: 'policing/club-restrict', isNew: true },
-      { label: 'Member Stop Limits', route: 'policing/member-stop-limits', isNew: true },
-      { label: 'Member Restrict Game & Access', route: 'policing/member-restrict' }
+    title: 'Restrictions', items: [
+      { label: 'Club Stop Limits', route: 'restrictions/club-stop-limits' },
+      { label: 'Club Restrict Game & Access', route: 'restrictions/club-restrict', isNew: true },
+      { label: 'Member Stop Limits', route: 'restrictions/member-stop-limits', isNew: true },
+      { label: 'Member Restrict Game & Access', route: 'restrictions/member-restrict' }
     ]
   },
-  { num: 3, title: 'Chips & Credits', route: 'chips', solo: true },
+  /* Two links rather than one page with Clubs/Members tabs, so the club and
+     member tiers are expressed the same way they are under Restrictions. */
   {
-    num: 4, title: 'Games', items: [
+    solo: true, items: [
+      { label: 'Club Chips & Credits', route: 'chips/clubs' },
+      { label: 'Member Chips & Credits', route: 'chips/members' }
+    ]
+  },
+  {
+    title: 'Games', items: [
       { label: 'Ring Games', route: 'games/ring' },
-      { label: 'Tournaments (MTT)', route: 'games/mtt' },
+      { label: 'Tournaments', route: 'games/mtt' },
       { label: 'SNGs', route: 'games/sng' },
       { label: 'Templates', route: 'games/templates' },
       { label: 'Recurring Games', route: 'games/recurring' }
     ]
   },
   {
-    num: 5, title: 'Promotions', items: [
+    title: 'Promotions', items: [
       { label: 'Leaderboards', route: 'promos/leaderboards' },
       { label: 'Bad Beat Jackpot', route: 'promos/bbj' },
       { label: 'Announcements', route: 'promos/announcements' }
@@ -50,8 +62,9 @@ const DEFAULT_ROUTE = HOME_ROUTE;
 /* Flat lookup: route → { label, category } */
 const ROUTE_INDEX = {};
 NAV.forEach(g => {
-  if (g.solo) { ROUTE_INDEX[g.route] = { label: g.title, category: null }; return; }
-  g.items.forEach(i => { ROUTE_INDEX[i.route] = { label: i.label, category: g.title, isNew: i.isNew }; });
+  g.items.forEach(i => {
+    ROUTE_INDEX[i.route] = { label: i.label, category: g.solo ? null : g.title, isNew: i.isNew };
+  });
 });
 
 /* ── DOM handles ──────────────────────────────────────────────────── */
@@ -70,39 +83,19 @@ const store = {
 };
 
 /* ── Sidebar ──────────────────────────────────────────────────────── */
-const COLLAPSE_KEY = 'uap.collapsed';
-
-let collapsed;
-try { collapsed = new Set(JSON.parse(store.get(COLLAPSE_KEY) || '[]')); }
-catch { collapsed = new Set(); }
-
-const CHEV = '<svg class="chev" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const navLink = (i, active) => `
+  <li><a class="nav-link${active === i.route ? ' active' : ''}" href="#/${i.route}">
+    <span>${esc(i.label)}</span>${i.isNew ? '<span class="badge badge-new">New</span>' : ''}
+  </a></li>`;
 
 function renderNav(active) {
-  const parent = activeParent(active);
-
-  $nav.innerHTML = NAV.map(g => {
-    if (g.solo) {
-      return `<a class="nav-solo${active === g.route ? ' active' : ''}" href="#/${g.route}">
-                <span class="nav-group-num">${g.num}</span><span>${esc(g.title)}</span>
-              </a>`;
-    }
-    const isCollapsed = collapsed.has(g.title) && g.title !== parent;
-    return `
-      <div class="nav-group${isCollapsed ? ' collapsed' : ''}" data-group="${esc(g.title)}">
-        <button class="nav-group-head" aria-expanded="${!isCollapsed}">
-          <span class="nav-group-num">${g.num}</span>
-          <span>${esc(g.title)}</span>
-          ${CHEV}
-        </button>
-        <ul class="nav-items">
-          ${g.items.map(i => `
-            <li><a class="nav-link${active === i.route ? ' active' : ''}" href="#/${i.route}">
-              <span>${esc(i.label)}</span>${i.isNew ? '<span class="badge badge-new">New</span>' : ''}
-            </a></li>`).join('')}
-        </ul>
-      </div>`;
-  }).join('');
+  $nav.innerHTML = NAV.map(g => g.solo
+    ? `<ul class="nav-items nav-items-solo">${g.items.map(i => navLink(i, active)).join('')}</ul>`
+    : `<div class="nav-group">
+         <div class="nav-group-head">${esc(g.title)}</div>
+         <ul class="nav-items">${g.items.map(i => navLink(i, active)).join('')}</ul>
+       </div>`
+  ).join('');
 }
 
 /** For a detail route, the list route it belongs under. */
@@ -111,24 +104,6 @@ function listRouteFor(route) {
   if (/^activity\/members\/.+/.test(route)) return 'activity/members';
   return route;
 }
-
-function activeParent(route) {
-  const list = listRouteFor(route);
-  const entry = ROUTE_INDEX[list];
-  return entry ? entry.category : null;
-}
-
-$nav.addEventListener('click', e => {
-  const head = e.target.closest('.nav-group-head');
-  if (!head) return;
-  const group = head.closest('.nav-group');
-  const name = group.dataset.group;
-  group.classList.toggle('collapsed');
-  const isCollapsed = group.classList.contains('collapsed');
-  head.setAttribute('aria-expanded', String(!isCollapsed));
-  isCollapsed ? collapsed.add(name) : collapsed.delete(name);
-  store.set(COLLAPSE_KEY, JSON.stringify([...collapsed]));
-});
 
 /* ── Breadcrumbs ──────────────────────────────────────────────────── */
 /* Categories are organisational for the left nav only — they never appear

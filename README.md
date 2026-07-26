@@ -37,15 +37,28 @@ assets/js/app.js      nav structure, hash router, delegated interactions
 
 ## Site map
 
-Exactly the hierarchy in
-[Union Admin Portal: Navigation Hierarchy & Terminology](https://clubwpt.atlassian.net/wiki/spaces/CH/pages/1316585496/Union+Admin+Portal+Navigation+Hierarchy+Terminology).
+Based on
+[Union Admin Portal: Navigation Hierarchy & Terminology](https://clubwpt.atlassian.net/wiki/spaces/CH/pages/1316585496/Union+Admin+Portal+Navigation+Hierarchy+Terminology),
+with the nav changes noted underneath.
 
-1. **Activity History** — Clubs → *Club Detail*, Members → *Member Detail*
-2. **Policing & Restrictions** — Club Stop Limits, Club Restrict Game & Access **(New)**,
-   Member Stop Limits **(New)**, Member Restrict Game & Access
-3. **Chips & Credits** — standalone top-level item, no category
-4. **Games** — Ring Games, Tournaments (MTT), SNGs, Templates, Recurring Games
-5. **Promotions** — Leaderboards, Bad Beat Jackpot, Announcements
+- **Activity** — Clubs → *Club Detail*, Members → *Member Detail*
+- **Restrictions** — Club Stop Limits, Club Restrict Game & Access **(New)**,
+  Member Stop Limits **(New)**, Member Restrict Game & Access
+- *(no category)* — Club Chips & Credits, Member Chips & Credits
+- **Games** — Ring Games, Tournaments, SNGs, Templates, Recurring Games
+- **Promotions** — Leaderboards, Bad Beat Jackpot, Announcements
+
+Differences from the nav doc, all deliberate:
+
+- **Activity History → Activity** and **Policing & Restrictions → Restrictions.** Shorter, and
+  "policing" carried more enforcement connotation than the pages warrant. Route paths follow
+  (`#/restrictions/…`).
+- **Chips & Credits is two links, not one page with Clubs/Members tabs.** Expressing the club and
+  member tiers as tabs there while Restrictions expressed them as separate nav entries was
+  inconsistent; both now use nav entries. Tournament Ticket sits under the member page, since its
+  recipients are members.
+- **Tournaments, not "Tournaments (MTT)".** One name or the other, not both.
+- The left nav has no numbering, no bullets, and no collapsible sections — categories are plain labels.
 
 Club Detail and Member Detail have **no left-nav entry** — they are reachable only by clicking a row
 in their list page. That is the fix for ClubGG's two broken nav items (Club Information loads a blank
@@ -62,16 +75,16 @@ These are the points flagged as load-bearing in the brief and the nav doc:
   is where those controls live — pulled out of buried detail pages onto one standalone, cross-club page.
   Worth deciding whether one badge should cover both cases. Everything else in the nav is a rename, a
   merge, or a straight port.
-- **Detail pages carry no policing controls.** Club Detail and Member Detail are scoped to activity,
-  history and security. Both show a callout linking out to Policing & Restrictions, so a reviewer can
+- **Detail pages carry no restriction controls.** Club Detail and Member Detail are scoped to activity,
+  history and security. Both show a callout linking out to Restrictions, so a reviewer can
   see the move was intentional rather than an omission.
-- **Chips & Credits is club-scoped; Tournament Tickets are not.** On the Chips & Credits tab the
+- **Chips & Credits is club-scoped; Tournament Tickets are not.** On the member page's Chips tab the
   Members recipient list is locked to one club's roster, and only Union Credits move across the union
   (Union ↔ Club). On the Tournament Ticket tab the Club filter is unlocked and the recipient list spans
   every club. Each tab states its scope in a strip above the list.
 - **Club List absorbs Club Revenue** — the same financial columns plus a date-range filter and a totals
   row, so there is no separate Report category.
-- **Chips & Credits is one page, not four.** It replaces Union Counter, Agent Counter, Member Counter
+- **Chips & Credits is two pages, not four.** They replace Union Counter, Agent Counter, Member Counter
   and Send Ticket, which all shared the same pattern: filterable recipient list, multi-select, send
   action, running total, History tab.
 
@@ -79,11 +92,10 @@ These are the points flagged as load-bearing in the brief and the nav doc:
 
 - The portal opens on the **union overview** — the club list, titled with the union name. Clicking
   *Union Admin Portal* top-left returns there from anywhere, and every breadcrumb is rooted in it.
-  Categories (Activity History, Games, …) organise the left nav only; they never appear in breadcrumbs.
-- Sidebar navigation; collapsible categories (state persists in `localStorage`)
+  Categories (Activity, Games, …) organise the left nav only; they never appear in breadcrumbs.
 - Row-click drill-down: Clubs → Club Detail, Members → Member Detail
-- Tabs on detail pages, and nested tabs on Chips & Credits
-- Cross-links — club names, member nicknames and the policing callouts all navigate
+- Tabs on the detail pages and on both Chips & Credits pages
+- Cross-links — club names, member nicknames and the restriction callouts all navigate
 - Toggle switches, segmented controls and checkboxes flip visually
 - Light / dark theme toggle (persists; defaults to your OS preference)
 - Breadcrumbs, deep-linkable URLs, browser back/forward

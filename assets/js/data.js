@@ -182,7 +182,7 @@ const CHIP_LOG = [
   { when: '24 Jul 12:05', sender: 'kurtis_c',    senderRole: 'Owner',      recipient: 'shortdeck_sy',     scope: 'Member', type: 'Tournament Ticket', dir: 'sent',      amount: 110,     start: null,    end: null, ticket: 'Any MTT ≤ $110' }
 ];
 
-/* ── Policing: club stop limits ───────────────────────────────────── */
+/* ── Restrictions: club stop limits ───────────────────────────────────── */
 const CLUB_STOP_LIMITS = [
   { club: '104829', winLimit: 150_000, lossLimit: 150_000, weekRing: 42_180, weekTourney: 6_240, tourneyCounts: true,  status: 'Active',    setBy: 'kurtis_c', updated: '20 Jul 2026' },
   { club: '218847', winLimit: 100_000, lossLimit: 80_000,  weekRing: 28_640, weekTourney: 3_180, tourneyCounts: true,  status: 'Active',    setBy: 'kurtis_c', updated: '20 Jul 2026' },
@@ -194,7 +194,7 @@ const CLUB_STOP_LIMITS = [
   { club: '896074', winLimit: null,    lossLimit: null,    weekRing: 1_240,  weekTourney: 0,     tourneyCounts: false, status: 'No limit',  setBy: '—',        updated: '—' }
 ];
 
-/* ── Policing: member stop limits (New) ───────────────────────────── */
+/* ── Restrictions: member stop limits (New) ───────────────────────────── */
 const MEMBER_STOP_LIMITS = [
   { nick: 'sa_delacruz', club: '104829', role: 'Super Agent', winLimit: 40_000, lossLimit: 40_000, weekPnl: 22_140, cascades: 34, clubCeiling: 150_000, status: 'Active',    setBy: 'kurtis_c',    updated: '22 Jul 2026' },
   { nick: 'ag_novak',    club: '104829', role: 'Agent',       winLimit: 15_000, lossLimit: 15_000, weekPnl: 6_410,  cascades: 9,  clubCeiling: 150_000, status: 'Active',    setBy: 'sa_delacruz', updated: '22 Jul 2026' },
@@ -205,7 +205,7 @@ const MEMBER_STOP_LIMITS = [
   { nick: 'shortdeck_sy',club: '552918', role: 'Player',      winLimit: 8_000,  lossLimit: 8_000,  weekPnl: 6_920,  cascades: 0,  clubCeiling: 40_000,  status: 'Active',    setBy: 'm_kovacs',    updated: '17 Jul 2026' }
 ];
 
-/* ── Policing: restrict game & access ─────────────────────────────── */
+/* ── Restrictions: restrict game & access ─────────────────────────────── */
 /* Blinds are min/max big blind per ring game type; buy-ins are per tournament format. */
 const RING_TYPES = ['NLH', 'PLO4', 'PLO5', 'PLO6'];
 
