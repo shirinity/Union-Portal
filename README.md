@@ -109,7 +109,7 @@ A few rows are set up to exercise edge cases worth looking at:
 | --- | --- |
 | Neon Sunset Club | Suspended by a stop-limit trigger — buy-ins blocked pending re-approval |
 | Aces Over Kings | Rake set to 0, so rake columns read `N/A` and the club has no union ceiling |
-| High Tide Poker | No Authority to Create Union Game — tables run by the owner club |
+| High Tide Poker | No Authority to Create Union Game — tables run by the master club |
 | `sa_ferreira` | Two linked accounts detected; member-level stop limit suspended |
 | `riverking22`, `quadqueen` | Near limit — over 80% of their weekly cap |
 | Neon Happy Hour | A paused recurring schedule, because its club is suspended |
@@ -133,17 +133,14 @@ gitignored regardless.
 
 Per the terminology PRD:
 
-- **Owner** replaces ClubGG's **Master**, everywhere — the role, the club's owner account, and the club
-  that heads the union. Roles are now **Owner / Manager / Super Agent / Agent / Player**.
+- **Owner** replaces ClubGG's **Master** for the role and for a club's owner account. Roles are
+  **Owner / Manager / Super Agent / Agent / Player**.
+- **Master club** stays as-is — the one club per union whose Owner is the Union Owner. The rename covers
+  the role, not the union's primary club, so "master club" and "club Owner" remain distinct terms.
 - **Member** is the generic term for anyone in a club. **Player** is only the lowest-tier default role
-  someone gets on joining. So a club's *member* count includes its Owner, Managers and Agents; its
-  *Player* count does not, and the two appear as separate columns on the home page.
-
-One loose end: ClubGG's **"master club"** — the one club per union whose Owner is the Union Owner — is
-rendered here as **"owner club"**. That is a literal application of master → owner and it reads a little
-oddly next to the Owner *role*. If the PRD settles on something else ("primary club", "union club", or
-keeping "master club" as a purely structural term), it is a one-line change in `data.js` and the badge
-labels in `pages.js`.
+  someone gets on joining. On the home page the union-wide **Members** stat counts everyone, while the
+  per-club role columns are deliberately singular — **Mgr · S.Agent · Agent · Player** — so they read as
+  role labels rather than as a second, contradictory headcount.
 
 ## One thing in the nav doc worth fixing
 

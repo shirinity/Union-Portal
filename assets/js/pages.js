@@ -26,7 +26,7 @@ PAGES['activity/clubs'] = () => {
 
   const cols = [
     { label: 'Club' }, { label: 'Club ID' }, { label: 'Credits', cls: 'num' },
-    { label: 'Mgr', cls: 'num' }, { label: 'S.Agent', cls: 'num' }, { label: 'Agent', cls: 'num' }, { label: 'Players', cls: 'num' },
+    { label: 'Mgr', cls: 'num' }, { label: 'S.Agent', cls: 'num' }, { label: 'Agent', cls: 'num' }, { label: 'Player', cls: 'num' },
     { label: 'Hands', cls: 'num' }, { label: 'Rake', cls: 'num' }, { label: 'Fees', cls: 'num' },
     { label: 'Insurance', cls: 'num' }, { label: 'EV Cashout', cls: 'num' }, { label: 'BBJ', cls: 'num' },
     { label: 'P&L', cls: 'num' }, { label: 'Status', cls: 'mid' }
@@ -36,7 +36,7 @@ PAGES['activity/clubs'] = () => {
     href: `#/activity/clubs/${c.id}`,
     title: `Open ${c.name}`,
     cells: [
-      primaryCell(esc(c.name) + (c.isOwnerClub ? ' ' + badge('Owner club', 'gold') : ''), 'Owner · ' + esc(c.owner)),
+      primaryCell(esc(c.name) + (c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''), 'Owner · ' + esc(c.owner)),
       idCell(c.id), `<span class="gold">${n(c.credits)}</span>`,
       n(c.managers), n(c.superAgents), n(c.agents), n(c.players),
       n(c.hands), num(c.rake), num(c.fees), num(c.insurance), money(c.evCashout), num(c.bbj),
@@ -51,11 +51,11 @@ PAGES['activity/clubs'] = () => {
     money(t.pnl), ''
   ];
 
-  const ownerClub = clubById(UNION.ownerClubId);
+  const masterClub = clubById(UNION.masterClubId);
 
   return pageHead({
     title: UNION.name,
-    badges: [badge(`Owner club · ${ownerClub.name}`, 'gold')],
+    badges: [badge(`Master club · ${masterClub.name}`, 'gold')],
     sub: `Union overview — where the portal opens. Signed in as the Union Owner, so everything in the union is in scope.
           Figures cover the selected period as of ${esc(UNION.asOf)}.`,
     actions: [btn('Union settings')]
@@ -75,7 +75,7 @@ PAGES['activity/clubs'] = () => {
     { label: 'Union game authority', type: 'select', options: ['Any', 'Granted', 'Not granted'] }
   ])
   + card({
-    hint: `Financial columns, member counts by role and a totals row — this list absorbs what ClubGG split out as <strong>Club Revenue</strong> under Report. Visible to <em>any</em> club's Owner or Manager, not only the owner club's.`,
+    hint: `Financial columns, member counts by role and a totals row — this list absorbs what ClubGG split out as <strong>Club Revenue</strong> under Report. Visible to <em>any</em> club's Owner or Manager, not only the master club's.`,
     body: dataTable({ cols, rows, foot, chevron: true })
   })
   + note(`<strong>Club ID</strong> is shown as 6 digits, numbers only — the format decided in Union Admin Features. Today's IDs are 8 characters mixing letters and numbers.`, 'info');
@@ -197,7 +197,7 @@ PAGES['activity/clubs/:id'] = id => {
         { label: 'Club ID', value: esc(c.id), mono: true },
         { label: 'Owner', value: `<a class="rowlink" href="#/activity/members/${esc(c.owner)}">${esc(c.owner)}</a>` },
         { label: 'Joined union', value: esc(c.joined) },
-        { label: 'Role in union', value: c.isOwnerClub ? badge('Owner club', 'gold') : badge('Member club', 'neutral') },
+        { label: 'Role in union', value: c.isMasterClub ? badge('Master club', 'gold') : badge('Member club', 'neutral') },
         { label: 'Rake configuration', value: esc(c.rakePct) },
         { label: 'Credits', value: `<span class="gold">${n(c.credits)}</span>` },
         { label: 'Members', value: `${n(c.managers + c.superAgents + c.agents + c.players + 1)}` },
@@ -235,7 +235,7 @@ PAGES['activity/clubs/:id'] = id => {
     <div class="entity">
       <div class="entity-avatar">${esc(initials)}</div>
       <div>
-        <div class="entity-name">${esc(c.name)}${c.isOwnerClub ? badge('Owner club', 'gold') : ''}${statusBadge(c.status)}</div>
+        <div class="entity-name">${esc(c.name)}${c.isMasterClub ? badge('Master club', 'gold') : ''}${statusBadge(c.status)}</div>
         <div class="entity-meta">Club ID ${esc(c.id)} · owner ${esc(c.owner)} · joined ${esc(c.joined)}</div>
       </div>
       <div class="entity-side">
@@ -526,7 +526,7 @@ PAGES['policing/club-stop-limits'] = () => {
     const cap = week >= 0 ? s.winLimit : s.lossLimit;
     return {
       cells: [
-        primaryCell(`<a class="rowlink" href="#/activity/clubs/${s.club}">${esc(c.name)}</a>${c.isOwnerClub ? ' ' + badge('Owner club', 'gold') : ''}`, 'Club ID ' + esc(s.club)),
+        primaryCell(`<a class="rowlink" href="#/activity/clubs/${s.club}">${esc(c.name)}</a>${c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''}`, 'Club ID ' + esc(s.club)),
         s.winLimit == null ? '<span class="muted">Not set</span>' : rangeCell([s.winLimit, s.lossLimit], { group: true }),
         money(s.weekRing),
         num(s.weekTourney),
@@ -548,7 +548,7 @@ PAGES['policing/club-stop-limits'] = () => {
           When a limit trips, the club is suspended: no new buy-ins or rebuys until the union re-approves it. Players already in a session may finish.`,
     actions: [exportBtn(), btn('Set limits for a club', { kind: 'primary' })]
   })
-  + note(`<strong>Visibility fix.</strong> A club's own Owner and Manager can see their limits here — <em>including non-owner clubs</em>. ClubGG restricts this view to the Union Owner and Manager, which forces every other club to ask for their own numbers off-product.`, 'accent', '✓')
+  + note(`<strong>Visibility fix.</strong> A club's own Owner and Manager can see their limits here — <em>including non-master clubs</em>. ClubGG restricts this view to the Union Owner and Manager, which forces every other club to ask for their own numbers off-product.`, 'accent', '✓')
   + stats([
     { label: 'Clubs with limits', value: `${n(CLUB_STOP_LIMITS.filter(s => s.winLimit != null).length)} / ${n(CLUB_STOP_LIMITS.length)}` },
     { label: 'Suspended now', value: `<span class="neg">${n(CLUB_STOP_LIMITS.filter(s => s.status === 'Suspended').length)}</span>`, meta: 'awaiting re-approval' },
@@ -581,7 +581,7 @@ PAGES['policing/club-restrict'] = () => {
     const c = clubById(r.club);
     return {
       cells: [
-        primaryCell(`<a class="rowlink" href="#/activity/clubs/${r.club}">${esc(c.name)}</a>${c.isOwnerClub ? ' ' + badge('Owner club', 'gold') : ''}`, 'Club ID ' + esc(r.club)),
+        primaryCell(`<a class="rowlink" href="#/activity/clubs/${r.club}">${esc(c.name)}</a>${c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''}`, 'Club ID ' + esc(r.club)),
         ...RING_TYPES.map(g => rangeCell(r.blinds[g], { unit: 'BB' })),
         esc(r.setBy), esc(r.updated), actionCell('Edit', 'Reset')
       ]
@@ -789,8 +789,8 @@ const amountField = (label, value) => `
   </div>`;
 
 PAGES['chips'] = () => {
-  const ownClub = clubById(UNION.ownerClubId);
-  const ownRoster = MEMBERS.filter(m => m.club === UNION.ownerClubId);
+  const ownClub = clubById(UNION.masterClubId);
+  const ownRoster = MEMBERS.filter(m => m.club === UNION.masterClubId);
 
   /* — Chips & Credits · Clubs (Union ↔ Club credits) — */
   const clubsPanel = `
@@ -810,7 +810,7 @@ PAGES['chips'] = () => {
           cols: [{ label: '', cls: 'mid' }, { label: 'Club' }, { label: 'Club ID' },
             { label: 'Current credits', cls: 'num' }, { label: 'Members', cls: 'num' }, { label: 'Status', cls: 'mid' }],
           rows: CLUBS.map((c, i) => ({
-            cells: [checkbox(i < 2), primaryCell(esc(c.name) + (c.isOwnerClub ? ' ' + badge('Owner club', 'gold') : ''), 'Owner · ' + esc(c.owner)),
+            cells: [checkbox(i < 2), primaryCell(esc(c.name) + (c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''), 'Owner · ' + esc(c.owner)),
               idCell(c.id), `<span class="gold">${n(c.credits)}</span>`,
               n(c.managers + c.superAgents + c.agents + c.players + 1), statusBadge(c.status)]
           }))

@@ -9,14 +9,14 @@
    · "Member" is the generic term for anyone in a club; "Player" is only the
      lowest-tier default role someone gets on joining. So a club's member
      count includes its Owner, Managers and Agents; its Player count does not.
-   · Every union has exactly one owner club; that club's Owner is the Union
-     Owner. ("Owner club" renders ClubGG's "master club" under the new
-     terminology — swap the label here if the PRD settles on another word.)
+   · Every union has exactly one master club; that club's Owner is the Union
+     Owner. "Master club" is deliberately kept — the rename to Owner covers
+     the role and the club's owner account, not the union's primary club.
    =================================================================== */
 
 const UNION = {
   name: 'Bellota Labs Union',
-  ownerClubId: '104829',
+  masterClubId: '104829',
   unionOwner: 'kurtis_c',
   unionCredits: 4_820_000,
   creditsIssued: 3_147_500,
@@ -26,56 +26,56 @@ const UNION = {
 /* ── Clubs ────────────────────────────────────────────────────────── */
 const CLUBS = [
   {
-    id: '104829', name: 'Bellota Labs Home Game', owner: 'kurtis_c', isOwnerClub: true,
+    id: '104829', name: 'Bellota Labs Home Game', owner: 'kurtis_c', isMasterClub: true,
     joined: '2025-11-04', credits: 1_240_000, managers: 3, superAgents: 4, agents: 11, players: 214,
     hands: 148_920, rake: 62_480, fees: 9_240, insurance: 4_110, evCashout: -1_860, bbj: 3_720,
     pnl: 58_210, status: 'Active', unionGameAuthority: true, rakePct: '4% · 3 BB cap',
-    notes: 'Owner club. Highest-volume NLH traffic in the union — flagged as the reference club for the new stop-limit rollout.'
+    notes: 'Master club. Highest-volume NLH traffic in the union — flagged as the reference club for the new stop-limit rollout.'
   },
   {
-    id: '218847', name: 'Vegas Rail Room', owner: 'd_moreno', isOwnerClub: false,
+    id: '218847', name: 'Vegas Rail Room', owner: 'd_moreno', isMasterClub: false,
     joined: '2025-12-18', credits: 486_500, managers: 2, superAgents: 3, agents: 8, players: 137,
     hands: 92_340, rake: 38_760, fees: 6_180, insurance: 2_940, evCashout: -1_120, bbj: 2_310,
     pnl: 34_890, status: 'Active', unionGameAuthority: true, rakePct: '4% · 3 BB cap',
     notes: 'Requested union-game authority in Feb; granted. Runs the Tuesday PLO series.'
   },
   {
-    id: '337102', name: 'High Tide Poker', owner: 'a_tanaka', isOwnerClub: false,
+    id: '337102', name: 'High Tide Poker', owner: 'a_tanaka', isMasterClub: false,
     joined: '2026-01-09', credits: 312_000, managers: 1, superAgents: 2, agents: 6, players: 98,
     hands: 61_070, rake: 24_120, fees: 4_460, insurance: 1_780, evCashout: -640, bbj: 1_530,
     pnl: 22_180, status: 'Active', unionGameAuthority: false, rakePct: '3.5% · 3 BB cap',
-    notes: 'Short-deck heavy roster. No union-game authority — all tables run by the owner club.'
+    notes: 'Short-deck heavy roster. No union-game authority — all tables run by the master club.'
   },
   {
-    id: '415663', name: 'Riverboat Social', owner: 'j_beaumont', isOwnerClub: false,
+    id: '415663', name: 'Riverboat Social', owner: 'j_beaumont', isMasterClub: false,
     joined: '2026-02-02', credits: 268_400, managers: 2, superAgents: 1, agents: 5, players: 86,
     hands: 47_650, rake: 18_940, fees: 3_120, insurance: 1_240, evCashout: -410, bbj: 1_180,
     pnl: 17_360, status: 'Active', unionGameAuthority: false, rakePct: '4% · 3 BB cap',
     notes: ''
   },
   {
-    id: '552918', name: 'Neon Sunset Club', owner: 'm_kovacs', isOwnerClub: false,
+    id: '552918', name: 'Neon Sunset Club', owner: 'm_kovacs', isMasterClub: false,
     joined: '2026-02-21', credits: 194_800, managers: 1, superAgents: 2, agents: 4, players: 71,
     hands: 38_210, rake: 15_380, fees: 2_640, insurance: 980, evCashout: -300, bbj: 940,
     pnl: 13_970, status: 'Suspended', unionGameAuthority: false, rakePct: '4% · 3 BB cap',
     notes: 'Weekly loss limit tripped 24 Jul — buy-ins blocked pending union re-approval.'
   },
   {
-    id: '671245', name: 'Backdoor Straight', owner: 'r_singh', isOwnerClub: false,
+    id: '671245', name: 'Backdoor Straight', owner: 'r_singh', isMasterClub: false,
     joined: '2026-03-14', credits: 148_200, managers: 1, superAgents: 1, agents: 3, players: 58,
     hands: 29_480, rake: 11_640, fees: 1_980, insurance: 720, evCashout: -180, bbj: 690,
     pnl: 10_540, status: 'Active', unionGameAuthority: false, rakePct: '3% · 2 BB cap',
     notes: ''
   },
   {
-    id: '780331', name: 'Chip & Chair', owner: 'l_chen', isOwnerClub: false,
+    id: '780331', name: 'Chip & Chair', owner: 'l_chen', isMasterClub: false,
     joined: '2026-04-28', credits: 96_400, managers: 1, superAgents: 0, agents: 2, players: 41,
     hands: 18_760, rake: 7_240, fees: 1_180, insurance: 430, evCashout: -90, bbj: 410,
     pnl: 6_580, status: 'Active', unionGameAuthority: false, rakePct: '3% · 2 BB cap',
     notes: ''
   },
   {
-    id: '896074', name: 'Aces Over Kings', owner: 't_okafor', isOwnerClub: false,
+    id: '896074', name: 'Aces Over Kings', owner: 't_okafor', isMasterClub: false,
     joined: '2026-06-11', credits: 42_800, managers: 1, superAgents: 0, agents: 1, players: 23,
     hands: 8_140, rake: 3_180, fees: 520, insurance: 190, evCashout: -40, bbj: 170,
     pnl: 2_840, status: 'Active', unionGameAuthority: false, rakePct: 'No rake',
@@ -93,7 +93,7 @@ const MEMBERS = [
     credits: 1_240_000, chips: 86_400, games: 412, hands: 9_840, rake: 4_120, fees: 680, bbj: 240,
     pnl: 18_460, bo: true, lastLogin: '26 Jul 2026, 13:52', devices: 3, linked: 0, upline: '—',
     downline: 214, joined: '2025-11-04',
-    notes: 'Union owner. Do not modify role — union ownership derives from owner-club ownership.'
+    notes: 'Union owner. Do not modify role — union ownership derives from master-club ownership.'
   },
   {
     id: '48211044', nick: 'd_moreno', alias: 'Diego — Rail Room', club: '218847', role: 'Owner',
@@ -112,13 +112,13 @@ const MEMBERS = [
     credits: 0, chips: 32_600, games: 341, hands: 8_120, rake: 3_410, fees: 540, bbj: 210,
     pnl: -4_280, bo: true, lastLogin: '26 Jul 2026, 14:02', devices: 2, linked: 0, upline: 'kurtis_c',
     downline: 214, joined: '2025-11-19',
-    notes: 'Owner-club Manager — has Back Office access by default. Union-level parity except Manager creation.'
+    notes: 'Master-club Manager — has Back Office access by default. Union-level parity except Manager creation.'
   },
   {
     id: '48412660', nick: 'sa_delacruz', alias: 'Nina D.', club: '104829', role: 'Super Agent',
     credits: 0, chips: 118_400, games: 264, hands: 6_480, rake: 2_720, fees: 410, bbj: 160,
     pnl: 9_140, bo: false, lastLogin: '26 Jul 2026, 11:37', devices: 2, linked: 1, upline: 'mgr_wallace',
-    downline: 34, joined: '2025-12-02', notes: 'Largest downline in the owner club.'
+    downline: 34, joined: '2025-12-02', notes: 'Largest downline in the master club.'
   },
   {
     id: '48520381', nick: 'sa_ferreira', alias: 'Bruno F.', club: '218847', role: 'Super Agent',
