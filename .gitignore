@@ -1,0 +1,18 @@
+# Credentials — never commit
+.env
+.env.*
+!.env.example
+
+# Local Claude Code config — machine-specific paths and permissions, not shared
+.claude/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Nothing is built, but just in case
+node_modules/
+dist/

@@ -1,0 +1,20 @@
+# Not for search engines. Internal review prototype.
+User-agent: *
+Disallow: /
+
+# How this actually behaves, so nobody is misled by its presence:
+#
+# This site is served as a GitHub Pages PROJECT site at
+#   https://shirinity.github.io/Union-Portal/
+# but crawlers only ever read robots.txt from the DOMAIN root
+#   https://shirinity.github.io/robots.txt
+# which is owned by the shirinity.github.io repo, not this one. So this file is
+# effectively inert here. It starts working only if this site later moves to a
+# custom domain, or if shirinity.github.io/robots.txt disallows /Union-Portal/.
+#
+# What does work per-page is the meta tag in index.html:
+#   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+# Keep it there. That is the real protection against indexing.
+#
+# Neither makes the site private. Anyone with the URL can open it, and the
+# source is readable on github.com because the repo is public.
