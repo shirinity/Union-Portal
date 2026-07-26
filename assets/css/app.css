@@ -170,24 +170,25 @@ body {
 
 .nav-group { margin-bottom: 14px; }
 
-/* Plain label. Not a button, not numbered, not collapsible. */
+/* Plain label. Not a button, not numbered, not collapsible — but bold and
+   in the primary text colour so it reads as a header, not another link. */
 .nav-group-head {
-  padding: 0 10px 5px;
-  color: var(--text-3);
-  font-size: 10px;
-  font-weight: 650;
+  padding: 0 10px 6px;
+  color: var(--text);
+  font-size: 10.5px;
+  font-weight: 800;
   letter-spacing: .09em;
   text-transform: uppercase;
 }
 
 .nav-items { list-style: none; margin: 0; padding: 0; }
-.nav-items-solo { margin-bottom: 14px; }
 
+/* Links sit indented under their header. */
 .nav-link {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 10px;
+  padding: 6px 10px 6px 22px;
   margin: 1px 0;
   border-radius: var(--radius-sm);
   color: var(--text-2);

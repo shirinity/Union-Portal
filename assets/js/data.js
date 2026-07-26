@@ -205,8 +205,11 @@ const MEMBER_STOP_LIMITS = [
   { nick: 'shortdeck_sy',club: '552918', role: 'Player',      winLimit: 8_000,  lossLimit: 8_000,  weekPnl: 6_920,  cascades: 0,  clubCeiling: 40_000,  status: 'Active',    setBy: 'm_kovacs',    updated: '17 Jul 2026' }
 ];
 
-/* ── Restrictions: restrict game & access ─────────────────────────────── */
-/* Blinds are min/max big blind per ring game type; buy-ins are per tournament format. */
+/* ── Restrictions: stakes ─────────────────────────────────────────── */
+/* Blinds are min/max big blind per ring game type; mtt is min/max buy-in.
+   `sng`, `setBy` and `updated` are kept but not rendered — SNG stakes are
+   out of scope until we have SNGs, and the two audit columns were dropped
+   to make room for MTT buy-in on the same table. */
 const RING_TYPES = ['NLH', 'PLO4', 'PLO5', 'PLO6'];
 
 const CLUB_RESTRICTIONS = [

@@ -244,7 +244,7 @@ PAGES['activity/clubs/:id'] = id => {
         <div class="dl-item"><div class="dl-label">P&amp;L</div><div class="dl-value mono">${money(c.pnl)}</div></div>
       </div>
     </div>
-    ${note(`<strong>Detail is scoped to activity, history and security.</strong> Stop Limits and Restrict Game &amp; Access are no longer tabs here — both moved out to
+    ${note(`<strong>Detail is scoped to activity, history and security.</strong> Stop Limits and Stakes are no longer tabs here — both moved out to
       <a href="#/restrictions/club-stop-limits">Restrictions</a>, where each exists at club <em>and</em> member tier.`, 'accent', '↗')}
     ${tabs([
       { label: 'Game History', html: gameHistory },
@@ -501,8 +501,8 @@ PAGES['activity/members/:nick'] = nick => {
         <div class="dl-item"><div class="dl-label">Last login</div><div class="dl-value">${esc(m.lastLogin)}</div></div>
       </div>
     </div>
-    ${note(`<strong>Detail is scoped to activity, history and security.</strong> Stop Limits and Restrict Game &amp; Access are no longer tabs here — see
-      <a href="#/restrictions/member-stop-limits">Member Stop Limits</a> and <a href="#/restrictions/member-restrict">Member Restrict Game &amp; Access</a>.`, 'accent', '↗')}
+    ${note(`<strong>Detail is scoped to activity, history and security.</strong> Stop Limits and Stakes are no longer tabs here — see
+      <a href="#/restrictions/member-stop-limits">Member Stop Limits</a> and <a href="#/restrictions/member-stakes">Member Stakes</a>.`, 'accent', '↗')}
     ${tabs([
       { label: 'Ring Game History', html: ringHistory },
       { label: 'Tournament History', html: tourneyHistory },
@@ -575,34 +575,25 @@ PAGES['restrictions/club-stop-limits'] = () => {
   + note(`Triggering a limit notifies nobody — it silently blocks new buy-ins. That is ClubGG's behaviour today and it is worth deciding whether we keep it.`, 'warn', '⚠');
 };
 
-/* ── Club Restrict Game & Access (New) ────────────────────────────── */
-PAGES['restrictions/club-restrict'] = () => {
-  const blindRows = CLUB_RESTRICTIONS.map(r => {
+/* ── Club Stakes (New) ────────────────────────────── */
+PAGES['restrictions/club-stakes'] = () => {
+  const rows = CLUB_RESTRICTIONS.map(r => {
     const c = clubById(r.club);
     return {
       cells: [
         primaryCell(`<a class="rowlink" href="#/activity/clubs/${r.club}">${esc(c.name)}</a>${c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''}`, 'Club ID ' + esc(r.club)),
         ...RING_TYPES.map(g => rangeCell(r.blinds[g], { unit: 'BB' })),
-        esc(r.setBy), esc(r.updated), actionCell('Edit', 'Reset')
-      ]
-    };
-  });
-
-  const buyinRows = CLUB_RESTRICTIONS.map(r => {
-    const c = clubById(r.club);
-    return {
-      cells: [
-        primaryCell(`<a class="rowlink" href="#/activity/clubs/${r.club}">${esc(c.name)}</a>`, 'Club ID ' + esc(r.club)),
-        rangeCell(r.mtt, { group: true }), rangeCell(r.sng, { group: true }), esc(r.setBy), esc(r.updated), actionCell('Edit', 'Reset')
+        rangeCell(r.mtt, { group: true }),
+        actionCell('Edit', 'Reset')
       ]
     };
   });
 
   return pageHead({
-    title: 'Club Restrict Game & Access',
+    title: 'Club Stakes',
     isNew: true,
-    sub: `Min and max blinds per ring-game type, and min/max tournament buy-ins, set per club. The Union Owner sets a <strong>ceiling</strong>; the club's own Owner or Manager then narrows within it — they can never widen it.`,
-    actions: [exportBtn(), btn('Set restrictions for a club', { kind: 'primary' })]
+    sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, set per club. The Union Owner sets a <strong>ceiling</strong>; the club's own Owner or Manager then narrows within it — they can never widen it.`,
+    actions: [exportBtn(), btn('Set stakes for a club', { kind: 'primary' })]
   })
   + note(`<strong>New page, not a new capability.</strong> ClubGG already does all of this — the union can restrict clubs and members, and a club can restrict its own members. What is new is <em>where it lives</em>: these controls are pulled out of buried detail pages and given one standalone, cross-club page. Contrast <a href="#/restrictions/member-stop-limits">Member Stop Limits</a>, which is a capability ClubGG genuinely lacks.`, 'new', '✦')
   + stats([
@@ -615,30 +606,14 @@ PAGES['restrictions/club-restrict'] = () => {
     { label: 'Search', type: 'search', placeholder: 'Club name or ID…', grow: true },
     { label: 'Ceiling', type: 'select', options: ['Any', 'Set', 'Not set'] }
   ])
-  + tabs([
-    {
-      label: 'Ring Game Blinds',
-      html: card({
-        title: 'Min / max big blind, per game type',
-        hint: 'Blank means no union ceiling — the club sets its own',
-        body: dataTable({
-          cols: [{ label: 'Club' }, ...RING_TYPES.map(g => ({ label: g })), { label: 'Set by' }, { label: 'Updated' }, { label: '' }],
-          rows: blindRows
-        })
-      })
-    },
-    {
-      label: 'Tournament Buy-ins',
-      html: card({
-        title: 'Min / max buy-in, per format',
-        hint: 'Set independently for MTT and SNG',
-        body: dataTable({
-          cols: [{ label: 'Club' }, { label: 'MTT buy-in' }, { label: 'SNG buy-in' }, { label: 'Set by' }, { label: 'Updated' }, { label: '' }],
-          rows: buyinRows
-        })
-      })
-    }
-  ]);
+  + card({
+    title: 'Stakes ceilings',
+    hint: 'Ring games in big blinds · tournaments in buy-in. Blank means no union ceiling — the club sets its own',
+    body: dataTable({
+      cols: [{ label: 'Club' }, ...RING_TYPES.map(g => ({ label: g })), { label: 'MTT buy-in' }, { label: '' }],
+      rows
+    })
+  });
 };
 
 /* ── Member Stop Limits (New) ─────────────────────────────────────── */
@@ -697,33 +672,29 @@ PAGES['restrictions/member-stop-limits'] = () => {
   });
 };
 
-/* ── Member Restrict Game & Access ────────────────────────────────── */
-PAGES['restrictions/member-restrict'] = () => {
-  const blindRows = MEMBER_RESTRICTIONS.map(r => ({
-    cells: [
-      primaryCell(`<a class="rowlink" href="#/activity/members/${esc(r.nick)}">${esc(r.nick)}</a>`, esc(clubName(r.club))),
-      roleTag(r.role),
-      ...RING_TYPES.map((g, i) => rangeCell(r.blinds[g], { unit: 'BB', ceiling: i === 0 ? r.ceiling : '' })),
-      r.cascades ? `${n(r.cascades)} downstream` : '<span class="muted">none</span>',
-      esc(r.setBy), esc(r.updated), actionCell('Edit', 'Reset')
-    ]
-  }));
+/* ── Member Stakes ────────────────────────────────── */
+PAGES['restrictions/member-stakes'] = () => {
+  /* Cascade reach sits under the role, not in its own column — it is a
+     property of being agent-tier, and is blank for a Player. */
+  const roleCell = r => roleTag(r.role)
+    + (r.cascades ? `<span class="cell-sub">cascades to ${n(r.cascades)}</span>` : '');
 
-  const buyinRows = MEMBER_RESTRICTIONS.map(r => ({
+  const rows = MEMBER_RESTRICTIONS.map(r => ({
     cells: [
       primaryCell(`<a class="rowlink" href="#/activity/members/${esc(r.nick)}">${esc(r.nick)}</a>`, esc(clubName(r.club))),
-      roleTag(r.role), rangeCell(r.mtt, { group: true }), rangeCell(r.sng, { group: true }),
-      r.cascades ? `${n(r.cascades)} downstream` : '<span class="muted">none</span>',
-      esc(r.setBy), esc(r.updated), actionCell('Edit', 'Reset')
+      roleCell(r),
+      ...RING_TYPES.map((g, i) => rangeCell(r.blinds[g], { unit: 'BB', ceiling: i === 0 ? r.ceiling : '' })),
+      rangeCell(r.mtt, { group: true }),
+      actionCell('Edit', 'Reset')
     ]
   }));
 
   return pageHead({
-    title: 'Member Restrict Game & Access',
-    sub: `Min and max blinds per ring-game type, and min/max tournament buy-ins, per member. ClubGG calls this <strong>Restrict Access to Game</strong>. Every range is narrowed within whatever ceiling the club — or the member's own upline — has already set.`,
-    actions: [exportBtn(), btn('Set restrictions', { kind: 'primary' })]
+    title: 'Member Stakes',
+    sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, per member. ClubGG calls this <strong>Restrict Access to Game</strong>. Every range is narrowed within whatever ceiling the club — or the member's own upline — has already set.`,
+    actions: [exportBtn(), btn('Set stakes', { kind: 'primary' })]
   })
-  + note(`A Super Agent or Agent can set these for their own downline only, and <strong>never looser than their own upline's ceiling</strong>. The ceiling in force is shown under each member's NLH range.`, 'info')
+  + note(`A Super Agent or Agent can set these for their own downline only, and <strong>never looser than their own upline's ceiling</strong>. The ceiling in force is shown under each member's NLH range, and how far a setting cascades is shown under their role.`, 'info')
   + stats([
     { label: 'Members restricted', value: n(MEMBER_RESTRICTIONS.length), meta: 'across 4 clubs' },
     { label: 'Agent-tier', value: n(MEMBER_RESTRICTIONS.filter(r => r.role !== 'Player').length), meta: 'cascade downstream' },
@@ -733,34 +704,17 @@ PAGES['restrictions/member-restrict'] = () => {
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Nickname or member ID…', grow: true },
     { label: 'Club', type: 'select', options: clubOptions() },
-    { label: 'Role', type: 'select', options: ROLE_OPTIONS },
-    { label: 'Set by', type: 'select', options: ['Anyone', 'Union Owner', 'Club Owner / Manager', 'Super Agent', 'Agent'] }
+    { label: 'Role', type: 'select', options: ROLE_OPTIONS }
   ])
-  + tabs([
-    {
-      label: 'Ring Game Blinds',
-      html: card({
-        title: 'Min / max big blind, per game type',
-        hint: 'Set independently per variant',
-        body: dataTable({
-          cols: [{ label: 'Member' }, { label: 'Role' }, ...RING_TYPES.map(g => ({ label: g })),
-            { label: 'Cascades to' }, { label: 'Set by' }, { label: 'Updated' }, { label: '' }],
-          rows: blindRows
-        })
-      })
-    },
-    {
-      label: 'Tournament Buy-ins',
-      html: card({
-        title: 'Min / max buy-in, per format',
-        body: dataTable({
-          cols: [{ label: 'Member' }, { label: 'Role' }, { label: 'MTT buy-in' }, { label: 'SNG buy-in' },
-            { label: 'Cascades to' }, { label: 'Set by' }, { label: 'Updated' }, { label: '' }],
-          rows: buyinRows
-        })
-      })
-    }
-  ]);
+  + card({
+    title: 'Stakes per member',
+    hint: 'Ring games in big blinds · tournaments in buy-in. Set independently per variant',
+    body: dataTable({
+      cols: [{ label: 'Member' }, { label: 'Role' }, ...RING_TYPES.map(g => ({ label: g })),
+        { label: 'MTT buy-in' }, { label: '' }],
+      rows
+    })
+  });
 };
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -788,26 +742,35 @@ const amountField = (label, value) => `
     <input value="${esc(value)}">
   </div>`;
 
-/** Transfer history, scoped to one tier. Club and member flows are separate
-    pages, so each keeps its own history rather than sharing a filtered one. */
-const chipHistory = scope => {
-  const rows = CHIP_LOG.filter(r => r.scope === scope);
+const AGENT_TIER = ['Super Agent', 'Agent'];
+const isAgentTier = nick => AGENT_TIER.includes(((memberByNick(nick) || {}).role));
+
+/**
+ * Transfer history for one page. Split by what moved, not by tier:
+ * 'credits' covers union→club credits and credits down to agents,
+ * 'chips' covers chips and tickets landing on ordinary members.
+ */
+const chipHistory = mode => {
+  const rows = CHIP_LOG.filter(r => mode === 'credits'
+    ? r.scope === 'Club' || isAgentTier(r.recipient)
+    : r.scope === 'Member' && !isAgentTier(r.recipient));
+
   return filters([
     { label: 'Date range', type: 'select', options: DATE_PRESETS },
-    { label: 'Value type', type: 'select', options: scope === 'Club' ? ['All types', 'Credits'] : ['All types', 'Chips', 'Tournament Ticket'] },
-    { label: scope === 'Club' ? 'Club' : 'Member', type: 'select', options: scope === 'Club' ? clubOptions() : ['Everyone', ...MEMBERS.map(m => m.nick)] },
+    { label: 'Value type', type: 'select', options: mode === 'credits' ? ['All types', 'Credits', 'Chips'] : ['All types', 'Chips', 'Tournament Ticket'] },
+    { label: 'Recipient', type: 'select', options: mode === 'credits' ? ['Everyone', ...CLUBS.map(c => c.name), ...MEMBERS.filter(m => AGENT_TIER.includes(m.role)).map(m => m.nick)] : ['Everyone', ...MEMBERS.filter(m => !AGENT_TIER.includes(m.role)).map(m => m.nick)] },
     { label: 'Direction', type: 'select', options: ['Sent & reclaimed', 'Sent only', 'Reclaimed only'] }
   ], [exportBtn()])
   + card({
     title: 'Transfer history',
-    hint: scope === 'Club' ? 'Union ↔ club credit movement' : 'Chips and tickets sent to or reclaimed from members',
+    hint: mode === 'credits' ? 'Credits issued to clubs and down to agents' : 'Chips and tickets sent to or reclaimed from members',
     body: dataTable({
       cols: [{ label: 'Date / time' }, { label: 'Sender' }, { label: 'Recipient' }, { label: 'Type' },
         { label: 'Direction', cls: 'mid' }, { label: 'Amount', cls: 'num' },
         { label: 'Starting', cls: 'num' }, { label: 'Ending', cls: 'num' }],
       rows: rows.map(r => ({
         cells: [r.when, primaryCell(esc(r.sender), esc(r.senderRole)),
-          scope === 'Club'
+          r.scope === 'Club'
             ? `<a class="rowlink" href="#/activity/clubs/${(CLUBS.find(c => c.name === r.recipient) || {}).id || ''}">${esc(r.recipient)}</a>`
             : `<a class="rowlink" href="#/activity/members/${esc(r.recipient)}">${esc(r.recipient)}</a>`,
           badge(r.type, r.type === 'Credits' ? 'gold' : r.type === 'Tournament Ticket' ? 'info' : 'neutral')
@@ -820,9 +783,12 @@ const chipHistory = scope => {
   });
 };
 
-/* ── Club Chips & Credits ─────────────────────────────────────────── */
-PAGES['chips/clubs'] = () => {
-  const sendPanel = `
+/* ── Club & Agent Credits ─────────────────────────────────────────── */
+/* ClubGG's Union Counter (union → club) and Agent Counter (credits to the
+   agents inside your own club) are the same act at two tiers, so they sit
+   on one page as two recipient scopes. */
+PAGES['chips/credits'] = () => {
+  const clubsPanel = `
     <div class="scope-strip">
       ${badge('Union → Club', 'gold')}
       <span>Union Credits are the one value that moves <strong>across</strong> the union. Everything below club tier stays inside a single club.</span>
@@ -863,27 +829,84 @@ PAGES['chips/clubs'] = () => {
       </div>
     </div>`;
 
+  /* — Agents (credits to the agent tier inside your own club) — */
+  const ownClub = clubById(UNION.masterClubId);
+  const agents = MEMBERS.filter(m => m.club === UNION.masterClubId && AGENT_TIER.includes(m.role));
+  const alloc = nick => CHIP_BUDGET.agentAllocations.find(a => a.nick === nick) || {};
+
+  const agentsPanel = `
+    <div class="scope-strip">
+      ${badge('Club-scoped', 'neutral')}
+      <span>Credits to the Super Agents and Agents inside <strong>${esc(ownClub.name)}</strong> — ClubGG's <strong>Agent Counter</strong>. An agent can only pass these down their own downline.</span>
+    </div>
+    ${filters([
+      { label: 'Search', type: 'search', placeholder: 'Nickname or member ID…', grow: true },
+      { label: 'Club context', type: 'select', options: [`${ownClub.name} · ${ownClub.id}`, '— locked to one club —'] },
+      { label: 'Role', type: 'select', options: ['Super Agent & Agent', 'Super Agent', 'Agent'] }
+    ])}
+    <div class="picker">
+      ${card({
+        title: 'Agent tier',
+        hint: `${n(agents.length)} agents in ${esc(ownClub.name)}`,
+        body: dataTable({
+          cols: [{ label: '', cls: 'mid' }, { label: 'Agent' }, { label: 'Role' }, { label: 'Upline' },
+            { label: 'Allocated', cls: 'num' }, { label: 'Dispersed', cls: 'num' }, { label: 'Credit limit', cls: 'num' }],
+          rows: agents.map((m, i) => {
+            const a = alloc(m.nick);
+            return {
+              cells: [checkbox(i === 0),
+                primaryCell(esc(m.nick), m.alias ? esc(m.alias) : '<span class="muted">no alias</span>'),
+                roleTag(m.role) + `<span class="cell-sub">${n(m.downline)} downstream</span>`,
+                esc(m.upline),
+                a.budget ? n(a.budget) : '<span class="muted">—</span>',
+                a.spent ? meter(a.spent, a.budget) : '<span class="muted">—</span>',
+                `<span class="muted">${a.creditLimit != null ? n(a.creditLimit) : '—'}</span>`]
+            };
+          }),
+          empty: 'No agent-tier members in this club.'
+        }),
+        flush: true
+      })}
+      <div>
+        ${card({
+          title: 'Amount',
+          body: amountField('Credits per agent', '50,000')
+            + seg(['Add', 'Subtract', 'Set to'], 0)
+        })}
+        ${sendRail({ selected: 1, total: { each: '50,000', sum: '50,000' }, valueLabel: 'Credits' })}
+        ${card({
+          title: 'Chip budget',
+          hint: 'Allowance model',
+          body: `
+            <div class="dl-label">Club budget from the union</div>
+            ${meter(CHIP_BUDGET.clubSpent, CHIP_BUDGET.clubBudget, `${n(CHIP_BUDGET.clubSpent)} of ${n(CHIP_BUDGET.clubBudget)} dispersed`)}
+            <div class="card-hint" style="margin-top:9px">A union grants each club a budget; Owners and Managers allocate a slice of it to Agents and Super Agents, capping how much they can send to their own downline. Credit limits set how far negative a downstream balance may go before cut-off.</div>`
+        })}
+      </div>
+    </div>`;
+
   const biggest = [...CLUBS].sort((a, b) => b.credits - a.credits)[0];
 
   return pageHead({
-    title: 'Club Chips & Credits',
-    sub: `Issue or reclaim <strong>Union Credits</strong> to and from clubs. Replaces ClubGG's <strong>Union Counter</strong>.`,
+    title: 'Club & Agent Credits',
+    sub: `Issue or reclaim credits — to a club from the union, or to an agent from their club. Replaces ClubGG's <strong>Union Counter</strong> and <strong>Agent Counter</strong>, which are the same flow at two tiers.`,
     actions: [btn('Union settings')]
   })
-  + note(`<strong>Union Credits are the only value that crosses club lines.</strong> Everything below club tier — chips, tickets — is handled on <a href="#/chips/members">Member Chips &amp; Credits</a>, and chips never leave the club they were issued into.`, 'accent', '⇄')
+  + note(`<strong>Union Credits are the only value that crosses club lines.</strong> Credits to agents stay inside their own club, and chips to ordinary members are handled on <a href="#/chips/members">Member Chips</a>.`, 'accent', '⇄')
   + stats([
     { label: 'Union credits', value: `<span class="gold">${n(UNION.unionCredits)}</span>`, meta: 'available to issue' },
     { label: 'Issued to clubs', value: n(UNION.creditsIssued), meta: `across ${n(CLUBS.length)} clubs` },
     { label: 'Largest balance', value: n(biggest.credits), meta: esc(biggest.name) },
-    { label: 'Suspended clubs', value: `<span class="neg">${n(CLUBS.filter(c => c.status === 'Suspended').length)}</span>`, meta: 'cannot be issued credits' }
+    { label: 'Allocated to agents', value: n(CHIP_BUDGET.agentAllocations.reduce((a, x) => a + x.budget, 0)), meta: `${n(CHIP_BUDGET.agentAllocations.length)} agents union-wide` }
   ])
   + tabs([
-    { label: 'Send & Reclaim', html: sendPanel },
-    { label: 'History', html: chipHistory('Club') }
+    { label: 'Clubs', html: clubsPanel },
+    { label: 'Agents', html: agentsPanel },
+    { label: 'History', html: chipHistory('credits') }
   ]);
 };
 
-/* ── Member Chips & Credits ───────────────────────────────────────── */
+/* ── Member Chips ─────────────────────────────────────────────────── */
 PAGES['chips/members'] = () => {
   const ownClub = clubById(UNION.masterClubId);
   const ownRoster = MEMBERS.filter(m => m.club === UNION.masterClubId);
@@ -922,21 +945,10 @@ PAGES['chips/members'] = () => {
         ${sendRail({ selected: 2, total: { each: '5,000', sum: '10,000' }, valueLabel: 'Chips' })}
         ${card({
           title: 'Chip budget',
-          hint: 'Allowance model',
           body: `
             <div class="dl-label">Club budget from the union</div>
             ${meter(CHIP_BUDGET.clubSpent, CHIP_BUDGET.clubBudget, `${n(CHIP_BUDGET.clubSpent)} of ${n(CHIP_BUDGET.clubBudget)} dispersed`)}
-            <hr class="hr">
-            <div class="dl-label" style="margin-bottom:7px">Allocated to agents</div>
-            ${CHIP_BUDGET.agentAllocations.map(a => `
-              <div style="margin-bottom:9px">
-                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
-                  <span>${esc(a.nick)} ${roleTag(a.role)}</span>
-                  <span class="muted" style="font-family:var(--mono)">limit ${n(a.creditLimit)}</span>
-                </div>
-                ${meter(a.spent, a.budget)}
-              </div>`).join('')}
-            <div class="card-hint">A union grants each club a chip budget; Owners and Managers allocate a slice of it to Agents and Super Agents, capping how much they can send downstream. Credit limits set how far negative a downstream balance may go before cut-off.</div>`
+            <div class="card-hint" style="margin-top:9px">Sends here draw down the club's budget. How that budget is carved up between agents is set on <a class="rowlink" href="#/chips/credits">Club &amp; Agent Credits</a>.</div>`
         })}
       </div>
     </div>`;
@@ -992,8 +1004,8 @@ PAGES['chips/members'] = () => {
     </div>`;
 
   return pageHead({
-    title: 'Member Chips & Credits',
-    sub: `Send or reclaim chips, and issue tournament tickets. Replaces ClubGG's <strong>Agent Counter</strong>, <strong>Member Counter</strong> and <strong>Send Ticket</strong> — three pages that shared one pattern: a filterable recipient list, multi-select, a send action, a running total and a history tab, each pointed at a different value type. The role filter is what makes a separate Agent Counter unnecessary.`,
+    title: 'Member Chips',
+    sub: `Send or reclaim club chips, and issue tournament tickets. Replaces ClubGG's <strong>Member Counter</strong> and <strong>Send Ticket</strong> — two pages sharing one pattern: a filterable recipient list, multi-select, a send action, a running total and a history tab, each pointed at a different value type.`,
     actions: [btn('Chip budget')]
   })
   + note(`<strong>Two recipient scopes, on purpose.</strong> Chips are club-scoped — you can only send to or reclaim from your own club's roster. Tournament Tickets are the exception and reach any member in any club in the union. ClubGG's Send Ticket already supports "ALL Clubs" while its Member Counter is silently locked to one club at a time.`, 'accent', '⇄')
@@ -1006,7 +1018,7 @@ PAGES['chips/members'] = () => {
   + tabs([
     { label: 'Chips', html: membersPanel },
     { label: 'Tournament Ticket', html: ticketPanel },
-    { label: 'History', html: chipHistory('Member') }
+    { label: 'History', html: chipHistory('chips') }
   ]);
 };
 

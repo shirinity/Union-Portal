@@ -23,17 +23,17 @@ const NAV = [
   {
     title: 'Restrictions', items: [
       { label: 'Club Stop Limits', route: 'restrictions/club-stop-limits' },
-      { label: 'Club Restrict Game & Access', route: 'restrictions/club-restrict', isNew: true },
+      { label: 'Club Stakes', route: 'restrictions/club-stakes', isNew: true },
       { label: 'Member Stop Limits', route: 'restrictions/member-stop-limits', isNew: true },
-      { label: 'Member Restrict Game & Access', route: 'restrictions/member-restrict' }
+      { label: 'Member Stakes', route: 'restrictions/member-stakes' }
     ]
   },
-  /* Two links rather than one page with Clubs/Members tabs, so the club and
-     member tiers are expressed the same way they are under Restrictions. */
+  /* Split by what actually moves, not by tier: credits go to clubs and to
+     agents (ClubGG's Union Counter + Agent Counter), chips go to members. */
   {
-    solo: true, items: [
-      { label: 'Club Chips & Credits', route: 'chips/clubs' },
-      { label: 'Member Chips & Credits', route: 'chips/members' }
+    title: 'Chips & Credits', items: [
+      { label: 'Club & Agent Credits', route: 'chips/credits' },
+      { label: 'Member Chips', route: 'chips/members' }
     ]
   },
   {
@@ -63,7 +63,7 @@ const DEFAULT_ROUTE = HOME_ROUTE;
 const ROUTE_INDEX = {};
 NAV.forEach(g => {
   g.items.forEach(i => {
-    ROUTE_INDEX[i.route] = { label: i.label, category: g.solo ? null : g.title, isNew: i.isNew };
+    ROUTE_INDEX[i.route] = { label: i.label, category: g.title, isNew: i.isNew };
   });
 });
 
@@ -89,13 +89,11 @@ const navLink = (i, active) => `
   </a></li>`;
 
 function renderNav(active) {
-  $nav.innerHTML = NAV.map(g => g.solo
-    ? `<ul class="nav-items nav-items-solo">${g.items.map(i => navLink(i, active)).join('')}</ul>`
-    : `<div class="nav-group">
-         <div class="nav-group-head">${esc(g.title)}</div>
-         <ul class="nav-items">${g.items.map(i => navLink(i, active)).join('')}</ul>
-       </div>`
-  ).join('');
+  $nav.innerHTML = NAV.map(g => `
+    <div class="nav-group">
+      <div class="nav-group-head">${esc(g.title)}</div>
+      <ul class="nav-items">${g.items.map(i => navLink(i, active)).join('')}</ul>
+    </div>`).join('');
 }
 
 /** For a detail route, the list route it belongs under. */

@@ -42,9 +42,8 @@ Based on
 with the nav changes noted underneath.
 
 - **Activity** — Clubs → *Club Detail*, Members → *Member Detail*
-- **Restrictions** — Club Stop Limits, Club Restrict Game & Access **(New)**,
-  Member Stop Limits **(New)**, Member Restrict Game & Access
-- *(no category)* — Club Chips & Credits, Member Chips & Credits
+- **Restrictions** — Club Stop Limits, Club Stakes **(New)**, Member Stop Limits **(New)**, Member Stakes
+- **Chips & Credits** — Club & Agent Credits, Member Chips
 - **Games** — Ring Games, Tournaments, SNGs, Templates, Recurring Games
 - **Promotions** — Leaderboards, Bad Beat Jackpot, Announcements
 
@@ -53,12 +52,15 @@ Differences from the nav doc, all deliberate:
 - **Activity History → Activity** and **Policing & Restrictions → Restrictions.** Shorter, and
   "policing" carried more enforcement connotation than the pages warrant. Route paths follow
   (`#/restrictions/…`).
-- **Chips & Credits is two links, not one page with Clubs/Members tabs.** Expressing the club and
-  member tiers as tabs there while Restrictions expressed them as separate nav entries was
-  inconsistent; both now use nav entries. Tournament Ticket sits under the member page, since its
-  recipients are members.
+- **Restrict Game & Access → Stakes.** Both pages set min/max blinds and buy-ins, so "Club Stakes" and
+  "Member Stakes" say it in a third of the characters.
+- **Chips & Credits splits by what moves, not by tier.** *Club & Agent Credits* covers ClubGG's Union
+  Counter (union → club) and Agent Counter (credits to the agents inside your own club) as two tabs of
+  one flow. *Member Chips* covers Member Counter and Send Ticket. Tournament Ticket sits with Member
+  Chips because its recipients are members.
 - **Tournaments, not "Tournaments (MTT)".** One name or the other, not both.
-- The left nav has no numbering, no bullets, and no collapsible sections — categories are plain labels.
+- The left nav has no numbering, no bullets, and no collapsible sections — bold category headers with
+  indented links beneath.
 
 Club Detail and Member Detail have **no left-nav entry** — they are reachable only by clicking a row
 in their list page. That is the fix for ClubGG's two broken nav items (Club Information loads a blank
@@ -70,7 +72,7 @@ These are the points flagged as load-bearing in the brief and the nav doc:
 
 - **The two "New" badges do not mean the same thing, and each page says which it is.**
   *Member Stop Limits* is a new **capability** — ClubGG has stop limits at club tier only, so this cannot
-  be done today at all. *Club Restrict Game & Access* is a new **page**, not a new capability: ClubGG
+  be done today at all. *Club Stakes* is a new **page**, not a new capability: ClubGG
   already lets a union restrict clubs and members, and lets a club restrict its own members. What changes
   is where those controls live — pulled out of buried detail pages onto one standalone, cross-club page.
   Worth deciding whether one badge should cover both cases. Everything else in the nav is a rename, a
@@ -78,7 +80,7 @@ These are the points flagged as load-bearing in the brief and the nav doc:
 - **Detail pages carry no restriction controls.** Club Detail and Member Detail are scoped to activity,
   history and security. Both show a callout linking out to Restrictions, so a reviewer can
   see the move was intentional rather than an omission.
-- **Chips & Credits is club-scoped; Tournament Tickets are not.** On the member page's Chips tab the
+- **Chips & Credits is club-scoped; Tournament Tickets are not.** On Member Chips' Chips tab the
   Members recipient list is locked to one club's roster, and only Union Credits move across the union
   (Union ↔ Club). On the Tournament Ticket tab the Club filter is unlocked and the recipient list spans
   every club. Each tab states its scope in a strip above the list.
@@ -159,6 +161,6 @@ Per the terminology PRD:
 **ClubGG's Restrict Game & Access is not member-tier only.** The nav doc says it is, in both the "Why
 we're changing this" section and the terminology table ("Restrict Access to Game (member-level, ClubGG)").
 In fact ClubGG lets the union restrict both clubs and members, and lets a club restrict its own members.
-That matters because it was the stated basis for marking Club Restrict Game & Access as New — which is why
+That matters because it was the stated basis for marking Club Stakes as New — which is why
 this prototype now describes that page as a new *place* for existing controls rather than a new
 capability.
