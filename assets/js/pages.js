@@ -23,18 +23,17 @@ const PAGES = {};
  */
 const unionSummary = () => {
   const T = UNION_TOTALS;
+  /* One figure per card, and cards size to their content — a card holding
+     "8" has no business being as wide as one holding a hand breakdown. */
   const suspended = CLUBS.filter(c => c.status === 'Suspended').length;
   return stats([
-    { label: 'Union', value: n(T.clubs),
-      meta: `clubs · ${n(T.members)} members · ${n(suspended)} suspended` },
-    { label: 'Outstanding', value: `<span class="gold">${n(T.credits)}</span>`,
-      meta: `club credits · ${n(T.chips)} member chips` },
-    { label: 'Games', value: n(T.games),
-      meta: `${n(T.gamesRing)} ring · ${n(T.gamesMtt)} tournament` },
-    { label: 'Hands', value: n(T.hands),
-      meta: `${n(T.handsNlh)} NLH · ${n(T.handsPlo)} PLO · ${n(T.handsOther)} other` },
-    { label: 'Union total', value: n(T.unionTotal),
-      meta: `${n(T.rake)} rake · ${n(T.fees)} fees` }
+    { label: 'Clubs', value: n(T.clubs), meta: `${n(suspended)} suspended` },
+    { label: 'Members', value: n(T.members), meta: 'across all clubs' },
+    { label: 'Credits', value: `<span class="gold">${n(T.credits)}</span>`, meta: 'with clubs' },
+    { label: 'Chips', value: n(T.chips), meta: 'with members' },
+    { label: 'Games', value: n(T.games), meta: `${n(T.gamesRing)} ring · ${n(T.gamesMtt)} tournament` },
+    { label: 'Hands', value: n(T.hands), meta: `${n(T.handsNlh)} NLH · ${n(T.handsPlo)} PLO · ${n(T.handsOther)} other` },
+    { label: 'Union total', value: n(T.unionTotal), meta: `${n(T.rake)} rake · ${n(T.fees)} fees` }
   ]);
 };
 
@@ -96,6 +95,16 @@ PAGES['activity/clubs'] = () => {
   + note(`<strong>Club ID</strong> is shown as 6 digits, numbers only — the format decided in Union Admin Features. Today's IDs are 8 characters mixing letters and numbers.`, 'info');
 };
 
+/**
+ * The single filter bar a detail tab shows. The date range leads it on every
+ * tab, so it reads as one persistent control rather than a second strip; any
+ * filters specific to that tab follow it.
+ */
+const tabFilters = (extra = []) => filters(
+  [{ label: 'Date range', type: 'select', options: DATE_PRESETS }, ...extra],
+  [exportBtn()]
+);
+
 /* ── Club Detail ──────────────────────────────────────────────────── */
 PAGES['activity/clubs/:id'] = id => {
   const c = clubById(id);
@@ -111,7 +120,7 @@ PAGES['activity/clubs/:id'] = id => {
 
   /* — Game History tab — no date control; the page-level range governs. */
   const gameHistory =
-    filters([
+    tabFilters([
       { label: 'Member', type: 'select', options: ['All members', ...roster] },
       { label: 'Game', type: 'select', options: ['All games', ...RING_TYPES] }
     ])
@@ -147,7 +156,7 @@ PAGES['activity/clubs/:id'] = id => {
 
   /* — Chip Activity tab — */
   const chipActivity =
-    filters([
+    tabFilters([
       { label: 'Recipient', type: 'select', options: ['Everyone', ...roster] },
       { label: 'Direction', type: 'select', options: ['Sent & reclaimed', 'Sent only', 'Reclaimed only'] }
     ])
@@ -168,7 +177,8 @@ PAGES['activity/clubs/:id'] = id => {
 
   /* — Security tab — */
   const security =
-    note(`Security &amp; moderation data only. Restriction controls — stop limits and game/access restrictions — live under <a href="#/restrictions/club-stop-limits">Restrictions</a>.`, 'info')
+    tabFilters()
+    + note(`Security &amp; moderation data only. Restriction controls — stop limits and game/access restrictions — live under <a href="#/restrictions/club-stop-limits">Restrictions</a>.`, 'info')
     + `<div class="cols">
         ${card({
           title: 'Device &amp; platform history',
@@ -192,6 +202,8 @@ PAGES['activity/clubs/:id'] = id => {
 
   const profile = `
     <div class="profile">
+      <div class="profile-body">
+      <div class="profile-left">
       <div class="profile-top">
         <div class="entity-avatar">${esc(initials)}</div>
         <div class="profile-ident">
@@ -201,12 +213,6 @@ PAGES['activity/clubs/:id'] = id => {
             owner <a class="rowlink" href="#/activity/members/${esc(c.owner)}">${esc(c.owner)}</a> ·
             joined ${esc(c.joined)} · rake ${esc(c.rakePct)}
           </div>
-          ${facts([
-            fact('Credits', `<span class="gold">${n(c.credits)}</span>`),
-            fact('Chips out', n(c.chipsOut)),
-            fact('Members', n(memberCount), `${n(c.players)} Player · ${n(c.agents)} Agent · ${n(c.superAgents)} S.Agent · ${n(c.managers)} Mgr`),
-            fact('Union games', c.unionGameAuthority ? badge('Granted', 'pos') : badge('Not granted', 'neutral'))
-          ])}
         </div>
         <div class="profile-actions">
           ${c.status === 'Suspended'
@@ -216,16 +222,25 @@ PAGES['activity/clubs/:id'] = id => {
       </div>
 
       <div class="profile-fields">
-        <div class="pf-group">
-          <div class="pf">
-            <label class="pf-label">Authority to Create Union Game</label>
-            <div class="pf-static">${toggle(c.unionGameAuthority, c.unionGameAuthority ? 'Granted' : 'Off by default')}</div>
-          </div>
+        <div class="pf">
+          <label class="pf-label">Authority to Create Union Game</label>
+          <div class="pf-static">${toggle(c.unionGameAuthority, c.unionGameAuthority ? 'Granted' : 'Off by default')}</div>
         </div>
-        <div class="pf pf-note">
-          <label class="pf-label" title="Visible to union admins">Notes</label>
-          <textarea rows="2" placeholder="Add a note about this club…">${esc(c.notes)}</textarea>
-        </div>
+      </div>
+
+      <div class="profile-facts">
+        ${facts([
+          fact('Credits', `<span class="gold">${n(c.credits)}</span>`),
+          fact('Chips out', n(c.chipsOut)),
+          fact('Members', n(memberCount), `${n(c.players)} Player · ${n(c.agents)} Agent · ${n(c.superAgents)} S.Agent · ${n(c.managers)} Mgr`)
+        ])}
+      </div>
+      </div>
+
+      <div class="profile-notes">
+        <label class="pf-label" title="Visible to union admins">Notes</label>
+        <textarea placeholder="Add a note about this club…">${esc(c.notes)}</textarea>
+      </div>
       </div>
     </div>`;
 
@@ -239,20 +254,9 @@ PAGES['activity/clubs/:id'] = id => {
     { label: 'P&L', value: money(c.pnl, { sign: false }) }
   ]);
 
-  const dateBar = `
-    <div class="daterange">
-      <div class="field">
-        <label class="field-label">Date range</label>
-        <select>${DATE_PRESETS.map(d => `<option>${esc(d)}</option>`).join('')}</select>
-      </div>
-      <div class="pf-static">${exportBtn()}</div>
-      <span class="daterange-note">Date range applies to the summary and every tab below</span>
-    </div>`;
-
   return profile
     + note(`<strong>Scoped to activity, history and security.</strong> Stop Limits and Stakes are set on
       <a href="#/restrictions/club-stop-limits">Club Stop Limits</a> and <a href="#/restrictions/club-stakes">Club Stakes</a>, not here.`, 'accent', '↗')
-    + dateBar
     + summary
     + tabs([
       { label: 'Game History', html: gameHistory },
@@ -326,7 +330,7 @@ PAGES['activity/members/:nick'] = nick => {
   /* Tabs carry no date control of their own — the page-level range above
      governs all of them. Only genuinely tab-specific filters stay. */
   const ringHistory =
-    filters([
+    tabFilters([
       { label: 'Game', type: 'select', options: ['All games', ...RING_TYPES] },
       { label: 'Stakes', type: 'select', options: ['All stakes', '0.5 / 1', '1 / 2', '2 / 4', '5 / 10'] }
     ])
@@ -350,7 +354,7 @@ PAGES['activity/members/:nick'] = nick => {
       })
     });
 
-  const tourneyHistory = card({
+  const tourneyHistory = tabFilters() + card({
         body: dataTable({
       cols: [{ label: 'Date' }, { label: 'Tournament' }, { label: 'Game' }, { label: 'Buy-in' },
         { label: 'Entries', cls: 'num' }, { label: 'Finish' }, { label: 'Prize', cls: 'num' }, { label: 'P&L', cls: 'num' }],
@@ -364,7 +368,7 @@ PAGES['activity/members/:nick'] = nick => {
     })
   });
 
-  const balanceHistory = card({
+  const balanceHistory = tabFilters() + card({
         hint: 'Every change to this member\'s chip balance',
     body: dataTable({
       cols: [{ label: 'Date / time' }, { label: 'Actioned by' }, { label: 'Direction', cls: 'mid' },
@@ -378,7 +382,7 @@ PAGES['activity/members/:nick'] = nick => {
     })
   }) + note(`From the member's point of view chips <em>sent</em> to them are green (credited) and <em>reclaimed</em> is red — the inverse of the club-side log, where a send is a debt to the club.`, 'info');
 
-  const ticketHistory = card({
+  const ticketHistory = tabFilters() + card({
         hint: 'Tournament Tickets can arrive from any club in the union',
     body: dataTable({
       cols: [{ label: 'Date / time' }, { label: 'Ticket' }, { label: 'Specified by' },
@@ -391,7 +395,7 @@ PAGES['activity/members/:nick'] = nick => {
   });
 
   const loginHistory =
-    card({
+    tabFilters() + card({
             body: dataTable({
         cols: [{ label: 'Date / time' }, { label: 'Device' }, { label: 'Platform' },
           { label: 'IP address' }, { label: 'Location' }, { label: 'Result', cls: 'mid' }],
@@ -402,7 +406,7 @@ PAGES['activity/members/:nick'] = nick => {
       })
     });
 
-  const downline = note(
+  const downline = tabFilters() + note(
       `<strong>Downline</strong> is everyone beneath this member in the hierarchy — the people whose chips they control, whose game data they see, and whose stakes they can set. Always scoped to their own club.`, 'info')
     + card({
       title: `Downline · ${n(m.downline)} members`,
@@ -428,6 +432,8 @@ PAGES['activity/members/:nick'] = nick => {
      Profile tab: nothing here belongs behind one. */
   const profile = `
     <div class="profile">
+      <div class="profile-body">
+      <div class="profile-left">
       <div class="profile-top">
         <div class="entity-avatar">${esc(initials)}</div>
         <div class="profile-ident">
@@ -438,43 +444,47 @@ PAGES['activity/members/:nick'] = nick => {
             joined ${esc(m.joined)} ·
             upline ${m.upline === '—' ? '<span class="muted">none</span>' : `<a class="rowlink" href="#/activity/members/${esc(m.upline)}">${esc(m.upline)}</a>`}
           </div>
-          ${facts([
-            fact('Chips', n(m.chips)),
-            fact('Credits', m.credits ? `<span class="gold">${n(m.credits)}</span>` : '<span class="muted">—</span>'),
-            fact('Last login', esc(m.lastLogin.split(',')[0]), m.lastLogin.split(', ')[1]),
-            linkedFact('Devices', n(MEMBER_DEVICES.length), 'devices'),
-            linkedFact('Linked accounts', m.linked ? `<span class="neg">${n(m.linked)}</span>` : '0', 'linked')
-          ])}
         </div>
       </div>
 
       <div class="profile-fields">
-        <div class="pf-group">
-          <div class="pf pf-alias">
-            <label class="pf-label" title="Written by the member; admins can overwrite it">Alias</label>
-            <input value="${esc(m.alias)}" placeholder="Not set">
-          </div>
-          <div class="pf">
-            <label class="pf-label">Role</label>
-            <select><option>${esc(m.role)}</option>${ROLE_OPTIONS.slice(1).filter(r => r !== m.role).map(r => `<option>${esc(r)}</option>`).join('')}</select>
-          </div>
-          <div class="pf">
-            <label class="pf-label">Portal access</label>
-            <div class="pf-static">${toggle(m.bo, m.bo ? 'Granted' : 'Not granted')}</div>
-          </div>
-          <div class="pf">
-            <label class="pf-label">Chat</label>
-            <div class="pf-static">${toggle(true, 'Enabled')}</div>
-          </div>
-          <div class="pf">
-            <label class="pf-label">Membership</label>
-            <div class="pf-static">${btn('Remove from club', { sm: true, kind: 'danger' })}</div>
-          </div>
+        <div class="pf pf-alias">
+          <label class="pf-label" title="Written by the member; admins can overwrite it">Alias</label>
+          <input value="${esc(m.alias)}" placeholder="Not set">
         </div>
-        <div class="pf pf-note">
-          <label class="pf-label" title="Visible only to whoever wrote it">Notes</label>
-          <textarea rows="2" placeholder="Add a note…">${esc(m.notes)}</textarea>
+        <div class="pf">
+          <label class="pf-label">Role</label>
+          <select><option>${esc(m.role)}</option>${ROLE_OPTIONS.slice(1).filter(r => r !== m.role).map(r => `<option>${esc(r)}</option>`).join('')}</select>
         </div>
+        <div class="pf">
+          <label class="pf-label">Portal access</label>
+          <div class="pf-static">${toggle(m.bo, m.bo ? 'Granted' : 'Not granted')}</div>
+        </div>
+        <div class="pf">
+          <label class="pf-label">Chat</label>
+          <div class="pf-static">${toggle(true, 'Enabled')}</div>
+        </div>
+        <div class="pf">
+          <label class="pf-label">Membership</label>
+          <div class="pf-static">${btn('Remove from club', { sm: true, kind: 'danger' })}</div>
+        </div>
+      </div>
+
+      <div class="profile-facts">
+        ${facts([
+          fact('Chips', n(m.chips)),
+          fact('Credits', m.credits ? `<span class="gold">${n(m.credits)}</span>` : '<span class="muted">—</span>'),
+          fact('Last login', esc(m.lastLogin.split(',')[0]), m.lastLogin.split(', ')[1]),
+          linkedFact('Devices', n(MEMBER_DEVICES.length), 'devices'),
+          linkedFact('Linked accounts', m.linked ? `<span class="neg">${n(m.linked)}</span>` : '0', 'linked')
+        ])}
+      </div>
+      </div>
+
+      <div class="profile-notes">
+        <label class="pf-label" title="Visible only to whoever wrote it">Notes</label>
+        <textarea placeholder="Add a note…">${esc(m.notes)}</textarea>
+      </div>
       </div>
     </div>`;
 
@@ -487,20 +497,9 @@ PAGES['activity/members/:nick'] = nick => {
     { label: 'P&L', value: money(m.pnl, { sign: false }) }
   ]);
 
-  const dateBar = `
-    <div class="daterange">
-      <div class="field">
-        <label class="field-label">Date range</label>
-        <select>${DATE_PRESETS.map(d => `<option>${esc(d)}</option>`).join('')}</select>
-      </div>
-      <div class="pf-static">${exportBtn()}</div>
-      <span class="daterange-note">Date range applies to the summary and every tab below</span>
-    </div>`;
-
   return profile
     + note(`<strong>Scoped to activity, history and security.</strong> Stop Limits and Stakes are set on
       <a href="#/restrictions/member-stop-limits">Member Stop Limits</a> and <a href="#/restrictions/member-stakes">Member Stakes</a>, not here.`, 'accent', '↗')
-    + dateBar
     + summary
     + tabs([
       { label: 'Ring Games', html: ringHistory },
