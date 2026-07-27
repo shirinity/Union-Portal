@@ -28,9 +28,20 @@ const pct = (a, b) => b ? Math.min(100, Math.round((Math.abs(a) / b) * 100)) : 0
 /* ── Badges ───────────────────────────────────────────────────────── */
 const badge = (text, kind = 'neutral') => `<span class="badge badge-${kind}">${esc(text)}</span>`;
 
-/* "New" means new to this proposal. Each page says whether that is a new
-   capability or only a new place to find an existing one — the two differ. */
-const NEW_BADGE = '<span class="badge badge-new" title="New in this proposal — see the note on the page for what exactly is new">New</span>';
+/**
+ * Two different claims, so two different badges:
+ *   new   — ClubGG cannot do this at all today
+ *   moved — ClubGG can, but only from inside a detail view; what changed is
+ *           that it now has its own page
+ */
+const FLAGS = {
+  new: { label: 'New', kind: 'new', title: 'A capability ClubGG does not have today' },
+  moved: { label: 'Moved', kind: 'moved', title: 'Exists in ClubGG, but buried in a detail view — new here is that it has its own page' }
+};
+const flagBadge = flag => {
+  const f = FLAGS[flag];
+  return f ? `<span class="badge badge-${f.kind}" title="${esc(f.title)}">${f.label}</span>` : '';
+};
 
 const liveBadge = () => '<span class="badge badge-live"><span class="dot"></span>Live</span>';
 
@@ -50,11 +61,11 @@ const statusBadge = s => {
 const roleTag = r => `<span class="role role-${r.toLowerCase().replace(/\s+/g, '-')}">${esc(r)}</span>`;
 
 /* ── Layout blocks ────────────────────────────────────────────────── */
-const pageHead = ({ title, isNew, sub, actions = [], badges = [] }) => `
+const pageHead = ({ title, flag, sub, actions = [], badges = [] }) => `
   <div class="page-head">
     <div class="page-head-row">
       <div>
-        <h1 class="page-title">${esc(title)}${isNew ? NEW_BADGE : ''}${badges.join('')}</h1>
+        <h1 class="page-title">${esc(title)}${flagBadge(flag)}${badges.join('')}</h1>
         ${sub ? `<p class="page-sub">${sub}</p>` : ''}
       </div>
       ${actions.length ? `<div class="page-head-actions">${actions.join('')}</div>` : ''}

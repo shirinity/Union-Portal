@@ -21,10 +21,10 @@ const NAV = [
   },
   {
     title: 'Game Restrictions', items: [
-      { label: 'Club Stakes', route: 'restrictions/club-stakes', isNew: true },
-      { label: 'Member Stakes', route: 'restrictions/member-stakes', isNew: true },
+      { label: 'Club Stakes', route: 'restrictions/club-stakes', flag: 'moved' },
+      { label: 'Member Stakes', route: 'restrictions/member-stakes', flag: 'moved' },
       { label: 'Club Stop Limits', route: 'restrictions/club-stop-limits' },
-      { label: 'Member Stop Limits', route: 'restrictions/member-stop-limits', isNew: true }
+      { label: 'Member Stop Limits', route: 'restrictions/member-stop-limits', flag: 'new' }
     ]
   },
   /* Split by what moves and how far it reaches: credits stop at the club,
@@ -63,7 +63,7 @@ const DEFAULT_ROUTE = HOME_ROUTE;
 const ROUTE_INDEX = {};
 NAV.forEach(g => {
   g.items.forEach(i => {
-    ROUTE_INDEX[i.route] = { label: i.label, category: g.title, isNew: i.isNew };
+    ROUTE_INDEX[i.route] = { label: i.label, category: g.title, flag: i.flag };
   });
 });
 
@@ -85,7 +85,7 @@ const store = {
 /* ── Sidebar ──────────────────────────────────────────────────────── */
 const navLink = (i, active) => `
   <li><a class="nav-link${active === i.route ? ' active' : ''}" href="#/${i.route}">
-    <span>${esc(i.label)}</span>${i.isNew ? '<span class="badge badge-new">New</span>' : ''}
+    <span>${esc(i.label)}</span>${flagBadge(i.flag)}
   </a></li>`;
 
 function renderNav(active) {
@@ -122,7 +122,7 @@ function renderCrumbs(route) {
       if (list !== HOME_ROUTE) parts.push(`<a href="#/${list}">${esc(entry.label)}</a>`);
       parts.push(`<span class="here">${esc(detailTitle(route))}</span>`);
     } else if (entry) {
-      parts.push(`<span class="here">${esc(entry.label)}</span>${entry.isNew ? ' ' + NEW_BADGE : ''}`);
+      parts.push(`<span class="here">${esc(entry.label)}</span>${entry.flag ? ' ' + flagBadge(entry.flag) : ''}`);
     } else {
       parts.push('<span class="here">Not found</span>');
     }

@@ -350,7 +350,9 @@ body {
   white-space: nowrap;
   vertical-align: middle;
 }
+/* New = a capability ClubGG lacks. Moved = it exists, but had no page. */
 .badge-new     { background: var(--new-soft);   color: var(--new);    border-color: color-mix(in srgb, var(--new) 32%, transparent); }
+.badge-moved   { background: var(--info-soft);  color: var(--info);   border-color: color-mix(in srgb, var(--info) 32%, transparent); }
 .badge-pos     { background: var(--pos-soft);   color: var(--pos);    border-color: color-mix(in srgb, var(--pos) 28%, transparent); }
 .badge-neg     { background: var(--neg-soft);   color: var(--neg);    border-color: color-mix(in srgb, var(--neg) 28%, transparent); }
 .badge-warn    { background: var(--warn-soft);  color: var(--warn);   border-color: color-mix(in srgb, var(--warn) 28%, transparent); }
@@ -701,6 +703,7 @@ input[type="checkbox"].chk {
 .note strong { color: var(--text); font-weight: 650; }
 .note-info   { background: var(--info-soft);   border-color: color-mix(in srgb, var(--info) 26%, transparent); }
 .note-new    { background: var(--new-soft);    border-color: color-mix(in srgb, var(--new) 26%, transparent); }
+.note-moved  { background: var(--info-soft);   border-color: color-mix(in srgb, var(--info) 26%, transparent); }
 .note-warn   { background: var(--warn-soft);   border-color: color-mix(in srgb, var(--warn) 26%, transparent); }
 .note-accent { background: var(--accent-soft); border-color: var(--accent-line); }
 .note a { color: var(--accent); }
