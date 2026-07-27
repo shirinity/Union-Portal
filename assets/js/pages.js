@@ -78,7 +78,6 @@ PAGES['activity/clubs'] = () => {
     sub: `Union overview — where the portal opens. Signed in as the Union Owner, so everything in the union
           is in scope, for the period selected below. This list absorbs what ClubGG split out as
           <strong>Club Revenue</strong> under Report.`,
-    actions: [btn('Union settings')]
   })
   + unionSummary()
   + filters([
@@ -188,9 +187,10 @@ PAGES['activity/clubs/:id'] = id => {
 
   const profile = `
     <div class="profile">
+      <div class="profile-main">
       <div class="profile-top">
         <div class="entity-avatar">${esc(initials)}</div>
-        <div>
+        <div class="profile-ident">
           <div class="entity-name">${esc(c.name)}${c.isMasterClub ? badge('Master club', 'gold') : ''}${statusBadge(c.status)}</div>
           <div class="entity-meta">
             Club ID ${esc(c.id)} ·
@@ -210,6 +210,7 @@ PAGES['activity/clubs/:id'] = id => {
         ${figure('Members', n(memberCount), `${n(c.players)} Player · ${n(c.agents)} Agent · ${n(c.superAgents)} S.Agent · ${n(c.managers)} Mgr`)}
         ${figure('Chips outstanding', n(MEMBERS.filter(m => m.club === c.id).reduce((a, m) => a + m.chips, 0)), 'held by members')}
         ${figure('Union games', c.unionGameAuthority ? badge('Granted', 'pos') : badge('Not granted', 'neutral'))}
+      </div>
       </div>
 
       <div class="profile-fields">
@@ -423,6 +424,7 @@ PAGES['activity/members/:nick'] = nick => {
      Profile tab: nothing here belongs behind one. */
   const profile = `
     <div class="profile">
+      <div class="profile-main">
       <div class="profile-top">
         <div class="entity-avatar">${esc(initials)}</div>
         <div class="profile-ident">
@@ -454,6 +456,7 @@ PAGES['activity/members/:nick'] = nick => {
         ${figure('Last login', esc(m.lastLogin.split(',')[0]), m.lastLogin.split(', ')[1])}
         ${linkedFigure('Devices used', n(MEMBER_DEVICES.length), 'devices', 'view device IDs')}
         ${linkedFigure('Linked accounts', m.linked ? `<span class="neg">${n(m.linked)}</span>` : '0', 'linked', m.linked ? 'shared device' : 'none detected')}
+      </div>
       </div>
 
       <div class="profile-fields">
@@ -948,7 +951,6 @@ PAGES['chips/credits'] = () => {
   return pageHead({
     title: 'Club & Agent Credits',
     sub: `Issue or reclaim credits — to a club from the union, or to an agent from their club. Replaces ClubGG's <strong>Union Counter</strong> and <strong>Agent Counter</strong>, which are the same flow at two tiers.`,
-    actions: [btn('Union settings')]
   })
   + note(`<strong>Union Credits are the only value that crosses club lines.</strong> Credits to agents stay inside their own club, and chips to ordinary members are handled on <a href="#/chips/members">Member Chips</a>. A union can issue as many credits as it likes — what matters is what is outstanding, below.`, 'accent', '⇄')
   + stats([
@@ -1013,7 +1015,6 @@ PAGES['chips/members'] = () => {
   return pageHead({
     title: 'Member Chips',
     sub: `Send or reclaim club chips. Replaces ClubGG's <strong>Member Counter</strong>.`,
-    actions: [btn('Chip budget')]
   })
   + note(`<strong>Club-scoped.</strong> You can only send to or reclaim from your own club's roster — chips never cross club lines. The one value that does reach members in other clubs is a <a href="#/chips/tickets">Tournament Ticket</a>.`, 'accent', '⇄')
   + stats([

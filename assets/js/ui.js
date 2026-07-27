@@ -198,19 +198,22 @@ const modal = ({ title, meta, body }) => `
     </div>
   </div>`;
 
-/** A field in the profile header that opens a modal. */
+/* Figures read as a tight label-left / value-right list rather than a row of
+   boxes stretched across the full page width. */
+const figureKey = (label, sub) =>
+  `<div class="figure-key"><span class="figure-label">${esc(label)}</span>${sub ? `<span class="figure-sub">${esc(sub)}</span>` : ''}</div>`;
+
+/** A figure in the profile header that opens a modal. */
 const linkedFigure = (label, value, modalKey, sub) => `
   <div class="figure">
-    <div class="figure-label">${esc(label)}</div>
+    ${figureKey(label, sub)}
     <a class="figure-value is-link" href="#" data-modal="${esc(modalKey)}">${value}<span aria-hidden="true"> ›</span></a>
-    ${sub ? `<div class="figure-sub">${esc(sub)}</div>` : ''}
   </div>`;
 
 const figure = (label, value, sub) => `
   <div class="figure">
-    <div class="figure-label">${esc(label)}</div>
+    ${figureKey(label, sub)}
     <div class="figure-value">${value}</div>
-    ${sub ? `<div class="figure-sub">${esc(sub)}</div>` : ''}
   </div>`;
 
 /* ── Tables ───────────────────────────────────────────────────────── */
