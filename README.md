@@ -80,6 +80,9 @@ These are the points flagged as load-bearing in the brief and the nav doc:
 - **Detail pages carry no restriction controls.** Club Detail and Member Detail are scoped to activity,
   history and security. Both show a callout linking out to Restrictions, so a reviewer can
   see the move was intentional rather than an omission.
+- **Neither detail page has a Profile tab.** Identity, role, alias, private note, permissions and the
+  destructive actions all live in the persistent header. A tab is for switching between histories, not
+  for hiding who someone is.
 - **Chips & Credits is club-scoped; Tournament Tickets are not.** On Member Chips' Chips tab the
   Members recipient list is locked to one club's roster, and only Union Credits move across the union
   (Union ↔ Club). On the Tournament Ticket tab the Club filter is unlocked and the recipient list spans
@@ -96,6 +99,12 @@ These are the points flagged as load-bearing in the brief and the nav doc:
   *Union Admin Portal* top-left returns there from anywhere, and every breadcrumb is rooted in it.
   Categories (Activity, Games, …) organise the left nav only; they never appear in breadcrumbs.
 - Row-click drill-down: Clubs → Club Detail, Members → Member Detail
+- **Detail pages** put identity, current-state figures and the editable fields in a **persistent header**
+  — nothing about who a member is sits behind a tab. Below it, one date range governs the summary *and*
+  every tab, so tabs sit under the range they obey rather than above it. Tabs are history only.
+- **Devices used** and **Linked accounts** are linked figures in that header. Clicking either opens a
+  popup, the way ClubGG surfaces them off Member Information — Device ID List, and Linked Accounts
+  grouped by device to show multi-accounting. Nicknames in the popup navigate to that member.
 - Tabs on the detail pages and on both Chips & Credits pages
 - Cross-links — club names, member nicknames and the restriction callouts all navigate
 - Toggle switches, segmented controls and checkboxes flip visually

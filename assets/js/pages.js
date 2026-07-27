@@ -94,21 +94,12 @@ PAGES['activity/clubs/:id'] = id => {
   const roster = MEMBERS.filter(m => m.club === c.id).map(m => m.nick);
   const chipRows = CHIP_LOG.filter(r => r.recipient === c.name || roster.includes(r.recipient));
 
-  /* — Game History tab — */
+  /* — Game History tab — no date control; the page-level range governs. */
   const gameHistory =
-    stats([
-      { label: 'Games', value: n(CLUB_GAME_HISTORY.length), meta: `${CLUB_GAME_HISTORY.filter(g => g.live).length} live now` },
-      { label: 'Active members', value: n(c.players), meta: 'unique, played in period' },
-      { label: 'Hands', value: n(CLUB_GAME_HISTORY.reduce((a, g) => a + g.hands, 0)) },
-      hasRake
-        ? { label: 'Rake', value: n(CLUB_GAME_HISTORY.reduce((a, g) => a + g.rake, 0)) }
-        : { label: 'Rake', value: '<span class="muted">No rake</span>', meta: 'club rake is 0' }
-    ])
-    + filters([
-      { label: 'Date range', type: 'select', options: DATE_PRESETS },
+    filters([
       { label: 'Member', type: 'select', options: ['All members', ...roster] },
       { label: 'Game', type: 'select', options: ['All games', ...RING_TYPES] }
-    ], [exportBtn()])
+    ])
     + card({
       title: 'Game list', hint: 'One row per table lifecycle',
       body: dataTable({
@@ -141,17 +132,10 @@ PAGES['activity/clubs/:id'] = id => {
 
   /* — Chip Activity tab — */
   const chipActivity =
-    stats([
-      { label: 'Club credits', value: `<span class="gold">${n(c.credits)}</span>`, meta: 'issued by the union' },
-      { label: 'Chips outstanding', value: n(MEMBERS.filter(m => m.club === c.id).reduce((a, m) => a + m.chips, 0)), meta: 'held by members' },
-      { label: 'Sent, period', value: n(chipRows.filter(r => r.dir === 'sent').reduce((a, r) => a + r.amount, 0)) },
-      { label: 'Reclaimed, period', value: n(chipRows.filter(r => r.dir === 'reclaimed').reduce((a, r) => a + r.amount, 0)) }
-    ])
-    + filters([
-      { label: 'Date range', type: 'select', options: DATE_PRESETS },
+    filters([
       { label: 'Recipient', type: 'select', options: ['Everyone', ...roster] },
       { label: 'Direction', type: 'select', options: ['Sent & reclaimed', 'Sent only', 'Reclaimed only'] }
-    ], [exportBtn()])
+    ])
     + card({
       title: 'Chip & credit log',
       hint: 'Sent shows red — it is a debt to the club; reclaimed shows green',
@@ -188,70 +172,78 @@ PAGES['activity/clubs/:id'] = id => {
         })}
       </div>`;
 
-  /* — Profile tab — */
-  const profile =
-    card({
-      title: 'Club profile',
-      body: dl([
-        { label: 'Club name', value: esc(c.name) },
-        { label: 'Club ID', value: esc(c.id), mono: true },
-        { label: 'Owner', value: `<a class="rowlink" href="#/activity/members/${esc(c.owner)}">${esc(c.owner)}</a>` },
-        { label: 'Joined union', value: esc(c.joined) },
-        { label: 'Role in union', value: c.isMasterClub ? badge('Master club', 'gold') : badge('Member club', 'neutral') },
-        { label: 'Rake configuration', value: esc(c.rakePct) },
-        { label: 'Credits', value: `<span class="gold">${n(c.credits)}</span>` },
-        { label: 'Members', value: `${n(c.managers + c.superAgents + c.agents + c.players + 1)}` },
-        { label: 'Status', value: statusBadge(c.status) }
-      ])
-    })
-    + card({
-      title: 'Permissions',
-      body: `
-        <div style="display:flex;flex-direction:column;gap:13px">
-          <div>
-            ${toggle(c.unionGameAuthority, 'Authority to Create Union Game')}
-            <div class="card-hint" style="margin-top:4px;padding-left:40px">
-              Off by default once a club joins a union. Granted by the Union Owner. Once granted, tables this club creates
-              appear union-wide in the combined lobby — and only its Owner and Managers can create them, never Agents or Members.
-            </div>
-          </div>
-          <div>
-            ${toggle(c.status === 'Suspended', 'Suspend club')}
-            <div class="card-hint" style="margin-top:4px;padding-left:40px">
-              Blocks new buy-ins and rebuys. Players already in a session may finish it.
-              ${c.status === 'Suspended' ? '<strong>Currently suspended by a stop-limit trigger</strong> — re-approve from Club Stop Limits.' : ''}
-            </div>
-          </div>
-        </div>`
-    })
-    + card({
-      title: 'Internal notes',
-      hint: 'Visible to union admins',
-      body: `<textarea class="textbox" placeholder="Add an internal note about this club…">${esc(c.notes)}</textarea>
-             <div style="margin-top:9px">${btn('Save note', { kind: 'primary', sm: true })}</div>`
-    });
+  /* Persistent profile header — same pattern as Member Detail. Profile
+     fields and permissions are always visible rather than behind a tab. */
+  const memberCount = c.managers + c.superAgents + c.agents + c.players + 1;
 
-  return `
-    <div class="entity">
-      <div class="entity-avatar">${esc(initials)}</div>
-      <div>
-        <div class="entity-name">${esc(c.name)}${c.isMasterClub ? badge('Master club', 'gold') : ''}${statusBadge(c.status)}</div>
-        <div class="entity-meta">Club ID ${esc(c.id)} · owner ${esc(c.owner)} · joined ${esc(c.joined)}</div>
+  const profile = `
+    <div class="profile">
+      <div class="profile-top">
+        <div class="entity-avatar">${esc(initials)}</div>
+        <div>
+          <div class="entity-name">${esc(c.name)}${c.isMasterClub ? badge('Master club', 'gold') : ''}${statusBadge(c.status)}</div>
+          <div class="entity-meta">
+            Club ID ${esc(c.id)} ·
+            owner <a class="rowlink" href="#/activity/members/${esc(c.owner)}">${esc(c.owner)}</a> ·
+            joined ${esc(c.joined)} · rake ${esc(c.rakePct)}
+          </div>
+        </div>
+        <div class="profile-actions">
+          ${c.status === 'Suspended'
+            ? btn('Re-approve club', { sm: true, kind: 'primary' })
+            : btn('Suspend club', { sm: true, kind: 'danger' })}
+        </div>
       </div>
-      <div class="entity-side">
-        <div class="dl-item"><div class="dl-label">Credits</div><div class="dl-value mono gold">${n(c.credits)}</div></div>
-        <div class="dl-item"><div class="dl-label">Members</div><div class="dl-value mono">${n(c.managers + c.superAgents + c.agents + c.players + 1)}</div></div>
-        <div class="dl-item"><div class="dl-label">P&amp;L</div><div class="dl-value mono">${money(c.pnl)}</div></div>
+
+      <div class="profile-figures">
+        ${figure('Credits', `<span class="gold">${n(c.credits)}</span>`, 'issued by the union')}
+        ${figure('Members', n(memberCount), `${n(c.players)} Player · ${n(c.agents)} Agent · ${n(c.superAgents)} S.Agent · ${n(c.managers)} Mgr`)}
+        ${figure('Chips outstanding', n(MEMBERS.filter(m => m.club === c.id).reduce((a, m) => a + m.chips, 0)), 'held by members')}
+        ${figure('Union games', c.unionGameAuthority ? badge('Granted', 'pos') : badge('Not granted', 'neutral'))}
       </div>
-    </div>
-    ${note(`<strong>Detail is scoped to activity, history and security.</strong> Stop Limits and Stakes are no longer tabs here — both moved out to
-      <a href="#/restrictions/club-stop-limits">Restrictions</a>, where each exists at club <em>and</em> member tier.`, 'accent', '↗')}
-    ${tabs([
+
+      <div class="profile-fields">
+        <div class="pf">
+          <label class="pf-label">Authority to Create Union Game</label>
+          <div class="pf-static">${toggle(c.unionGameAuthority, c.unionGameAuthority ? 'Granted' : 'Off by default')}</div>
+        </div>
+        <div class="pf pf-wide">
+          <label class="pf-label">Internal note — visible to union admins</label>
+          <input value="${esc(c.notes)}" placeholder="Add an internal note about this club…">
+        </div>
+      </div>
+    </div>`;
+
+  const summary = stats([
+    { label: 'Games', value: n(CLUB_GAME_HISTORY.length), meta: `${CLUB_GAME_HISTORY.filter(g => g.live).length} live now` },
+    { label: 'Active members', value: n(c.players), meta: 'unique, played in period' },
+    { label: 'Hands', value: n(CLUB_GAME_HISTORY.reduce((a, g) => a + g.hands, 0)) },
+    hasRake
+      ? { label: 'Rake', value: n(CLUB_GAME_HISTORY.reduce((a, g) => a + g.rake, 0)) }
+      : { label: 'Rake', value: '<span class="muted">No rake</span>', meta: 'club rake is 0' },
+    { label: 'P&L', value: money(c.pnl, { sign: false }) }
+  ]);
+
+  const dateBar = `
+    <div class="daterange">
+      <div class="field">
+        <label class="field-label">Date range</label>
+        <select>${DATE_PRESETS.map(d => `<option>${esc(d)}</option>`).join('')}</select>
+      </div>
+      <span class="daterange-note">Applies to the summary and every tab below</span>
+      <div class="daterange-end">${exportBtn()}</div>
+    </div>`;
+
+  return profile
+    + note(`<strong>Scoped to activity, history and security.</strong> Stop Limits and Stakes are set on
+      <a href="#/restrictions/club-stop-limits">Club Stop Limits</a> and <a href="#/restrictions/club-stakes">Club Stakes</a>, not here.`, 'accent', '↗')
+    + dateBar
+    + summary
+    + tabs([
       { label: 'Game History', html: gameHistory },
       { label: 'Chip Activity', html: chipActivity },
-      { label: 'Security', html: security },
-      { label: 'Profile', html: profile }
-    ])}`;
+      { label: 'Security', html: security }
+    ]);
 };
 
 /* ── Member List ──────────────────────────────────────────────────── */
@@ -318,18 +310,13 @@ PAGES['activity/members/:nick'] = nick => {
   const m = memberByNick(nick);
   if (!m) return pageHead({ title: 'Member not found' }) + `<div class="empty">No member called ${esc(nick)}.</div>`;
 
+  /* Tabs carry no date control of their own — the page-level range above
+     governs all of them. Only genuinely tab-specific filters stay. */
   const ringHistory =
-    stats([
-      { label: 'Games', value: n(m.games) },
-      { label: 'Hands', value: n(m.hands) },
-      { label: 'Rake', value: n(m.rake) },
-      { label: 'P&L', value: money(m.pnl, { sign: false }) }
-    ])
-    + filters([
-      { label: 'Date range', type: 'select', options: DATE_PRESETS },
+    filters([
       { label: 'Game', type: 'select', options: ['All games', ...RING_TYPES] },
       { label: 'Stakes', type: 'select', options: ['All stakes', '0.5 / 1', '1 / 2', '2 / 4', '5 / 10'] }
-    ], [exportBtn()])
+    ])
     + card({
       title: 'Ring game history', hint: 'One row per session — a buy-in-to-cash-out cycle',
       body: dataTable({
@@ -423,95 +410,146 @@ PAGES['activity/members/:nick'] = nick => {
       })
     });
 
-  const profileTab =
-    `<div class="cols">
-      <div>
-        ${card({
-          title: 'Profile',
-          body: dl([
-            { label: 'Member ID', value: esc(m.id), mono: true },
-            { label: 'Nickname', value: esc(m.nick) },
-            { label: 'Club', value: `<a class="rowlink" href="#/activity/clubs/${m.club}">${esc(clubName(m.club))}</a>` },
-            { label: 'Role', value: roleTag(m.role) },
-            { label: 'Upline', value: m.upline === '—' ? '<span class="muted">—</span>' : `<a class="rowlink" href="#/activity/members/${esc(m.upline)}">${esc(m.upline)}</a>` },
-            { label: 'Joined', value: esc(m.joined) },
-            { label: 'Credits', value: m.credits ? `<span class="gold">${n(m.credits)}</span>` : '<span class="muted">—</span>' },
-            { label: 'Club chips', value: n(m.chips), mono: true },
-            { label: 'Last login', value: esc(m.lastLogin) }
-          ])
-        })}
-        ${card({
-          title: 'Alias &amp; notes',
-          body: `
-            <div class="dl-label">Alias — "tell owner who you are"</div>
-            <input class="textbox" style="min-height:0;height:32px;margin-top:4px" value="${esc(m.alias)}" placeholder="Not set by the member">
-            <div class="card-hint" style="margin-top:5px">Written by the member to identify themselves. Admins can edit it; Agents and Super Agents can view it for their own downline but not edit.</div>
-            <hr class="hr">
-            <div class="dl-label">Private note</div>
-            <textarea class="textbox" style="margin-top:4px" placeholder="Only you can see this…">${esc(m.notes)}</textarea>
-            <div class="card-hint" style="margin-top:5px">Visible only to whoever wrote it — not shared with other admins at the same club.</div>
-            <div style="margin-top:9px">${btn('Save', { kind: 'primary', sm: true })}</div>`
-        })}
+  const initials = m.nick.replace(/[^a-z0-9]/gi, '').slice(0, 2).toUpperCase();
+
+  /* ── Persistent profile header ──────────────────────────────────
+     Identity, current-state figures, and the handful of editable
+     fields — all of it always on screen. Devices and Linked accounts
+     are linked figures that open the ClubGG-style popups. There is no
+     Profile tab: nothing here belongs behind one. */
+  const profile = `
+    <div class="profile">
+      <div class="profile-top">
+        <div class="entity-avatar">${esc(initials)}</div>
+        <div>
+          <div class="entity-name">${esc(m.nick)}${roleTag(m.role)}${m.linked ? badge(`${m.linked} linked`, 'warn') : ''}</div>
+          <div class="entity-meta">
+            Member ID ${esc(m.id)} ·
+            <a class="rowlink" href="#/activity/clubs/${m.club}">${esc(clubName(m.club))}</a> ·
+            joined ${esc(m.joined)} ·
+            upline ${m.upline === '—' ? '<span class="muted">none</span>' : `<a class="rowlink" href="#/activity/members/${esc(m.upline)}">${esc(m.upline)}</a>`}
+          </div>
+        </div>
+        <div class="profile-actions">
+          ${btn('Ban chat', { sm: true })}
+          ${btn('Remove from club', { sm: true, kind: 'danger' })}
+        </div>
       </div>
-      <div>
-        ${card({
-          title: 'Role management',
-          body: `
-            <div class="field" style="margin-bottom:11px">
-              <label class="field-label">Role</label>
-              <select><option>${esc(m.role)}</option>${ROLE_OPTIONS.slice(1).filter(r => r !== m.role).map(r => `<option>${esc(r)}</option>`).join('')}</select>
-            </div>
-            ${toggle(m.bo, 'Back Office / portal access')}
-            <div class="card-hint" style="margin-top:8px">
-              Only an Owner can create or manage a Manager. Managers may promote to Agent or Super Agent, but not to Manager.
-              A Super Agent cannot promote anyone to Super Agent.
-            </div>
-            <div style="margin-top:11px">${btn('Apply role change', { sm: true })}</div>`
-        })}
-        ${card({
-          title: 'Security data',
-          body: dl([
-            { label: 'Devices used', value: n(m.devices) },
-            { label: 'Linked accounts', value: m.linked ? `<span class="neg">${n(m.linked)} detected</span>` : '<span class="muted">None</span>' },
-            { label: 'Last login', value: esc(m.lastLogin) },
-            { label: 'Chat status', value: badge('Not banned', 'pos') }
-          ]) + `<hr class="hr">
-            <div class="inline-actions">${btn('Ban chat', { sm: true })}${btn('Remove from club', { sm: true, kind: 'danger' })}</div>
-            <div class="card-hint" style="margin-top:7px">Removing a member from their club also removes them from the union — union membership derives from club membership.</div>`
-        })}
+
+      <div class="profile-figures">
+        ${figure('Club chips', n(m.chips))}
+        ${figure('Credits', m.credits ? `<span class="gold">${n(m.credits)}</span>` : '<span class="muted">—</span>')}
+        ${figure('Last login', esc(m.lastLogin.split(',')[0]), m.lastLogin.split(', ')[1])}
+        ${linkedFigure('Devices used', n(MEMBER_DEVICES.length), 'devices', 'view device IDs')}
+        ${linkedFigure('Linked accounts', m.linked ? `<span class="neg">${n(m.linked)}</span>` : '0', 'linked', m.linked ? 'shared device' : 'none detected')}
+        ${figure('Chat', badge('Not banned', 'pos'))}
+      </div>
+
+      <div class="profile-fields">
+        <div class="pf">
+          <label class="pf-label">Role</label>
+          <select><option>${esc(m.role)}</option>${ROLE_OPTIONS.slice(1).filter(r => r !== m.role).map(r => `<option>${esc(r)}</option>`).join('')}</select>
+        </div>
+        <div class="pf">
+          <label class="pf-label">Portal access</label>
+          <div class="pf-static">${toggle(m.bo, m.bo ? 'Granted' : 'Not granted')}</div>
+        </div>
+        <div class="pf pf-wide">
+          <label class="pf-label">Alias — member-written</label>
+          <input value="${esc(m.alias)}" placeholder="Not set by the member">
+        </div>
+        <div class="pf pf-wide">
+          <label class="pf-label">Private note — only you see this</label>
+          <input value="${esc(m.notes)}" placeholder="Add a note…">
+        </div>
       </div>
     </div>`;
 
-  const initials = m.nick.replace(/[^a-z0-9]/gi, '').slice(0, 2).toUpperCase();
+  /* Period activity — distinct from the current-state figures above. */
+  const summary = stats([
+    { label: 'Games', value: n(m.games) },
+    { label: 'Hands', value: n(m.hands) },
+    { label: 'Rake', value: n(m.rake) },
+    { label: 'Fees', value: n(m.fees) },
+    { label: 'P&L', value: money(m.pnl, { sign: false }) }
+  ]);
 
-  return `
-    <div class="entity">
-      <div class="entity-avatar">${esc(initials)}</div>
-      <div>
-        <div class="entity-name">${esc(m.nick)}${roleTag(m.role)}${m.linked ? badge(`${m.linked} linked`, 'warn') : ''}</div>
-        <div class="entity-meta">
-          Member ID ${esc(m.id)} · <a class="rowlink" href="#/activity/clubs/${m.club}">${esc(clubName(m.club))}</a>
-          ${m.alias ? ' · alias “' + esc(m.alias) + '”' : ''}
-        </div>
+  const dateBar = `
+    <div class="daterange">
+      <div class="field">
+        <label class="field-label">Date range</label>
+        <select>${DATE_PRESETS.map(d => `<option>${esc(d)}</option>`).join('')}</select>
       </div>
-      <div class="entity-side">
-        <div class="dl-item"><div class="dl-label">Club chips</div><div class="dl-value mono">${n(m.chips)}</div></div>
-        ${m.credits ? `<div class="dl-item"><div class="dl-label">Credits</div><div class="dl-value mono gold">${n(m.credits)}</div></div>` : ''}
-        <div class="dl-item"><div class="dl-label">P&amp;L</div><div class="dl-value mono">${money(m.pnl)}</div></div>
-        <div class="dl-item"><div class="dl-label">Last login</div><div class="dl-value">${esc(m.lastLogin)}</div></div>
-      </div>
-    </div>
-    ${note(`<strong>Detail is scoped to activity, history and security.</strong> Stop Limits and Stakes are no longer tabs here — see
-      <a href="#/restrictions/member-stop-limits">Member Stop Limits</a> and <a href="#/restrictions/member-stakes">Member Stakes</a>.`, 'accent', '↗')}
-    ${tabs([
-      { label: 'Ring Game History', html: ringHistory },
-      { label: 'Tournament History', html: tourneyHistory },
-      { label: 'Balance History', html: balanceHistory },
-      { label: 'Ticket History', html: ticketHistory },
-      { label: 'Login History', html: loginHistory },
-      { label: 'Downline', html: downline },
-      { label: 'Profile & Security', html: profileTab }
-    ])}`;
+      <span class="daterange-note">Applies to the summary and every tab below</span>
+      <div class="daterange-end">${exportBtn()}</div>
+    </div>`;
+
+  return profile
+    + note(`<strong>Scoped to activity, history and security.</strong> Stop Limits and Stakes are set on
+      <a href="#/restrictions/member-stop-limits">Member Stop Limits</a> and <a href="#/restrictions/member-stakes">Member Stakes</a>, not here.`, 'accent', '↗')
+    + dateBar
+    + summary
+    + tabs([
+      { label: 'Ring Games', html: ringHistory },
+      { label: 'Tournaments', html: tourneyHistory },
+      { label: 'Balance', html: balanceHistory },
+      { label: 'Tickets', html: ticketHistory },
+      { label: 'Logins', html: loginHistory },
+      { label: 'Downline', html: downline }
+    ]);
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   MODALS — linked from the profile header, mirroring ClubGG's popups
+   ═══════════════════════════════════════════════════════════════════ */
+
+const MODALS = {
+  devices: () => modal({
+    title: 'Device ID List',
+    meta: `Showing 1 to ${MEMBER_DEVICES.length} of ${MEMBER_DEVICES.length} entries`,
+    body: dataTable({
+      cols: [{ label: 'No.', cls: 'num' }, { label: 'Last login date' }, { label: 'Platform' }, { label: 'Device ID' }],
+      rows: MEMBER_DEVICES.map(d => ({
+        cells: [n(d.no), esc(d.when), badge(d.platform, 'neutral'), `<span class="id">${esc(d.id)}</span>`]
+      }))
+    })
+  }),
+
+  linked: () => {
+    const total = LINKED_ACCOUNTS.reduce((a, g) => a + g.accounts.length, 0);
+    /* Hand-built so the device cell can span its account group, the way
+       ClubGG shows it — one device, many accounts seen on it. */
+    const rows = LINKED_ACCOUNTS.map(g => g.accounts.map((a, i) => `
+      <tr>
+        ${i === 0 ? `<td class="rowgroup" rowspan="${g.accounts.length}"><span class="id">${esc(g.device)}</span></td>
+                     <td class="rowgroup" rowspan="${g.accounts.length}">${badge(g.platform, 'neutral')}</td>` : ''}
+        <td><span class="id">${esc(a.uid)}</span></td>
+        <td>${memberByNick(a.nick)
+              ? `<a class="rowlink" href="#/activity/members/${esc(a.nick)}">${esc(a.nick)}</a>`
+              : esc(a.nick)}</td>
+        <td>${esc(a.date)}</td>
+        <td><span class="id">${esc(a.ip)}</span></td>
+        <td>${esc(a.loc)}</td>
+        <td class="num">${n(a.logins)}</td>
+      </tr>`).join('')).join('');
+
+    return modal({
+      title: 'Linked Accounts',
+      meta: `Showing 1 to ${total} of ${total} entries · other accounts seen on the same device`,
+      body: `<div class="table-scroll"><table class="data">
+        <thead>
+          <tr>
+            <th rowspan="2">Device ID</th><th rowspan="2">Platform</th>
+            <th rowspan="2">UID</th><th rowspan="2">Nickname</th>
+            <th class="group" colspan="3">Recent login</th>
+            <th rowspan="2" class="num">Login count</th>
+          </tr>
+          <tr><th>Date</th><th>IP</th><th>Location</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table></div>`
+    });
+  }
 };
 
 /* ═══════════════════════════════════════════════════════════════════

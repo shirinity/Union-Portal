@@ -227,6 +227,44 @@ $page.addEventListener('keydown', e => {
   location.hash = row.dataset.href;
 });
 
+/* ── Modals ───────────────────────────────────────────────────────── */
+const $modal = document.createElement('div');
+document.body.appendChild($modal);
+
+function openModal(key) {
+  const build = MODALS[key];
+  if (!build) return;
+  $modal.innerHTML = build();
+  document.body.style.overflow = 'hidden';
+  const close = $modal.querySelector('.modal-x');
+  if (close) close.focus();
+}
+
+function closeModal() {
+  $modal.innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+$page.addEventListener('click', e => {
+  const link = e.target.closest('[data-modal]');
+  if (!link) return;
+  e.preventDefault();
+  openModal(link.dataset.modal);
+});
+
+$modal.addEventListener('click', e => {
+  /* A cross-link out of the modal navigates and dismisses. */
+  if (e.target.closest('a[href^="#/"]')) { closeModal(); return; }
+
+  const onBackdrop = e.target.classList.contains('modal-backdrop');
+  const onCloseAffordance = !!e.target.closest('.modal-x, .modal-foot .btn');
+  if (onBackdrop || onCloseAffordance) closeModal();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $modal.innerHTML) closeModal();
+});
+
 /* Mock buttons: say plainly that nothing is wired up rather than
    looking broken. Real navigation and filters are unaffected. */
 $page.addEventListener('click', e => {

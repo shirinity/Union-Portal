@@ -386,6 +386,36 @@ const MEMBER_LOGIN_HISTORY = [
   { when: '24 Jul 12:41', device: 'iPad Air',        platform: 'iPadOS 19.1',  ip: '73.42.18.204',  loc: 'Los Angeles, US', result: 'Success' }
 ];
 
+/* Devices used — ClubGG surfaces this as a linked field on Member
+   Information that opens a "Device ID List" popup. Same here. */
+const MEMBER_DEVICES = [
+  { no: 5, when: '2026-07-26 11:37:04', platform: 'iOS',     id: 'EABEEFB3-0999-4D00-87F7-303A699A218F' },
+  { no: 4, when: '2026-06-15 19:29:18', platform: 'iOS',     id: '1E50AC9F-8461-4351-B6B6-A5CBE51C7509' },
+  { no: 3, when: '2026-05-24 21:18:11', platform: 'Android', id: 'AE38F999-7887-48B7-A459-1A8D49E078E7' },
+  { no: 2, when: '2026-03-13 20:10:19', platform: 'Windows', id: 'EA2D8C12-4FB0-45DA-83AE-4227B7093A34' },
+  { no: 1, when: '2025-12-02 19:35:19', platform: 'iOS',     id: '0B5ED819-B1BA-4700-9E37-7391B9E4DD89' }
+];
+
+/* Linked accounts — other accounts seen on the same device. Grouped by
+   device, matching ClubGG's popup. This is the multi-accounting signal. */
+const LINKED_ACCOUNTS = [
+  {
+    device: 'EABEEFB3-0999-4D00-87F7-303A699A218F', platform: 'iOS',
+    accounts: [
+      { uid: '2490-0305', nick: 'sa_delacruz', date: '2026-07-26 11:37:04', ip: '73.42.18.204', loc: 'Los Angeles, US', logins: 191 }
+    ]
+  },
+  {
+    device: 'EA2D8C12-4FB0-45DA-83AE-4227B7093A34', platform: 'Windows',
+    accounts: [
+      { uid: '2490-0305', nick: 'sa_delacruz', date: '2026-03-13 20:10:19', ip: '104.28.60.11', loc: 'Las Vegas, US', logins: 19 },
+      { uid: '2054-2226', nick: 'flopsweat',   date: '2026-05-09 22:44:42', ip: '104.28.60.11', loc: 'Las Vegas, US', logins: 2 },
+      { uid: '1182-7953', nick: 'nit_nate',    date: '2026-05-15 03:28:51', ip: '104.28.60.11', loc: 'Las Vegas, US', logins: 4 },
+      { uid: '9284-1649', nick: 'tiltmonster', date: '2026-06-26 04:25:33', ip: '104.28.60.11', loc: 'Las Vegas, US', logins: 2 }
+    ]
+  }
+];
+
 const MEMBER_DOWNLINE = [
   { nick: 'ag_novak',   role: 'Agent',  chips: 46_200, pnl: 3_410,  hands: 3_280, members: 9, lastActive: '25 Jul' },
   { nick: 'quadqueen',  role: 'Player', chips: 8_960,  pnl: -9_240, hands: 4_820, members: 0, lastActive: '26 Jul' },

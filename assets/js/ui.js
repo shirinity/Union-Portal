@@ -167,6 +167,39 @@ const tabs = panels => `
     ${panels.map((p, i) => `<div data-panel="${i}"${i ? ' hidden' : ''}>${p.html}</div>`).join('')}
   </div>`;
 
+/* ── Modals ───────────────────────────────────────────────────────── */
+/* Opened from linked fields, the way ClubGG surfaces Device ID List and
+   Linked Accounts off Member Information. app.js owns open/close. */
+const modal = ({ title, meta, body }) => `
+  <div class="modal-backdrop" data-modal-close>
+    <div class="modal" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+      <div class="modal-head">
+        <h2 class="modal-title">${esc(title)}</h2>
+        <button class="modal-x" data-modal-close aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        ${meta ? `<div class="modal-meta">${esc(meta)}</div>` : ''}
+        ${body}
+      </div>
+      <div class="modal-foot">${btn('Close', {})}</div>
+    </div>
+  </div>`;
+
+/** A field in the profile header that opens a modal. */
+const linkedFigure = (label, value, modalKey, sub) => `
+  <div class="figure">
+    <div class="figure-label">${esc(label)}</div>
+    <a class="figure-value is-link" href="#" data-modal="${esc(modalKey)}">${value}<span aria-hidden="true"> ›</span></a>
+    ${sub ? `<div class="figure-sub">${esc(sub)}</div>` : ''}
+  </div>`;
+
+const figure = (label, value, sub) => `
+  <div class="figure">
+    <div class="figure-label">${esc(label)}</div>
+    <div class="figure-value">${value}</div>
+    ${sub ? `<div class="figure-sub">${esc(sub)}</div>` : ''}
+  </div>`;
+
 /* ── Tables ───────────────────────────────────────────────────────── */
 /**
  * cols: [{ key, label, cls }]  — cls: 'num' | 'mid' | ''
