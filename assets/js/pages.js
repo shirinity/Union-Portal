@@ -60,14 +60,19 @@ PAGES['activity/clubs'] = () => {
           Figures cover the selected period as of ${esc(UNION.asOf)}.`,
     actions: [btn('Union settings')]
   })
+  /* Same shape as the Members page. Rake and fees are shown separately
+     because together they *are* union P&L — burying fees inside the rake
+     card hid half of that sum. The P&L column in the table below is the
+     club's own P&L, which is a different number. */
   + stats([
-    { label: 'Clubs', value: n(CLUBS.length), meta: `${CLUBS.filter(c => c.status === 'Active').length} active · 1 suspended` },
+    { label: 'Clubs', value: n(CLUBS.length), meta: `${CLUBS.filter(c => c.status === 'Active').length} active · ${CLUBS.filter(c => c.status === 'Suspended').length} suspended` },
     { label: 'Members', value: n(t.players + t.agents + t.superAgents + t.managers + CLUBS.length), meta: 'across all clubs' },
     { label: 'Hands', value: n(t.hands), meta: 'selected period' },
-    { label: 'Rake', value: n(t.rake), meta: `+ ${n(t.fees)} tournament fees` },
-    { label: 'Union P&L', value: money(t.pnl, { sign: false }), meta: 'ring + tournament' }
+    { label: 'Rake', value: n(t.rake), meta: 'ring games' },
+    { label: 'Fees', value: n(t.fees), meta: 'tournaments' },
+    { label: 'Union P&L', value: money(t.rake + t.fees, { sign: false }), meta: 'rake + fees' }
   ])
-  + sectionHead('Clubs', 'Click a row to open a club', [exportBtn()])
+  + sectionHead('Clubs', 'Click a row to open a club')
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Club name or 6-digit ID…', grow: true },
     { label: 'Date range', type: 'select', options: DATE_PRESETS },
@@ -75,6 +80,7 @@ PAGES['activity/clubs'] = () => {
     { label: 'Union game authority', type: 'select', options: ['Any', 'Granted', 'Not granted'] }
   ])
   + card({
+    actions: [exportBtn()],
     hint: `Financial columns, member counts by role and a totals row — this list absorbs what ClubGG split out as <strong>Club Revenue</strong> under Report. Visible to <em>any</em> club's Owner or Manager, not only the master club's.`,
     body: dataTable({ cols, rows, foot, chevron: true })
   })
@@ -248,13 +254,14 @@ PAGES['activity/clubs/:id'] = id => {
 /* ── Member List ──────────────────────────────────────────────────── */
 PAGES['activity/members'] = () => {
   const t = MEMBERS.reduce((a, m) => ({
-    chips: a.chips + m.chips, games: a.games + m.games, hands: a.hands + m.hands,
-    rake: a.rake + m.rake, fees: a.fees + m.fees, bbj: a.bbj + m.bbj, pnl: a.pnl + m.pnl
-  }), { chips: 0, games: 0, hands: 0, rake: 0, fees: 0, bbj: 0, pnl: 0 });
+    credits: a.credits + m.credits, chips: a.chips + m.chips, games: a.games + m.games,
+    hands: a.hands + m.hands, rake: a.rake + m.rake, fees: a.fees + m.fees,
+    bbj: a.bbj + m.bbj, pnl: a.pnl + m.pnl
+  }), { credits: 0, chips: 0, games: 0, hands: 0, rake: 0, fees: 0, bbj: 0, pnl: 0 });
 
   const cols = [
     { label: 'Member' }, { label: 'Member ID' }, { label: 'Club' }, { label: 'Role' },
-    { label: 'Credits', cls: 'num' }, { label: 'Club chips', cls: 'num' },
+    { label: 'Credits', cls: 'num' }, { label: 'Chips', cls: 'num' },
     { label: 'Games', cls: 'num' }, { label: 'Hands', cls: 'num' }, { label: 'Rake', cls: 'num' },
     { label: 'Fees', cls: 'num' }, { label: 'BBJ', cls: 'num' }, { label: 'P&L', cls: 'num' },
     { label: 'Portal access', cls: 'mid' }
@@ -274,21 +281,25 @@ PAGES['activity/members'] = () => {
     ]
   }));
 
-  const foot = [`<strong>Total · ${MEMBERS.length} shown</strong>`, '', '', '', '',
+  const foot = [`<strong>Total · ${MEMBERS.length} shown</strong>`, '', '', '',
+    `<span class="gold">${n(t.credits)}</span>`,
     n(t.chips), n(t.games), n(t.hands), n(t.rake), n(t.fees), n(t.bbj), money(t.pnl), ''];
 
   return pageHead({
     title: 'Member List',
     sub: `Every member across every club in the union. Filter by club and role; ClubGG's separate <strong>Agent Counter</strong> page is unnecessary once this role filter exists.
           <em>Portal access</em> is ClubGG's "BO" column — whether the member can sign in to this admin portal.`,
-    actions: [exportBtn()]
   })
+  /* Deliberately the same six stats as the Clubs page, in the same order —
+     only the first two differ, because they are the ones that meaningfully
+     differ between a list of clubs and a list of members. */
   + stats([
-    { label: 'Members shown', value: n(MEMBERS.length), meta: `of ${n(CLUBS.reduce((a, c) => a + c.players + c.agents + c.superAgents + c.managers + 1, 0))} in the union` },
-    { label: 'Chips outstanding', value: n(t.chips), meta: 'held by these members' },
+    { label: 'Members', value: n(MEMBERS.length), meta: `of ${n(CLUBS.reduce((a, c) => a + c.players + c.agents + c.superAgents + c.managers + 1, 0))} in the union` },
+    { label: 'Chips', value: n(t.chips), meta: 'held by these members' },
     { label: 'Hands', value: n(t.hands), meta: 'selected period' },
-    { label: 'Rake + fees', value: n(t.rake + t.fees) },
-    { label: 'Net P&L', value: money(t.pnl, { sign: false }) }
+    { label: 'Rake', value: n(t.rake), meta: 'ring games' },
+    { label: 'Fees', value: n(t.fees), meta: 'tournaments' },
+    { label: 'Union P&L', value: money(t.rake + t.fees, { sign: false }), meta: 'rake + fees' }
   ])
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Nickname, alias or member ID…', grow: true },
@@ -300,6 +311,7 @@ PAGES['activity/members'] = () => {
   + card({
     title: 'All members',
     hint: 'Click a row to open Member Detail',
+    actions: [exportBtn()],
     body: dataTable({ cols, rows, foot, chevron: true })
   });
 };
@@ -440,7 +452,7 @@ PAGES['activity/members/:nick'] = nick => {
       </div>
 
       <div class="profile-figures">
-        ${figure('Club chips', n(m.chips))}
+        ${figure('Chips', n(m.chips))}
         ${figure('Credits', m.credits ? `<span class="gold">${n(m.credits)}</span>` : '<span class="muted">—</span>')}
         ${figure('Last login', esc(m.lastLogin.split(',')[0]), m.lastLogin.split(', ')[1])}
         ${linkedFigure('Devices used', n(MEMBER_DEVICES.length), 'devices', 'view device IDs')}
@@ -586,7 +598,7 @@ PAGES['restrictions/club-stop-limits'] = () => {
     title: 'Club Stop Limits',
     sub: `Every club's weekly win and loss limit in one editable list — ClubGG's <strong>Weekly Club Stop Limit</strong>, minus the "Weekly" now that the same control exists at member tier.
           When a limit trips, the club is suspended: no new buy-ins or rebuys until the union re-approves it. Players already in a session may finish.`,
-    actions: [exportBtn(), btn('Set limits for a club', { kind: 'primary' })]
+    actions: [btn('Set limits for a club', { kind: 'primary' })]
   })
   + note(`<strong>Visibility fix.</strong> A club's own Owner and Manager can see their limits here — <em>including non-master clubs</em>. ClubGG restricts this view to the Union Owner and Manager, which forces every other club to ask for their own numbers off-product.`, 'accent', '✓')
   + stats([
@@ -603,6 +615,7 @@ PAGES['restrictions/club-stop-limits'] = () => {
   + card({
     title: 'Weekly win / loss limits',
     hint: 'Win limit – loss limit',
+    actions: [exportBtn()],
     body: dataTable({
       cols: [
         { label: 'Club' }, { label: 'Win – loss limit' }, { label: 'Ring P&L, week', cls: 'num' },
@@ -677,7 +690,7 @@ PAGES['restrictions/member-stop-limits'] = () => {
     title: 'Member Stop Limits',
     isNew: true,
     sub: `Weekly win and loss limits for individual members, agents and super agents. A limit set here <strong>cascades to that person's whole downstream funnel</strong>, and is always narrowed within their club's limit if one exists.`,
-    actions: [exportBtn(), btn('Set a limit', { kind: 'primary' })]
+    actions: [btn('Set a limit', { kind: 'primary' })]
   })
   + note(`<strong>A genuinely new capability.</strong> ClubGG has stop limits at club tier only, so this cannot be done today at all. Adding the member tier is what makes this symmetrical — every control now exists at both tiers, in one place.`, 'new', '✦')
   + stats([
@@ -696,6 +709,7 @@ PAGES['restrictions/member-stop-limits'] = () => {
   + card({
     title: 'Weekly win / loss limits',
     hint: 'Only members with a limit set appear here',
+    actions: [exportBtn()],
     body: dataTable({
       cols: [
         { label: 'Member' }, { label: 'Role' }, { label: 'Win – loss limit' }, { label: 'P&L, week', cls: 'num' },
@@ -1077,7 +1091,7 @@ PAGES['games/ring'] = () => {
   return pageHead({
     title: 'Ring Games',
     sub: `Cash tables across the union. Create, monitor and disband tables directly from the portal — not only from inside a club on mobile.`,
-    actions: [exportBtn(), btn('Create table', { kind: 'primary' })]
+    actions: [btn('Create table', { kind: 'primary' })]
   })
   + stats([
     { label: 'Live tables', value: n(live.length), meta: `${n(live.reduce((a, g) => a + g.players, 0))} players seated` },
@@ -1098,6 +1112,7 @@ PAGES['games/ring'] = () => {
   + card({
     title: 'Tables',
     hint: 'Live rows refresh automatically in the real product',
+    actions: [exportBtn()],
     body: dataTable({
       cols: [{ label: 'Table' }, { label: 'Club' }, { label: 'Game' }, { label: 'Blinds' }, { label: 'Buy-in' },
         { label: 'Seats' }, { label: 'Players', cls: 'num' }, { label: 'Hands', cls: 'num' }, { label: 'Rake', cls: 'num' },
@@ -1123,7 +1138,7 @@ PAGES['games/mtt'] = () => {
     title: 'Tournaments',
     sub: `Multi-table tournaments across the union. Create them here, or approve the ones a club with <strong>Authority to Create Union Game</strong> has requested.`,
     badges: pending.length ? [badge(`${pending.length} pending approval`, 'warn')] : [],
-    actions: [exportBtn(), btn('Create tournament', { kind: 'primary' })]
+    actions: [btn('Create tournament', { kind: 'primary' })]
   })
   + stats([
     { label: 'Running', value: n(TOURNAMENTS.filter(t => t.status === 'Running').length) },
@@ -1142,6 +1157,7 @@ PAGES['games/mtt'] = () => {
   ])
   + card({
     title: 'Tournaments',
+    actions: [exportBtn()],
     body: dataTable({
       cols: [{ label: 'Tournament' }, { label: 'Club' }, { label: 'Game' }, { label: 'Type' }, { label: 'Start' },
         { label: 'Registration' }, { label: 'Buy-in' }, { label: 'Re-entry' }, { label: 'Entries', cls: 'num' },
@@ -1166,7 +1182,7 @@ PAGES['games/mtt'] = () => {
 PAGES['games/sng'] = () => pageHead({
   title: 'SNGs',
   sub: `Sit-and-go tournaments: they start as soon as the seats fill. Entries, results and creation.`,
-  actions: [exportBtn(), btn('Create SNG', { kind: 'primary' })]
+  actions: [btn('Create SNG', { kind: 'primary' })]
 })
 + stats([
   { label: 'Filling', value: n(SNGS.filter(s => s.status === 'Filling').length) },
@@ -1184,6 +1200,7 @@ PAGES['games/sng'] = () => pageHead({
 ])
 + card({
   title: 'Sit & go events',
+  actions: [exportBtn()],
   body: dataTable({
     cols: [{ label: 'SNG' }, { label: 'Club' }, { label: 'Game' }, { label: 'Buy-in' }, { label: 'Seats', cls: 'num' },
       { label: 'Entries' }, { label: 'Structure' }, { label: 'Prize pool', cls: 'num' }, { label: 'Winner' },
@@ -1283,7 +1300,7 @@ PAGES['games/recurring'] = () => pageHead({
 PAGES['promos/leaderboards'] = () => pageHead({
   title: 'Leaderboards',
   sub: `Point-based competitions with configurable rewards — chips, membership or merchandise. Scope a leaderboard to the whole union or to a single club.`,
-  actions: [exportBtn(), btn('New leaderboard', { kind: 'primary' })]
+  actions: [btn('New leaderboard', { kind: 'primary' })]
 })
 + stats([
   { label: 'Running', value: n(LEADERBOARDS.filter(l => l.status === 'Running').length) },
@@ -1300,6 +1317,7 @@ PAGES['promos/leaderboards'] = () => pageHead({
 ])
 + card({
   title: 'Campaigns',
+  actions: [exportBtn()],
   body: dataTable({
     cols: [{ label: 'Leaderboard' }, { label: 'Type' }, { label: 'Period' }, { label: 'Scope' },
       { label: 'Participants', cls: 'num' }, { label: 'Reward' }, { label: 'Leader' }, { label: 'Status', cls: 'mid' }, { label: '' }],
@@ -1316,7 +1334,7 @@ PAGES['promos/leaderboards'] = () => pageHead({
 PAGES['promos/bbj'] = () => pageHead({
   title: 'Bad Beat Jackpot',
   sub: `On or off, the qualifying rules, the size of the pool, and the payout history. A slice of every raked pot feeds the pool; losing with a very strong hand wins it.`,
-  actions: [exportBtn(), btn('Top up pool')]
+  actions: [btn('Top up pool')]
 })
 + `<div class="jackpot">
     <div>
@@ -1361,6 +1379,7 @@ PAGES['promos/bbj'] = () => pageHead({
   <div style="height:14px"></div>`
 + card({
   title: 'Payout history',
+  actions: [exportBtn()],
   body: dataTable({
     cols: [{ label: 'Date / time' }, { label: 'Club' }, { label: 'Table' }, { label: 'Bad beat' },
       { label: 'Losing hand' }, { label: 'Winner' }, { label: 'Payout', cls: 'num' }],

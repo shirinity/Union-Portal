@@ -244,11 +244,17 @@ const idCell = v => `<span class="id">${esc(v)}</span>`;
 const rangeCell = (range, { unit = '', ceiling = '', group = false } = {}) => {
   if (!range) return '<span class="muted">Not set</span>';
   const fmt = v => group ? Number(v).toLocaleString('en-US') : v;
-  /* readonly by default — the row's Edit button unlocks it. */
+  /* Inputs are sized to their content so the pair hugs the left edge of the
+     cell and lines up under the column header. Fixed-width boxes with
+     right-aligned text pushed short values far off their heading. */
+  const box = (v, label) => {
+    const t = String(fmt(v));
+    return `<input value="${esc(t)}" size="${Math.max(t.length, 2)}" aria-label="${label}" readonly>`;
+  };
   return `<span class="range-cell${group ? ' is-wide' : ''}">
-      <input value="${esc(fmt(range[0]))}" aria-label="Minimum" readonly>
+      ${box(range[0], 'Minimum')}
       <span class="to">–</span>
-      <input value="${esc(fmt(range[1]))}" aria-label="Maximum" readonly>
+      ${box(range[1], 'Maximum')}
       ${unit ? `<span class="to">${esc(unit)}</span>` : ''}
     </span>${ceiling ? `<span class="ceiling">${esc(ceiling)}</span>` : ''}`;
 };

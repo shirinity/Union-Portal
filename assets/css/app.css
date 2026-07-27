@@ -759,9 +759,10 @@ input[type="checkbox"].chk {
 .range-cell { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 12px; }
 .range-cell .to { color: var(--text-3); font-family: var(--sans); }
 .range-cell input {
-  width: 62px;
+  width: auto;
+  min-width: 30px;
   height: 24px;
-  padding: 0 6px;
+  padding: 0 5px;
   border: 1px solid var(--line);
   border-radius: 5px;
   background: var(--surface-2);
@@ -769,11 +770,11 @@ input[type="checkbox"].chk {
   font: inherit;
   font-family: var(--mono);
   font-size: 11.5px;
-  text-align: right;
+  text-align: center;
   outline: 0;
 }
 .range-cell input:focus { border-color: var(--accent-line); }
-.range-cell.is-wide input { width: 76px; }
+.range-cell.is-wide input { min-width: 46px; }
 
 /* Read-only until the row is put into edit mode — a settings table should
    not look like a form full of live inputs. */
