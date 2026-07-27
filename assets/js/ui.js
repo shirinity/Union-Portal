@@ -209,23 +209,26 @@ const modal = ({ title, meta, body }) => `
     </div>
   </div>`;
 
-/* Figures read as a tight label-left / value-right list rather than a row of
-   boxes stretched across the full page width. */
-const figureKey = (label, sub) =>
-  `<div class="figure-key"><span class="figure-label">${esc(label)}</span>${sub ? `<span class="figure-sub">${esc(sub)}</span>` : ''}</div>`;
-
-/** A figure in the profile header that opens a modal. */
-const linkedFigure = (label, value, modalKey, sub) => `
-  <div class="figure">
-    ${figureKey(label, sub)}
-    <a class="figure-value is-link" href="#" data-modal="${esc(modalKey)}">${value}<span aria-hidden="true"> ›</span></a>
+/**
+ * Key facts sit inline under the name, in the same small-label / bold-value
+ * idiom the rest of the site uses — not in a bespoke panel, and not pushed
+ * to the right margin where they read as an afterthought.
+ */
+const fact = (label, value, sub) => `
+  <div class="fact">
+    <span class="fact-label">${esc(label)}</span>
+    <span class="fact-value">${value}</span>
+    ${sub ? `<span class="fact-sub">${esc(sub)}</span>` : ''}
   </div>`;
 
-const figure = (label, value, sub) => `
-  <div class="figure">
-    ${figureKey(label, sub)}
-    <div class="figure-value">${value}</div>
+/** A fact that opens a modal — devices, linked accounts. */
+const linkedFact = (label, value, modalKey) => `
+  <div class="fact">
+    <span class="fact-label">${esc(label)}</span>
+    <a class="fact-value is-link" href="#" data-modal="${esc(modalKey)}">${value}<span aria-hidden="true"> ›</span></a>
   </div>`;
+
+const facts = items => `<div class="facts">${items.join('')}</div>`;
 
 /* ── Tables ───────────────────────────────────────────────────────── */
 /**

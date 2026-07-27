@@ -187,7 +187,6 @@ PAGES['activity/clubs/:id'] = id => {
 
   const profile = `
     <div class="profile">
-      <div class="profile-main">
       <div class="profile-top">
         <div class="entity-avatar">${esc(initials)}</div>
         <div class="profile-ident">
@@ -197,6 +196,12 @@ PAGES['activity/clubs/:id'] = id => {
             owner <a class="rowlink" href="#/activity/members/${esc(c.owner)}">${esc(c.owner)}</a> ·
             joined ${esc(c.joined)} · rake ${esc(c.rakePct)}
           </div>
+          ${facts([
+            fact('Credits', `<span class="gold">${n(c.credits)}</span>`),
+            fact('Chips out', n(c.chipsOut)),
+            fact('Members', n(memberCount), `${n(c.players)} Player · ${n(c.agents)} Agent · ${n(c.superAgents)} S.Agent · ${n(c.managers)} Mgr`),
+            fact('Union games', c.unionGameAuthority ? badge('Granted', 'pos') : badge('Not granted', 'neutral'))
+          ])}
         </div>
         <div class="profile-actions">
           ${c.status === 'Suspended'
@@ -205,22 +210,14 @@ PAGES['activity/clubs/:id'] = id => {
         </div>
       </div>
 
-      <div class="profile-figures">
-        ${figure('Credits', `<span class="gold">${n(c.credits)}</span>`, 'issued by the union')}
-        ${figure('Members', n(memberCount), `${n(c.players)} Player · ${n(c.agents)} Agent · ${n(c.superAgents)} S.Agent · ${n(c.managers)} Mgr`)}
-        ${figure('Chips outstanding', n(MEMBERS.filter(m => m.club === c.id).reduce((a, m) => a + m.chips, 0)), 'held by members')}
-        ${figure('Union games', c.unionGameAuthority ? badge('Granted', 'pos') : badge('Not granted', 'neutral'))}
-      </div>
-      </div>
-
       <div class="profile-fields">
         <div class="pf">
           <label class="pf-label">Authority to Create Union Game</label>
           <div class="pf-static">${toggle(c.unionGameAuthority, c.unionGameAuthority ? 'Granted' : 'Off by default')}</div>
         </div>
-        <div class="pf pf-wide">
-          <label class="pf-label">Internal note — visible to union admins</label>
-          <input value="${esc(c.notes)}" placeholder="Add an internal note about this club…">
+        <div class="pf pf-note">
+          <label class="pf-label" title="Visible to union admins">Internal note</label>
+          <textarea rows="2" placeholder="Add an internal note about this club…">${esc(c.notes)}</textarea>
         </div>
       </div>
     </div>`;
@@ -424,7 +421,6 @@ PAGES['activity/members/:nick'] = nick => {
      Profile tab: nothing here belongs behind one. */
   const profile = `
     <div class="profile">
-      <div class="profile-main">
       <div class="profile-top">
         <div class="entity-avatar">${esc(initials)}</div>
         <div class="profile-ident">
@@ -435,31 +431,25 @@ PAGES['activity/members/:nick'] = nick => {
             joined ${esc(m.joined)} ·
             upline ${m.upline === '—' ? '<span class="muted">none</span>' : `<a class="rowlink" href="#/activity/members/${esc(m.upline)}">${esc(m.upline)}</a>`}
           </div>
-          <!-- Alias and note sit with the name: together they are the answer
-               to "who is this person", which is what the header is for. -->
-          <div class="ident-fields">
-            <div class="pf">
-              <label class="pf-label">Alias — member-written</label>
-              <input value="${esc(m.alias)}" placeholder="Not set">
-            </div>
-            <div class="pf">
-              <label class="pf-label">Private note — only you see this</label>
-              <textarea rows="2" placeholder="Add a note…">${esc(m.notes)}</textarea>
-            </div>
-          </div>
+          ${facts([
+            fact('Chips', n(m.chips)),
+            fact('Credits', m.credits ? `<span class="gold">${n(m.credits)}</span>` : '<span class="muted">—</span>'),
+            fact('Last login', esc(m.lastLogin.split(',')[0]), m.lastLogin.split(', ')[1]),
+            linkedFact('Devices', n(MEMBER_DEVICES.length), 'devices'),
+            linkedFact('Linked accounts', m.linked ? `<span class="neg">${n(m.linked)}</span>` : '0', 'linked')
+          ])}
         </div>
       </div>
 
-      <div class="profile-figures">
-        ${figure('Chips', n(m.chips))}
-        ${figure('Credits', m.credits ? `<span class="gold">${n(m.credits)}</span>` : '<span class="muted">—</span>')}
-        ${figure('Last login', esc(m.lastLogin.split(',')[0]), m.lastLogin.split(', ')[1])}
-        ${linkedFigure('Devices used', n(MEMBER_DEVICES.length), 'devices', 'view device IDs')}
-        ${linkedFigure('Linked accounts', m.linked ? `<span class="neg">${n(m.linked)}</span>` : '0', 'linked', m.linked ? 'shared device' : 'none detected')}
-      </div>
-      </div>
-
       <div class="profile-fields">
+        <div class="pf pf-alias">
+          <label class="pf-label" title="Written by the member; admins can overwrite it">Alias</label>
+          <input value="${esc(m.alias)}" placeholder="Not set">
+        </div>
+        <div class="pf pf-note">
+          <label class="pf-label" title="Visible only to whoever wrote it">Private note</label>
+          <textarea rows="2" placeholder="Add a note…">${esc(m.notes)}</textarea>
+        </div>
         <div class="pf">
           <label class="pf-label">Role</label>
           <select><option>${esc(m.role)}</option>${ROLE_OPTIONS.slice(1).filter(r => r !== m.role).map(r => `<option>${esc(r)}</option>`).join('')}</select>

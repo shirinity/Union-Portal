@@ -984,14 +984,6 @@ table.data.confirm td:first-child { white-space: normal; width: 34%; }
   margin-bottom: 14px;
   overflow: hidden;
 }
-/* Identity on the left, figures in a fixed column on the right, controls
-   across the bottom — so nothing is stretched to the width of the screen. */
-.profile-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-}
-@media (max-width: 1000px) { .profile-main { grid-template-columns: 1fr; } }
-
 .profile-top {
   display: flex;
   align-items: flex-start;
@@ -1003,67 +995,31 @@ table.data.confirm td:first-child { white-space: normal; width: 34%; }
 .profile-actions { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
 .profile-ident { flex: 1 1 320px; min-width: 0; }
 
-/* Alias (short) + private note (paragraph) sit under the name. */
-.ident-fields {
-  display: grid;
-  grid-template-columns: minmax(140px, 210px) minmax(0, 1fr);
-  gap: 10px 14px;
+/* Key facts, inline under the name. Same label/value idiom as everywhere
+   else — no bespoke panel, and in the primary reading column. */
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 24px;
   margin-top: 10px;
 }
-@media (max-width: 720px) { .ident-fields { grid-template-columns: 1fr; } }
-.ident-fields textarea {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  background: var(--surface-2);
-  color: var(--text);
-  font: inherit;
-  font-size: 12.5px;
-  line-height: 1.45;
-  resize: vertical;
-  outline: 0;
-}
-.ident-fields textarea:focus { border-color: var(--accent-line); }
-
-/* Key figures — current state, not period activity. A scannable list:
-   label on the left, value hard right, one per line. */
-.profile-figures {
-  border-left: 1px solid var(--line-soft);
-  background: var(--surface-2);
-  padding: 5px 0;
-}
-@media (max-width: 1000px) {
-  .profile-figures { border-left: 0; border-top: 1px solid var(--line-soft); }
-}
-.figure {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 5px 14px;
-  min-width: 0;
-}
-.figure-key { min-width: 0; }
-.figure-label {
-  display: block;
+.fact { display: flex; align-items: baseline; gap: 6px; }
+.fact-label {
   font-size: 9.5px;
   font-weight: 650;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--text-3);
 }
-.figure-value {
-  flex: 0 0 auto;
+.fact-value {
   font-size: 14px;
   font-weight: 650;
-  font-variant-numeric: tabular-nums;
   letter-spacing: -.2px;
-  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
-a.figure-value.is-link { color: var(--accent); text-decoration: none; }
-a.figure-value.is-link:hover { text-decoration: underline; }
-.figure-sub { display: block; font-size: 10.5px; color: var(--text-3); }
+a.fact-value.is-link { color: var(--accent); text-decoration: none; }
+a.fact-value.is-link:hover { text-decoration: underline; }
+.fact-sub { font-size: 11px; color: var(--text-3); }
 
 /* Controls cluster at the left rather than spreading to fill the row. */
 .profile-fields {
@@ -1077,10 +1033,26 @@ a.figure-value.is-link:hover { text-decoration: underline; }
 .pf { min-width: 0; }
 .profile-fields .pf { flex: 0 0 auto; }
 .profile-fields .pf select { min-width: 170px; }
-/* A free-text field still wants the leftover room */
-.profile-fields .pf-wide { flex: 1 1 300px; min-width: 240px; }
-.pf-wide { grid-column: span 2; }
-@media (max-width: 720px) { .pf-wide { grid-column: span 1; } }
+/* Sized to the content each field actually holds, not to the page width */
+.profile-fields .pf-alias { flex: 0 0 210px; }
+.profile-fields .pf-note  { flex: 0 0 340px; }
+@media (max-width: 720px) {
+  .profile-fields .pf-alias, .profile-fields .pf-note { flex: 1 1 100%; }
+}
+.pf textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.45;
+  resize: vertical;
+  outline: 0;
+}
+.pf textarea:focus { border-color: var(--accent-line); }
 .pf-label {
   display: block;
   font-size: 9.5px;
