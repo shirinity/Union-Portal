@@ -293,8 +293,8 @@ const idCell = v => `<span class="id">${esc(v)}</span>`;
  * `group: true` adds thousands separators — right for chip amounts,
  * wrong for blind levels like 0.5–10.
  */
-const rangeCell = (range, { unit = '', ceiling = '', group = false } = {}) => {
-  if (!range) return '<span class="muted">Not set</span>';
+const rangeCell = (range, { unit = '', group = false } = {}) => {
+  if (!range) return '<span class="muted">Any</span>';
   const fmt = v => group ? Number(v).toLocaleString('en-US') : v;
   /* Inputs are sized to their content so the pair hugs the left edge of the
      cell and lines up under the column header. Fixed-width boxes with
@@ -308,7 +308,7 @@ const rangeCell = (range, { unit = '', ceiling = '', group = false } = {}) => {
       <span class="to">–</span>
       ${box(range[1], 'Maximum')}
       ${unit ? `<span class="to">${esc(unit)}</span>` : ''}
-    </span>${ceiling ? `<span class="ceiling">${esc(ceiling)}</span>` : ''}`;
+    </span>`;
 };
 
 /**
@@ -318,7 +318,7 @@ const rangeCell = (range, { unit = '', ceiling = '', group = false } = {}) => {
  * which, or which direction the range ran.
  */
 const limitRange = (loss, win) => {
-  if (loss == null && win == null) return '<span class="muted">Not set</span>';
+  if (loss == null && win == null) return '<span class="muted">Any</span>';
   const box = (v, sign, cls) => {
     const t = sign + Number(v).toLocaleString('en-US');
     return `<input class="is-${cls}" value="${esc(t)}" size="${t.length}" aria-label="${cls === 'neg' ? 'Loss' : 'Win'} limit" readonly>`;

@@ -820,7 +820,6 @@ tr.is-editing .range-cell input {
   border-color: var(--accent-line);
   background: var(--surface);
 }
-.ceiling { font-size: 10.5px; color: var(--text-3); display: block; margin-top: 1px; font-family: var(--sans); }
 
 /* ── Meter bar ────────────────────────────────────────────────────── */
 .meter {

@@ -625,7 +625,6 @@ PAGES['restrictions/club-stop-limits'] = () => {
   ])
   + card({
     hint: 'Every figure is for the selected week',
-    actions: [exportBtn()],
     body: dataTable({
       cols: [
         { label: 'Club' }, { label: 'Loss – win limit' }, { label: 'Ring P&L', cls: 'num' },
@@ -655,18 +654,17 @@ PAGES['restrictions/club-stakes'] = () => {
   /* No summary cards: this is a settings table, not a report. Nothing here
      is a number worth aggregating. */
   return pageHead({
-    title: 'Club Stakes',
+    title: 'Club Stakes Restrictions',
     flag: 'moved',
     sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, set per club. The Union Owner sets a <strong>ceiling</strong>; the club's own Owner or Manager then narrows within it — they can never widen it.`
   })
   + note(`<strong>Moved, not new.</strong> ClubGG already does all of this — the union can restrict clubs and members, and a club can restrict its own members. What changed is <em>where it lives</em>: pulled out of buried detail views into one standalone, cross-club page. Same story as <a href="#/restrictions/member-stakes">Member Stakes</a>; contrast <a href="#/restrictions/member-stop-limits">Member Stop Limits</a>, badged <strong>New</strong> because ClubGG cannot do it at all.`, 'moved', '⇱')
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Club name or ID…', grow: true },
-    { label: 'Ceiling', type: 'select', options: ['Any', 'Set', 'Not set'] }
+    { label: 'Ceiling', type: 'select', options: ['All clubs', 'Restricted', 'Unrestricted'] }
   ])
   + card({
-    title: 'Stakes ceilings',
-    hint: 'Ring games in big blinds · tournaments in buy-in. Blank means no union ceiling — the club sets its own',
+    hint: 'Ring games in big blinds · tournaments in buy-in. "Any" means no union ceiling — the club sets its own',
     body: dataTable({
       cols: [{ label: 'Club' }, ...RING_TYPES.map(g => ({ label: g })), { label: 'MTT buy-in' }, { label: '', cls: 'sticky-end' }],
       rows
@@ -681,7 +679,7 @@ PAGES['restrictions/member-stop-limits'] = () => {
     return {
       cells: [
         primaryCell(`<a class="rowlink" href="#/activity/members/${esc(s.nick)}">${esc(s.nick)}</a>`, esc(clubName(s.club))),
-        roleTag(s.role) + (s.cascades ? `<span class="cell-sub">cascades to ${n(s.cascades)}</span>` : ''),
+        roleTag(s.role) + (s.cascades ? `<span class="cell-sub">${n(s.cascades)} downline</span>` : ''),
         limitRange(s.lossLimit, s.winLimit),
         money(s.weekPnl),
         meter(s.weekPnl, cap, `${n(Math.abs(s.weekPnl))} of ${n(cap)} ${s.weekPnl >= 0 ? 'win' : 'loss'}`),
@@ -711,7 +709,6 @@ PAGES['restrictions/member-stop-limits'] = () => {
   ])
   + card({
     hint: 'Only members with a limit set appear here · every figure is for the selected week',
-    actions: [exportBtn()],
     body: dataTable({
       cols: [
         { label: 'Member' }, { label: 'Role', cls: 'mid' }, { label: 'Loss – win limit' }, { label: 'P&L', cls: 'num' },
@@ -728,32 +725,31 @@ PAGES['restrictions/member-stakes'] = () => {
   /* Cascade reach sits under the role, not in its own column — it is a
      property of being agent-tier, and is blank for a Player. */
   const roleCell = r => roleTag(r.role)
-    + (r.cascades ? `<span class="cell-sub">cascades to ${n(r.cascades)}</span>` : '');
+    + (r.cascades ? `<span class="cell-sub">${n(r.cascades)} downline</span>` : '');
 
   const rows = MEMBER_RESTRICTIONS.map(r => ({
     cells: [
       primaryCell(`<a class="rowlink" href="#/activity/members/${esc(r.nick)}">${esc(r.nick)}</a>`, esc(clubName(r.club))),
       roleCell(r),
-      ...RING_TYPES.map((g, i) => rangeCell(r.blinds[g], { unit: 'BB', ceiling: i === 0 ? r.ceiling : '' })),
+      ...RING_TYPES.map(g => rangeCell(r.blinds[g], { unit: 'BB' })),
       rangeCell(r.mtt, { group: true }),
       editCell(btn('Reset', { sm: true, kind: 'danger' }))
     ]
   }));
 
   return pageHead({
-    title: 'Member Stakes',
+    title: 'Member Stakes Restrictions',
     flag: 'moved',
     sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, per member. ClubGG calls this <strong>Restrict Access to Game</strong>. Every range is narrowed within whatever ceiling the club — or the member's own upline — has already set.`
   })
   + note(`<strong>Moved, not new.</strong> ClubGG already lets a club restrict its own members — but only from inside that member's detail view, one member at a time. What changed is that it has its own page, where every member's stakes can be seen and set side by side. Same story as <a href="#/restrictions/club-stakes">Club Stakes</a>; contrast <a href="#/restrictions/member-stop-limits">Member Stop Limits</a>, badged <strong>New</strong> because ClubGG cannot do it at all.`, 'moved', '⇱')
-  + note(`A Super Agent or Agent can set these for their own downline only, and <strong>never looser than their own upline's ceiling</strong>. The ceiling in force is shown under each member's NLH range, and how far a setting cascades is shown under their role.`, 'info')
+  + note(`A Super Agent or Agent can set these for their own downline only, and <strong>never looser than their own upline's ceiling</strong>. The size of their downline is shown under their role.`, 'info')
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Nickname or member ID…', grow: true },
     { label: 'Club', type: 'select', options: clubOptions() },
     { label: 'Role', type: 'select', options: ROLE_OPTIONS }
   ])
   + card({
-    title: 'Stakes per member',
     hint: 'Ring games in big blinds · tournaments in buy-in. Set independently per variant',
     body: dataTable({
       cols: [{ label: 'Member' }, { label: 'Role' }, ...RING_TYPES.map(g => ({ label: g })),
@@ -853,7 +849,6 @@ const chipHistory = mode => {
     { label: 'Direction', type: 'select', options: ['Sent & reclaimed', 'Sent only', 'Reclaimed only'] }
   ], [exportBtn()])
   + card({
-    title: 'Transfer history',
     hint: cfg.hint,
     body: dataTable({
       cols: [{ label: 'Date / time' }, { label: 'Sender' }, { label: 'Recipient' }, { label: 'Type' },
@@ -1061,7 +1056,6 @@ PAGES['chips/tickets'] = () => {
     ])}
     <div class="picker">
       ${card({
-        title: 'Recipients across the union',
         hint: `${n(MEMBERS.length)} members from ${n(CLUBS.length)} clubs`,
         body: dataTable({
           cols: [{ label: '', cls: 'mid' }, { label: 'Member' }, { label: 'Club' }, { label: 'Role' },
@@ -1153,11 +1147,9 @@ PAGES['games/ring'] = () => {
     { label: 'Blinds', type: 'select', options: ['All blinds', '0.25 / 0.5', '0.5 / 1', '1 / 2', '2 / 4', '5 / 10'] },
     { label: 'Status', type: 'select', options: ['All statuses', 'Live', 'Waiting', 'Closed'] },
     { label: 'Created by', type: 'select', options: ['Any', 'Manual', 'Template', 'Recurring', 'Auto-waiting'] }
-  ])
+  ], [exportBtn()])
   + card({
-    title: 'Tables',
     hint: 'Live rows refresh automatically in the real product',
-    actions: [exportBtn()],
     body: dataTable({
       cols: [{ label: 'Table' }, { label: 'Club' }, { label: 'Game' }, { label: 'Blinds' }, { label: 'Buy-in' },
         { label: 'Seats' }, { label: 'Players', cls: 'num' }, { label: 'Hands', cls: 'num' }, { label: 'Rake', cls: 'num' },
@@ -1199,10 +1191,8 @@ PAGES['games/mtt'] = () => {
     { label: 'Game', type: 'select', options: ['All games', ...RING_TYPES] },
     { label: 'Type', type: 'select', options: ['All types', 'Freezeout', 'Re-entry', 'Turbo', 'Bounty', 'Satellite', 'Early Bird', 'Freeroll', 'Multi-day'] },
     { label: 'Status', type: 'select', options: ['All statuses', 'Scheduled', 'Registering', 'Running', 'Completed', 'Pending approval'] }
-  ])
+  ], [exportBtn()])
   + card({
-    title: 'Tournaments',
-    actions: [exportBtn()],
     body: dataTable({
       cols: [{ label: 'Tournament' }, { label: 'Club' }, { label: 'Game' }, { label: 'Type' }, { label: 'Start' },
         { label: 'Registration' }, { label: 'Buy-in' }, { label: 'Re-entry' }, { label: 'Entries', cls: 'num' },
@@ -1242,10 +1232,8 @@ PAGES['games/sng'] = () => pageHead({
   { label: 'Game', type: 'select', options: ['All games', ...RING_TYPES] },
   { label: 'Structure', type: 'select', options: ['All structures', 'Slow', 'Standard', 'Turbo', 'Hyper-turbo'] },
   { label: 'Status', type: 'select', options: ['All statuses', 'Filling', 'Running', 'Completed'] }
-])
+], [exportBtn()])
 + card({
-  title: 'Sit & go events',
-  actions: [exportBtn()],
   body: dataTable({
     cols: [{ label: 'SNG' }, { label: 'Club' }, { label: 'Game' }, { label: 'Buy-in' }, { label: 'Seats', cls: 'num' },
       { label: 'Entries' }, { label: 'Structure' }, { label: 'Prize pool', cls: 'num' }, { label: 'Winner' },
@@ -1281,7 +1269,6 @@ PAGES['games/templates'] = () => pageHead({
   { label: 'Owner', type: 'select', options: ['Anyone', 'kurtis_c', 'mgr_wallace', 'a_tanaka', 'l_chen'] }
 ])
 + card({
-  title: 'All templates',
   body: `<div class="tpl-grid">
     ${TEMPLATES.map(t => `
       <div class="tpl">
@@ -1322,7 +1309,6 @@ PAGES['games/recurring'] = () => pageHead({
   { label: 'State', type: 'select', options: ['All', 'Enabled', 'Paused'] }
 ])
 + card({
-  title: 'Schedules',
   body: dataTable({
     cols: [{ label: 'Schedule' }, { label: 'Kind' }, { label: 'Template' }, { label: 'Club' },
       { label: 'Cadence' }, { label: 'Next run' }, { label: 'Last run' }, { label: 'Runs', cls: 'num' },
@@ -1359,10 +1345,8 @@ PAGES['promos/leaderboards'] = () => pageHead({
   { label: 'Type', type: 'select', options: ['All types', 'Ring Games', 'Tournaments'] },
   { label: 'Scope', type: 'select', options: clubOptions('All clubs') },
   { label: 'Status', type: 'select', options: ['All statuses', 'Running', 'Scheduled', 'Completed'] }
-])
+], [exportBtn()])
 + card({
-  title: 'Campaigns',
-  actions: [exportBtn()],
   body: dataTable({
     cols: [{ label: 'Leaderboard' }, { label: 'Type' }, { label: 'Period' }, { label: 'Scope' },
       { label: 'Participants', cls: 'num' }, { label: 'Reward' }, { label: 'Leader' }, { label: 'Status', cls: 'mid' }, { label: '' }],
@@ -1456,7 +1440,6 @@ PAGES['promos/announcements'] = () => pageHead({
   { label: 'Status', type: 'select', options: ['All statuses', 'Live', 'Scheduled', 'Expired'] }
 ])
 + card({
-  title: 'Announcements',
   flush: true,
   body: `<div class="list-rows">
     ${ANNOUNCEMENTS.map(a => `
