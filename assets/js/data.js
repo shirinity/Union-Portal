@@ -24,6 +24,23 @@ const UNION = {
   asOf: '26 Jul 2026, 14:20 PT'
 };
 
+/**
+ * Who is signed in. Role changes are scoped to the actor's own club:
+ * an Owner can change anyone in it; a Manager can change Super Agents,
+ * Agents and Players, and only while the Owner leaves their
+ * "change member roles" privilege on (it is on by default). Nobody can
+ * change an Owner — ownership follows the club, not a dropdown.
+ */
+const SESSION = { nick: 'kurtis_c', role: 'Owner', club: '104829' };
+
+const canChangeRoleOf = m => {
+  if (m.role === 'Owner') return false;            // never reassignable
+  if (m.club !== SESSION.club) return false;       // own club only
+  if (SESSION.role === 'Owner') return true;
+  if (SESSION.role === 'Manager') return ['Super Agent', 'Agent', 'Player'].includes(m.role);
+  return false;
+};
+
 /* ── Clubs ────────────────────────────────────────────────────────── */
 const CLUBS = [
   {

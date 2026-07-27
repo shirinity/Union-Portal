@@ -809,6 +809,11 @@ table.data td.sticky-end {
 table.data thead th.sticky-end { background: var(--surface-2); z-index: 2; }
 table.data tbody tr:hover td.sticky-end { background: var(--surface-2); }
 
+/* Declared after the readonly rule above, and matching it on specificity,
+   so a stop limit's loss and win sides keep their colour when locked. */
+.range-cell input[readonly].is-neg, .range-cell input.is-neg { color: var(--neg); }
+.range-cell input[readonly].is-pos, .range-cell input.is-pos { color: var(--pos); }
+
 tr.is-editing { background: var(--accent-soft); }
 tr.is-editing td.sticky-end { background: var(--accent-soft); }
 tr.is-editing .range-cell input {
@@ -1015,9 +1020,11 @@ a.fact-value.is-link:hover { text-decoration: underline; }
 
 /* Identity and controls stack down the left; notes takes the whole right
    column, full height, instead of being wedged under a divider. */
+/* Left column sizes to its content so Notes starts immediately beside it
+   rather than after a gap; Notes then takes whatever is left. */
 .profile-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
+  grid-template-columns: auto minmax(280px, 1fr);
   align-items: stretch;
 }
 .profile-left { min-width: 0; display: flex; flex-direction: column; }

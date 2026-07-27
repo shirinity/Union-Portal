@@ -323,6 +323,19 @@ PAGES['activity/members'] = () => {
 };
 
 /* ── Member Detail ────────────────────────────────────────────────── */
+/* Why a role field is locked, for the tooltip and the inline note. */
+const roleLockNote = m =>
+  m.role === 'Owner' ? 'not reassignable'
+    : m.club !== SESSION.club ? 'another club'
+    : 'not permitted';
+
+const roleLockReason = m =>
+  m.role === 'Owner'
+    ? 'Ownership follows the club — an Owner cannot be reassigned from a profile'
+    : m.club !== SESSION.club
+      ? `Roles can only be changed within your own club. Set by ${clubName(m.club)}'s own Owner or Manager.`
+      : 'Your role does not permit changing this member';
+
 PAGES['activity/members/:nick'] = nick => {
   const m = memberByNick(nick);
   if (!m) return pageHead({ title: 'Member not found' }) + `<div class="empty">No member called ${esc(nick)}.</div>`;
@@ -454,8 +467,15 @@ PAGES['activity/members/:nick'] = nick => {
         </div>
         <div class="pf">
           <label class="pf-label">Role</label>
-          <select><option>${esc(m.role)}</option>${ROLE_OPTIONS.slice(1).filter(r => r !== m.role).map(r => `<option>${esc(r)}</option>`).join('')}</select>
+          ${canChangeRoleOf(m)
+            ? `<select><option>${esc(m.role)}</option>${ASSIGNABLE_ROLES.filter(r => r !== m.role).map(r => `<option>${esc(r)}</option>`).join('')}</select>`
+            : `<div class="pf-static" title="${esc(roleLockReason(m))}">${roleTag(m.role)} <span class="muted">${esc(roleLockNote(m))}</span></div>`}
         </div>
+        ${m.role === 'Manager' && m.club === SESSION.club ? `
+        <div class="pf">
+          <label class="pf-label" title="Granted by the Owner; on by default">Can change roles</label>
+          <div class="pf-static">${toggle(true, 'Granted')}</div>
+        </div>` : ''}
         <div class="pf">
           <label class="pf-label">Portal access</label>
           <div class="pf-static">${toggle(m.bo, m.bo ? 'Granted' : 'Not granted')}</div>
@@ -577,14 +597,12 @@ PAGES['restrictions/club-stop-limits'] = () => {
     return {
       cells: [
         primaryCell(`<a class="rowlink" href="#/activity/clubs/${s.club}">${esc(c.name)}</a>${c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''}`, 'Club ID ' + esc(s.club)),
-        s.winLimit == null ? '<span class="muted">Not set</span>' : rangeCell([s.winLimit, s.lossLimit], { group: true }),
+        limitRange(s.lossLimit, s.winLimit),
         money(s.weekRing),
-        num(s.weekTourney),
+        money(s.weekTourney),
         `<div class="mid">${toggle(s.tourneyCounts)}</div>`,
         cap ? meter(week, cap, `${n(Math.abs(week))} of ${n(cap)} ${week >= 0 ? 'win' : 'loss'}`) : '<span class="muted">—</span>',
         statusBadge(s.status),
-        esc(s.setBy),
-        esc(s.updated),
         s.status === 'Suspended'
           ? `<span class="inline-actions">${btn('Re-approve', { sm: true, kind: 'primary' })}${btn('Reset', { sm: true })}</span>`
           : editCell(btn('Reset', { sm: true, kind: 'danger' }))
@@ -606,14 +624,13 @@ PAGES['restrictions/club-stop-limits'] = () => {
     { label: 'Week', type: 'select', options: ['This week', 'Last week', '2 weeks ago'] }
   ])
   + card({
-    title: 'Weekly win / loss limits',
-    hint: 'Win limit – loss limit',
+    hint: 'Every figure is for the selected week',
     actions: [exportBtn()],
     body: dataTable({
       cols: [
-        { label: 'Club' }, { label: 'Win – loss limit' }, { label: 'Ring P&L, week', cls: 'num' },
-        { label: 'Tourney, week', cls: 'num' }, { label: 'Fees count', cls: 'mid' },
-        { label: 'Progress' }, { label: 'Status', cls: 'mid' }, { label: 'Set by' }, { label: 'Updated' }, { label: '', cls: 'sticky-end' }
+        { label: 'Club' }, { label: 'Loss – win limit' }, { label: 'Ring P&L', cls: 'num' },
+        { label: 'MTT P&L', cls: 'num' }, { label: 'MTTs count', cls: 'mid' },
+        { label: 'Progress' }, { label: 'Status', cls: 'mid' }, { label: '', cls: 'sticky-end' }
       ],
       rows
     })
@@ -664,14 +681,12 @@ PAGES['restrictions/member-stop-limits'] = () => {
     return {
       cells: [
         primaryCell(`<a class="rowlink" href="#/activity/members/${esc(s.nick)}">${esc(s.nick)}</a>`, esc(clubName(s.club))),
-        roleTag(s.role),
-        rangeCell([s.winLimit, s.lossLimit], { group: true }),
+        roleTag(s.role) + (s.cascades ? `<span class="cell-sub">cascades to ${n(s.cascades)}</span>` : ''),
+        limitRange(s.lossLimit, s.winLimit),
         money(s.weekPnl),
         meter(s.weekPnl, cap, `${n(Math.abs(s.weekPnl))} of ${n(cap)} ${s.weekPnl >= 0 ? 'win' : 'loss'}`),
-        s.cascades ? `${n(s.cascades)} downstream` : '<span class="muted">none</span>',
         `<span class="muted">${n(s.clubCeiling)}</span>`,
         statusBadge(s.status),
-        esc(s.setBy),
         s.status === 'Suspended'
           ? `<span class="inline-actions">${btn('Re-approve', { sm: true, kind: 'primary' })}${btn('Reset', { sm: true })}</span>`
           : editCell(btn('Reset', { sm: true, kind: 'danger' }))
@@ -695,14 +710,13 @@ PAGES['restrictions/member-stop-limits'] = () => {
     { label: 'Week', type: 'select', options: ['This week', 'Last week', '2 weeks ago'] }
   ])
   + card({
-    title: 'Weekly win / loss limits',
-    hint: 'Only members with a limit set appear here',
+    hint: 'Only members with a limit set appear here · every figure is for the selected week',
     actions: [exportBtn()],
     body: dataTable({
       cols: [
-        { label: 'Member' }, { label: 'Role' }, { label: 'Win – loss limit' }, { label: 'P&L, week', cls: 'num' },
-        { label: 'Progress' }, { label: 'Cascades to' }, { label: 'Club ceiling', cls: 'num' },
-        { label: 'Status', cls: 'mid' }, { label: 'Set by' }, { label: '', cls: 'sticky-end' }
+        { label: 'Member' }, { label: 'Role', cls: 'mid' }, { label: 'Loss – win limit' }, { label: 'P&L', cls: 'num' },
+        { label: 'Progress' }, { label: 'Club ceiling', cls: 'num' },
+        { label: 'Status', cls: 'mid' }, { label: '', cls: 'sticky-end' }
       ],
       rows
     })

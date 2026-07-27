@@ -148,6 +148,9 @@ const filters = (fields, end = []) => `
 
 const clubOptions = (all = 'All clubs') => [all, ...CLUBS.map(c => `${c.name} · ${c.id}`)];
 const ROLE_OPTIONS = ['All roles', 'Owner', 'Manager', 'Super Agent', 'Agent', 'Player'];
+/* Owner is not assignable — it follows ownership of the club itself, so it
+   never appears in a role dropdown even though it is a filterable role. */
+const ASSIGNABLE_ROLES = ['Manager', 'Super Agent', 'Agent', 'Player'];
 const DATE_PRESETS = ['Last 7 days', 'Last 14 days', 'Last 30 days', 'This week', 'Last week', 'Custom…'];
 
 /* ── Buttons ──────────────────────────────────────────────────────── */
@@ -306,6 +309,25 @@ const rangeCell = (range, { unit = '', ceiling = '', group = false } = {}) => {
       ${box(range[1], 'Maximum')}
       ${unit ? `<span class="to">${esc(unit)}</span>` : ''}
     </span>${ceiling ? `<span class="ceiling">${esc(ceiling)}</span>` : ''}`;
+};
+
+/**
+ * A weekly stop limit, rendered losing → winning so it reads left to right
+ * the way a P&L does. The loss side is negative and red, the win side
+ * positive and green — two bare positive numbers gave no clue which was
+ * which, or which direction the range ran.
+ */
+const limitRange = (loss, win) => {
+  if (loss == null && win == null) return '<span class="muted">Not set</span>';
+  const box = (v, sign, cls) => {
+    const t = sign + Number(v).toLocaleString('en-US');
+    return `<input class="is-${cls}" value="${esc(t)}" size="${t.length}" aria-label="${cls === 'neg' ? 'Loss' : 'Win'} limit" readonly>`;
+  };
+  return `<span class="range-cell is-wide">
+      ${box(loss, '−', 'neg')}
+      <span class="to">–</span>
+      ${box(win, '+', 'pos')}
+    </span>`;
 };
 
 /**
