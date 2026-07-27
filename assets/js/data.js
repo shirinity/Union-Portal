@@ -29,56 +29,56 @@ const CLUBS = [
   {
     id: '104829', name: 'Bellota Labs Home Game', owner: 'kurtis_c', isMasterClub: true,
     joined: '2025-11-04', credits: 1_240_000, chipsOut: 292_560, managers: 3, superAgents: 4, agents: 11, players: 214,
-    hands: 148_920, rake: 62_480, fees: 9_240, insurance: 4_110, evCashout: -1_860, bbj: 3_720, bbjPayout: 148_200, gamesRing: 876, gamesMtt: 142, handsNlh: 104_244,
+    hands: 148_920, rake: 62_480, fees: 9_240, insurance: 4_110, evCashout: -1_860, bbj: 3_720, bbjPayout: 148_200, gamesRing: 876, gamesMtt: 142, handsNlh: 104_244, handsOther: 7_446,
     pnl: 58_210, status: 'Active', unionGameAuthority: true, rakePct: '4% · 3 BB cap',
     notes: 'Master club. Highest-volume NLH traffic in the union — flagged as the reference club for the new stop-limit rollout.'
   },
   {
     id: '218847', name: 'Vegas Rail Room', owner: 'd_moreno', isMasterClub: false,
     joined: '2025-12-18', credits: 486_500, chipsOut: 128_500, managers: 2, superAgents: 3, agents: 8, players: 137,
-    hands: 92_340, rake: 38_760, fees: 6_180, insurance: 2_940, evCashout: -1_120, bbj: 2_310, bbjPayout: 96_400, gamesRing: 543, gamesMtt: 88, handsNlh: 61_868,
+    hands: 92_340, rake: 38_760, fees: 6_180, insurance: 2_940, evCashout: -1_120, bbj: 2_310, bbjPayout: 96_400, gamesRing: 543, gamesMtt: 88, handsNlh: 61_868, handsOther: 4_617,
     pnl: 34_890, status: 'Active', unionGameAuthority: true, rakePct: '4% · 3 BB cap',
     notes: 'Requested union-game authority in Feb; granted. Runs the Tuesday PLO series.'
   },
   {
     id: '337102', name: 'High Tide Poker', owner: 'a_tanaka', isMasterClub: false,
     joined: '2026-01-09', credits: 312_000, chipsOut: 94_700, managers: 1, superAgents: 2, agents: 6, players: 98,
-    hands: 61_070, rake: 24_120, fees: 4_460, insurance: 1_780, evCashout: -640, bbj: 1_530, bbjPayout: 0, gamesRing: 359, gamesMtt: 58, handsNlh: 42_749,
+    hands: 61_070, rake: 24_120, fees: 4_460, insurance: 1_780, evCashout: -640, bbj: 1_530, bbjPayout: 0, gamesRing: 359, gamesMtt: 58, handsNlh: 42_749, handsOther: 3_054,
     pnl: 22_180, status: 'Active', unionGameAuthority: false, rakePct: '3.5% · 3 BB cap',
     notes: 'Short-deck heavy roster. No union-game authority — all tables run by the master club.'
   },
   {
     id: '415663', name: 'Riverboat Social', owner: 'j_beaumont', isMasterClub: false,
     joined: '2026-02-02', credits: 268_400, chipsOut: 71_200, managers: 2, superAgents: 1, agents: 5, players: 86,
-    hands: 47_650, rake: 18_940, fees: 3_120, insurance: 1_240, evCashout: -410, bbj: 1_180, bbjPayout: 0, gamesRing: 280, gamesMtt: 45, handsNlh: 33_355,
+    hands: 47_650, rake: 18_940, fees: 3_120, insurance: 1_240, evCashout: -410, bbj: 1_180, bbjPayout: 0, gamesRing: 280, gamesMtt: 45, handsNlh: 33_355, handsOther: 2_383,
     pnl: 17_360, status: 'Active', unionGameAuthority: false, rakePct: '4% · 3 BB cap',
     notes: ''
   },
   {
     id: '552918', name: 'Neon Sunset Club', owner: 'm_kovacs', isMasterClub: false,
     joined: '2026-02-21', credits: 194_800, chipsOut: 58_300, managers: 1, superAgents: 2, agents: 4, players: 71,
-    hands: 38_210, rake: 15_380, fees: 2_640, insurance: 980, evCashout: -300, bbj: 940, bbjPayout: 0, gamesRing: 225, gamesMtt: 36, handsNlh: 26_747,
+    hands: 38_210, rake: 15_380, fees: 2_640, insurance: 980, evCashout: -300, bbj: 940, bbjPayout: 0, gamesRing: 225, gamesMtt: 36, handsNlh: 26_747, handsOther: 1_911,
     pnl: 13_970, status: 'Suspended', unionGameAuthority: false, rakePct: '4% · 3 BB cap',
     notes: 'Weekly loss limit tripped 24 Jul — buy-ins blocked pending union re-approval.'
   },
   {
     id: '671245', name: 'Backdoor Straight', owner: 'r_singh', isMasterClub: false,
     joined: '2026-03-14', credits: 148_200, chipsOut: 39_600, managers: 1, superAgents: 1, agents: 3, players: 58,
-    hands: 29_480, rake: 11_640, fees: 1_980, insurance: 720, evCashout: -180, bbj: 690, bbjPayout: 0, gamesRing: 173, gamesMtt: 28, handsNlh: 20_636,
+    hands: 29_480, rake: 11_640, fees: 1_980, insurance: 720, evCashout: -180, bbj: 690, bbjPayout: 0, gamesRing: 173, gamesMtt: 28, handsNlh: 20_636, handsOther: 1_474,
     pnl: 10_540, status: 'Active', unionGameAuthority: false, rakePct: '3% · 2 BB cap',
     notes: ''
   },
   {
     id: '780331', name: 'Chip & Chair', owner: 'l_chen', isMasterClub: false,
     joined: '2026-04-28', credits: 96_400, chipsOut: 22_800, managers: 1, superAgents: 0, agents: 2, players: 41,
-    hands: 18_760, rake: 7_240, fees: 1_180, insurance: 430, evCashout: -90, bbj: 410, bbjPayout: 0, gamesRing: 110, gamesMtt: 18, handsNlh: 13_132,
+    hands: 18_760, rake: 7_240, fees: 1_180, insurance: 430, evCashout: -90, bbj: 410, bbjPayout: 0, gamesRing: 110, gamesMtt: 18, handsNlh: 13_132, handsOther: 938,
     pnl: 6_580, status: 'Active', unionGameAuthority: false, rakePct: '3% · 2 BB cap',
     notes: ''
   },
   {
     id: '896074', name: 'Aces Over Kings', owner: 't_okafor', isMasterClub: false,
     joined: '2026-06-11', credits: 42_800, chipsOut: 8_100, managers: 1, superAgents: 0, agents: 1, players: 23,
-    hands: 8_140, rake: 3_180, fees: 520, insurance: 190, evCashout: -40, bbj: 170, bbjPayout: 0, gamesRing: 48, gamesMtt: 8, handsNlh: 5_698,
+    hands: 8_140, rake: 3_180, fees: 520, insurance: 190, evCashout: -40, bbj: 170, bbjPayout: 0, gamesRing: 48, gamesMtt: 8, handsNlh: 5_698, handsOther: 407,
     pnl: 2_840, status: 'Active', unionGameAuthority: false, rakePct: 'No rake',
     notes: 'Newest club in the union. Rake set to 0 while they build a roster.'
   }
@@ -104,7 +104,8 @@ const UNION_TOTALS = CLUBS.reduce((a, c) => ({
   gamesMtt: a.gamesMtt + c.gamesMtt,
   hands: a.hands + c.hands,
   handsNlh: a.handsNlh + c.handsNlh,
-  handsPlo: a.handsPlo + (c.hands - c.handsNlh),
+  handsOther: a.handsOther + c.handsOther,
+  handsPlo: a.handsPlo + (c.hands - c.handsNlh - c.handsOther),
   rake: a.rake + c.rake,
   fees: a.fees + c.fees,
   insurance: a.insurance + c.insurance,
@@ -114,7 +115,7 @@ const UNION_TOTALS = CLUBS.reduce((a, c) => ({
   pnl: a.pnl + c.pnl
 }), {
   clubs: 0, members: 0, players: 0, credits: 0, chips: 0, games: 0, gamesRing: 0,
-  gamesMtt: 0, hands: 0, handsNlh: 0, handsPlo: 0, rake: 0, fees: 0,
+  gamesMtt: 0, hands: 0, handsNlh: 0, handsPlo: 0, handsOther: 0, rake: 0, fees: 0,
   insurance: 0, evCashout: 0, bbj: 0, bbjPayout: 0, pnl: 0
 });
 /** Rake plus tournament fees — what the union actually takes. */

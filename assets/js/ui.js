@@ -91,27 +91,30 @@ const card = ({ title, hint, actions = [], body, flush = false }) => `
     <div class="card-body${flush ? ' card-body-flush' : ''}">${body}</div>
   </section>`;
 
+/**
+ * A stat card. Three shapes, all sharing one alignment grid:
+ *   value          — one headline figure
+ *   value + rows   — headline with a breakdown beneath it
+ *   rows only      — co-equal figures that do not sum to anything
+ * `rows` is [{ value, unit, gold }] and always renders as a two-column grid
+ * so the numbers line up on their right edge whatever their length.
+ */
 const stats = items => `
   <div class="stats">
     ${items.map(s => `
       <div class="stat">
         <div class="stat-label">${esc(s.label)}</div>
-        ${s.pair ? statPair(s.pair) : `<div class="stat-value">${s.value}</div>`}
+        ${s.value != null ? `<div class="stat-value">${s.value}</div>` : ''}
+        ${s.rows ? statRows(s.rows, !s.value) : ''}
         ${s.meta ? `<div class="stat-meta">${s.meta}</div>` : ''}
       </div>`).join('')}
   </div>`;
 
-/**
- * Two figures in one card, each carrying its own unit — for cards where a
- * single big number would be ambiguous without reading a caption to find
- * out what it counts. `parts` is [{ value, unit, gold }].
- */
-const statPair = parts => `
-  <div class="stat-pair">
-    ${parts.map(p => `<span class="pair">
-        <span class="pair-n${p.gold ? ' gold' : ''}">${n(p.value)}</span>
-        <span class="pair-u">${esc(p.unit)}</span>
-      </span>`).join('<span class="pair-sep" aria-hidden="true">·</span>')}
+const statRows = (rows, lead = false) => `
+  <div class="stat-rows${lead ? ' is-lead' : ''}">
+    ${rows.map(r => `
+      <span class="sr-n${r.gold ? ' gold' : ''}">${n(r.value)}</span>
+      <span class="sr-u">${esc(r.unit)}</span>`).join('')}
   </div>`;
 
 const note = (body, kind = 'info', icon = 'ℹ') => `

@@ -487,26 +487,29 @@ body {
   letter-spacing: -.4px;
   font-variant-numeric: tabular-nums;
 }
-.stat-meta { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+.stat-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; }
 
-/* Two figures, each with its own unit, when one big number would be
-   ambiguous without a caption explaining what it counts. */
-.stat-pair {
-  display: flex;
+/* Breakdown rows. Two columns so every number right-aligns on the same
+   edge; units are body colour, never the grey reserved for labels. */
+.stat-rows {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
   align-items: baseline;
-  flex-wrap: wrap;
-  gap: 3px 7px;
-  margin-top: 3px;
+  gap: 1px 8px;
+  margin-top: 4px;
 }
-.pair { display: inline-flex; align-items: baseline; gap: 4px; }
-.pair-n {
-  font-size: 17px;
-  font-weight: 650;
-  letter-spacing: -.3px;
+.sr-n {
+  text-align: right;
+  font-size: 12.5px;
+  font-weight: 620;
   font-variant-numeric: tabular-nums;
 }
-.pair-u { font-size: 11px; color: var(--text-2); }
-.pair-sep { color: var(--text-3); }
+.sr-u { font-size: 11.5px; color: var(--text-2); }
+
+/* With no headline above them the rows carry the card, so they scale up. */
+.stat-rows.is-lead { gap: 2px 9px; margin-top: 3px; }
+.stat-rows.is-lead .sr-n { font-size: 17px; font-weight: 650; letter-spacing: -.3px; }
+.stat-rows.is-lead .sr-u { font-size: 12px; }
 
 /* ── Filter bar ───────────────────────────────────────────────────── */
 .filters {
