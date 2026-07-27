@@ -28,12 +28,13 @@ const NAV = [
       { label: 'Member Stop Limits', route: 'restrictions/member-stop-limits', isNew: true }
     ]
   },
-  /* Split by what actually moves, not by tier: credits go to clubs and to
-     agents (ClubGG's Union Counter + Agent Counter), chips go to members. */
+  /* Split by what moves and how far it reaches: credits stop at the club,
+     chips stop at one club's roster, tickets reach the whole union. */
   {
     title: 'Chips & Credits', items: [
       { label: 'Club & Agent Credits', route: 'chips/credits' },
-      { label: 'Member Chips', route: 'chips/members' }
+      { label: 'Member Chips', route: 'chips/members' },
+      { label: 'Tournament Tickets', route: 'chips/tickets' }
     ]
   },
   {

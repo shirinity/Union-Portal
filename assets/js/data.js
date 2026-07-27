@@ -213,7 +213,18 @@ const CHIP_LOG = [
   { when: '25 Jul 16:47', sender: 'a_tanaka',    senderRole: 'Owner',      recipient: 'ag_haddad',        scope: 'Member', type: 'Chips',             dir: 'sent',      amount: 8_000,   start: 13_800,  end: 21_800 },
   { when: '24 Jul 20:09', sender: 'kurtis_c',    senderRole: 'Owner',      recipient: 'Neon Sunset Club', scope: 'Club',   type: 'Credits',           dir: 'reclaimed', amount: 60_000,  start: 254_800, end: 194_800 },
   { when: '24 Jul 15:22', sender: 'mgr_wallace', senderRole: 'Manager',     recipient: 'sa_delacruz',      scope: 'Member', type: 'Chips',             dir: 'sent',      amount: 40_000,  start: 78_400,  end: 118_400 },
-  { when: '24 Jul 12:05', sender: 'kurtis_c',    senderRole: 'Owner',      recipient: 'shortdeck_sy',     scope: 'Member', type: 'Tournament Ticket', dir: 'sent',      amount: 110,     start: null,    end: null, ticket: 'Any MTT ≤ $110' }
+  { when: '24 Jul 12:05', sender: 'kurtis_c',    senderRole: 'Owner',      recipient: 'shortdeck_sy',     scope: 'Member', type: 'Tournament Ticket', dir: 'sent',      amount: 110,     start: null,    end: null, ticket: 'Any MTT ≤ $110' },
+  { when: '24 Jul 09:48', sender: 'mgr_wallace', senderRole: 'Manager',     recipient: 'quadqueen',        scope: 'Member', type: 'Chips',             dir: 'reclaimed', amount: 2_400,   start: 6_360,   end: 3_960 },
+  { when: '23 Jul 20:18', sender: 'ag_novak',    senderRole: 'Agent',       recipient: 'quadqueen',        scope: 'Member', type: 'Chips',             dir: 'sent',      amount: 4_000,   start: 2_360,   end: 6_360 },
+  { when: '23 Jul 17:02', sender: 'a_tanaka',    senderRole: 'Owner',       recipient: 'ag_haddad',        scope: 'Member', type: 'Chips',             dir: 'sent',      amount: 6_000,   start: 15_800,  end: 21_800 },
+  { when: '23 Jul 14:30', sender: 'd_moreno',    senderRole: 'Owner',       recipient: 'riverking22',      scope: 'Member', type: 'Chips',             dir: 'sent',      amount: 8_000,   start: 4_400,   end: 12_400 },
+  { when: '22 Jul 19:44', sender: 'j_beaumont',  senderRole: 'Owner',       recipient: 'donkbet_dan',      scope: 'Member', type: 'Chips',             dir: 'sent',      amount: 3_000,   start: 240,     end: 3_240 },
+  /* Tickets reach members in clubs other than the sender's own — the one
+     value type that is not club-scoped. */
+  { when: '22 Jul 16:10', sender: 'kurtis_c',    senderRole: 'Owner',       recipient: 'ag_haddad',        scope: 'Member', type: 'Tournament Ticket', dir: 'sent',      amount: 55,      start: null,    end: null, ticket: 'Daily Turbo $50+5' },
+  { when: '21 Jul 16:20', sender: 'kurtis_c',    senderRole: 'Owner',       recipient: 'quadqueen',        scope: 'Member', type: 'Tournament Ticket', dir: 'sent',      amount: 110,     start: null,    end: null, ticket: 'Any MTT ≤ $110' },
+  { when: '20 Jul 11:05', sender: 'mgr_wallace', senderRole: 'Manager',     recipient: 'donkbet_dan',      scope: 'Member', type: 'Tournament Ticket', dir: 'sent',      amount: 220,     start: null,    end: null, ticket: 'Weekend Warm-Up $200+20' },
+  { when: '19 Jul 18:32', sender: 'kurtis_c',    senderRole: 'Owner',       recipient: 'sa_ferreira',      scope: 'Member', type: 'Tournament Ticket', dir: 'reclaimed', amount: 550,     start: null,    end: null, ticket: 'Sunday Major $500+50' }
 ];
 
 /* ── Restrictions: club stop limits ───────────────────────────────────── */

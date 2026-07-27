@@ -43,7 +43,7 @@ with the nav changes noted underneath.
 
 - **Activity** — Clubs → *Club Detail*, Members → *Member Detail*
 - **Restrictions** — Club Stakes **(New)**, Member Stakes, Club Stop Limits, Member Stop Limits **(New)**
-- **Chips & Credits** — Club & Agent Credits, Member Chips
+- **Chips & Credits** — Club & Agent Credits, Member Chips, Tournament Tickets
 - **Games** — Ring Games, Tournaments, SNGs, Templates, Recurring Games
 - **Promotions** — Leaderboards, Bad Beat Jackpot, Announcements
 
@@ -54,10 +54,11 @@ Differences from the nav doc, all deliberate:
   (`#/restrictions/…`).
 - **Restrict Game & Access → Stakes.** Both pages set min/max blinds and buy-ins, so "Club Stakes" and
   "Member Stakes" say it in a third of the characters.
-- **Chips & Credits splits by what moves, not by tier.** *Club & Agent Credits* covers ClubGG's Union
-  Counter (union → club) and Agent Counter (credits to the agents inside your own club) as two tabs of
-  one flow. *Member Chips* covers Member Counter and Send Ticket. Tournament Ticket sits with Member
-  Chips because its recipients are members.
+- **Chips & Credits splits by how far the value reaches.** *Club & Agent Credits* covers ClubGG's Union
+  Counter (union → club) and Agent Counter (credits to agents inside your own club) as two tabs of one
+  flow, because both stop at the club. *Member Chips* covers Member Counter and stops at a single club's
+  roster. *Tournament Tickets* is its own page because it is the only value that reaches any member in
+  any club — a different recipient list deserves a different page, not a tab.
 - **Tournaments, not "Tournaments (MTT)".** One name or the other, not both.
 - The left nav has no numbering, no bullets, and no collapsible sections — bold category headers with
   indented links beneath.
@@ -83,15 +84,15 @@ These are the points flagged as load-bearing in the brief and the nav doc:
 - **Neither detail page has a Profile tab.** Identity, role, alias, private note, permissions and the
   destructive actions all live in the persistent header. A tab is for switching between histories, not
   for hiding who someone is.
-- **Chips & Credits is club-scoped; Tournament Tickets are not.** On Member Chips' Chips tab the
-  Members recipient list is locked to one club's roster, and only Union Credits move across the union
-  (Union ↔ Club). On the Tournament Ticket tab the Club filter is unlocked and the recipient list spans
-  every club. Each tab states its scope in a strip above the list.
+- **Chips & Credits is club-scoped; Tournament Tickets are not.** Member Chips locks its recipient list
+  to one club's roster; only Union Credits move Union ↔ Club. Tournament Tickets leaves the Club filter
+  unlocked and lists every member in the union. Each page states its scope in a strip above the list.
 - **Club List absorbs Club Revenue** — the same financial columns plus a date-range filter and a totals
   row, so there is no separate Report category.
-- **Chips & Credits is two pages, not four.** They replace Union Counter, Agent Counter, Member Counter
-  and Send Ticket, which all shared the same pattern: filterable recipient list, multi-select, send
-  action, running total, History tab.
+- **Chips & Credits is three pages, not four.** They replace Union Counter, Agent Counter, Member
+  Counter and Send Ticket, which all shared the same pattern: filterable recipient list, multi-select,
+  send action, running total, History tab. Union and Agent Counter merge because they are one act at two
+  tiers; Send Ticket stays separate because its recipient scope is the whole union.
 - **A union has no credit balance.** It can issue as many credits as it likes, so there is no treasury
   figure anywhere — ClubGG's prominent union balance is a red herring. What the page reports instead is
   what is *outstanding*: credits sitting with clubs, and chips sitting with members.
@@ -119,7 +120,7 @@ These are the points flagged as load-bearing in the brief and the nav doc:
 - **Devices used** and **Linked accounts** are linked figures in that header. Clicking either opens a
   popup, the way ClubGG surfaces them off Member Information — Device ID List, and Linked Accounts
   grouped by device to show multi-accounting. Nicknames in the popup navigate to that member.
-- Tabs on the detail pages and on both Chips & Credits pages
+- Tabs on the detail pages and across the Chips & Credits pages
 - Cross-links — club names, member nicknames and the restriction callouts all navigate
 - **Settings tables render read-only.** On Stop Limits and Stakes, the value fields are locked until you
   press **Edit** on that row; Edit becomes **Confirm** and a **Cancel** appears, which restores the

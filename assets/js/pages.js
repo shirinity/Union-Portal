@@ -805,24 +805,46 @@ const AGENT_TIER = ['Super Agent', 'Agent'];
 const isAgentTier = nick => AGENT_TIER.includes(((memberByNick(nick) || {}).role));
 
 /**
- * Transfer history for one page. Split by what moved, not by tier:
- * 'credits' covers union→club credits and credits down to agents,
- * 'chips' covers chips and tickets landing on ordinary members.
+ * Transfer history for one page, split by what moved:
+ *   'credits' — union→club credits, plus credits down to agents
+ *   'chips'   — club chips to ordinary members, club-scoped
+ *   'tickets' — tournament tickets, which reach any club in the union
  */
+const HISTORY_MODES = {
+  credits: {
+    match: r => r.type !== 'Tournament Ticket' && (r.scope === 'Club' || isAgentTier(r.recipient)),
+    types: ['All types', 'Credits', 'Chips'],
+    hint: 'Credits issued to clubs and down to agents',
+    people: () => [...CLUBS.map(c => c.name), ...MEMBERS.filter(m => AGENT_TIER.includes(m.role)).map(m => m.nick)]
+  },
+  chips: {
+    match: r => r.type === 'Chips' && r.scope === 'Member' && !isAgentTier(r.recipient),
+    types: ['All types', 'Chips'],
+    hint: 'Chips sent to or reclaimed from members of this club',
+    people: () => MEMBERS.filter(m => !AGENT_TIER.includes(m.role)).map(m => m.nick)
+  },
+  tickets: {
+    match: r => r.type === 'Tournament Ticket',
+    types: ['All types', 'Specific tournament', 'Value'],
+    hint: 'Tickets issued across every club in the union',
+    people: () => MEMBERS.map(m => m.nick)
+  }
+};
+
 const chipHistory = mode => {
-  const rows = CHIP_LOG.filter(r => mode === 'credits'
-    ? r.scope === 'Club' || isAgentTier(r.recipient)
-    : r.scope === 'Member' && !isAgentTier(r.recipient));
+  const cfg = HISTORY_MODES[mode];
+  const rows = CHIP_LOG.filter(cfg.match);
 
   return filters([
     { label: 'Date range', type: 'select', options: DATE_PRESETS },
-    { label: 'Value type', type: 'select', options: mode === 'credits' ? ['All types', 'Credits', 'Chips'] : ['All types', 'Chips', 'Tournament Ticket'] },
-    { label: 'Recipient', type: 'select', options: mode === 'credits' ? ['Everyone', ...CLUBS.map(c => c.name), ...MEMBERS.filter(m => AGENT_TIER.includes(m.role)).map(m => m.nick)] : ['Everyone', ...MEMBERS.filter(m => !AGENT_TIER.includes(m.role)).map(m => m.nick)] },
+    { label: mode === 'tickets' ? 'Specified by' : 'Value type', type: 'select', options: cfg.types },
+    { label: 'Recipient', type: 'select', options: ['Everyone', ...cfg.people()] },
+    ...(mode === 'tickets' ? [{ label: 'Club', type: 'select', options: clubOptions('All clubs in the union') }] : []),
     { label: 'Direction', type: 'select', options: ['Sent & reclaimed', 'Sent only', 'Reclaimed only'] }
   ], [exportBtn()])
   + card({
     title: 'Transfer history',
-    hint: mode === 'credits' ? 'Credits issued to clubs and down to agents' : 'Chips and tickets sent to or reclaimed from members',
+    hint: cfg.hint,
     body: dataTable({
       cols: [{ label: 'Date / time' }, { label: 'Sender' }, { label: 'Recipient' }, { label: 'Type' },
         { label: 'Direction', cls: 'mid' }, { label: 'Amount', cls: 'num' },
@@ -995,11 +1017,34 @@ PAGES['chips/members'] = () => {
       </div>
     </div>`;
 
-  /* — Tournament Ticket (union-wide) — */
+  return pageHead({
+    title: 'Member Chips',
+    sub: `Send or reclaim club chips. Replaces ClubGG's <strong>Member Counter</strong>.`,
+    actions: [btn('Chip budget')]
+  })
+  + note(`<strong>Club-scoped.</strong> You can only send to or reclaim from your own club's roster — chips never cross club lines. The one value that does reach members in other clubs is a <a href="#/chips/tickets">Tournament Ticket</a>.`, 'accent', '⇄')
+  + stats([
+    { label: 'Chips outstanding', value: n(UNION_TOTALS.chips), meta: 'held by members union-wide' },
+    { label: 'Club budget left', value: n(CHIP_BUDGET.clubBudget - CHIP_BUDGET.clubSpent), meta: `of ${n(CHIP_BUDGET.clubBudget)} granted` },
+    { label: 'Roster in context', value: n(ownRoster.length), meta: esc(ownClub.name) }
+  ])
+  + tabs([
+    { label: 'Send & Reclaim', html: membersPanel },
+    { label: 'History', html: chipHistory('chips') }
+  ]);
+};
+
+/* ── Tournament Tickets ───────────────────────────────────────────── */
+/* Its own page rather than a tab on Member Chips: the recipient scope is
+   fundamentally different — any member in any club, not one club's roster. */
+PAGES['chips/tickets'] = () => {
+  const ticketRows = CHIP_LOG.filter(r => r.type === 'Tournament Ticket');
+  const reachedClubs = new Set(ticketRows.map(r => (memberByNick(r.recipient) || {}).club).filter(Boolean));
+
   const ticketPanel = `
     <div class="scope-strip">
       ${badge('Union-wide', 'info')}
-      <span><strong>Tournament Tickets are the exception</strong> — recipients can be any member in any club in the union. Note the Club filter below is not locked.</span>
+      <span><strong>Recipients can be any member in any club in the union</strong> — unlike chips and credits, tickets are not club-scoped. The Club filter below is not locked.</span>
     </div>
     ${filters([
       { label: 'Search', type: 'search', placeholder: 'Nickname or member ID…', grow: true },
@@ -1058,21 +1103,19 @@ PAGES['chips/members'] = () => {
     </div>`;
 
   return pageHead({
-    title: 'Member Chips',
-    sub: `Send or reclaim club chips, and issue tournament tickets. Replaces ClubGG's <strong>Member Counter</strong> and <strong>Send Ticket</strong> — two pages sharing one pattern: a filterable recipient list, multi-select, a send action, a running total and a history tab, each pointed at a different value type.`,
-    actions: [btn('Chip budget')]
+    title: 'Tournament Tickets',
+    sub: `Issue or revoke tournament entry credits. Replaces ClubGG's <strong>Send Ticket</strong>, where Ticket and Voucher were two names for one object — a tournament entry, specified either as a named tournament or as a value good at any tournament at or under it.`
   })
-  + note(`<strong>Two recipient scopes, on purpose.</strong> Chips are club-scoped — you can only send to or reclaim from your own club's roster. Tournament Tickets are the exception and reach any member in any club in the union. ClubGG's Send Ticket already supports "ALL Clubs" while its Member Counter is silently locked to one club at a time.`, 'accent', '⇄')
+  + note(`<strong>The one value that is not club-scoped.</strong> Credits stop at the club and chips stop at the club's own roster; a ticket can reach any member anywhere in the union. That is why this is its own page rather than a tab on <a href="#/chips/members">Member Chips</a> — the recipient list is a different list.`, 'accent', '⇄')
   + stats([
-    { label: 'Chips outstanding', value: n(MEMBERS.reduce((a, m) => a + m.chips, 0)), meta: 'held by members union-wide' },
-    { label: 'Club budget left', value: n(CHIP_BUDGET.clubBudget - CHIP_BUDGET.clubSpent), meta: `of ${n(CHIP_BUDGET.clubBudget)} granted` },
-    { label: 'Tickets live', value: n(MEMBER_TICKET_HISTORY.filter(t => t.status === 'Unused').length), meta: 'unused, not expired' },
-    { label: 'Roster in context', value: n(ownRoster.length), meta: esc(ownClub.name) }
+    { label: 'Issued', value: n(ticketRows.filter(r => r.dir === 'sent').length), meta: `${n(ticketRows.filter(r => r.dir === 'reclaimed').length)} revoked` },
+    { label: 'Value issued', value: n(ticketRows.filter(r => r.dir === 'sent').reduce((a, r) => a + r.amount, 0)), meta: 'buy-in equivalent' },
+    { label: 'Clubs reached', value: `${n(reachedClubs.size)} / ${n(CLUBS.length)}`, meta: 'recipients span the union' },
+    { label: 'Unused', value: n(MEMBER_TICKET_HISTORY.filter(t => t.status === 'Unused').length), meta: 'not yet played, not expired' }
   ])
   + tabs([
-    { label: 'Chips', html: membersPanel },
-    { label: 'Tournament Ticket', html: ticketPanel },
-    { label: 'History', html: chipHistory('chips') }
+    { label: 'Send', html: ticketPanel },
+    { label: 'History', html: chipHistory('tickets') }
   ]);
 };
 
