@@ -229,13 +229,15 @@ PAGES['activity/clubs/:id'] = id => {
       </div>
 
       <div class="profile-fields">
-        <div class="pf">
-          <label class="pf-label">Authority to Create Union Game</label>
-          <div class="pf-static">${toggle(c.unionGameAuthority, c.unionGameAuthority ? 'Granted' : 'Off by default')}</div>
+        <div class="pf-group">
+          <div class="pf">
+            <label class="pf-label">Authority to Create Union Game</label>
+            <div class="pf-static">${toggle(c.unionGameAuthority, c.unionGameAuthority ? 'Granted' : 'Off by default')}</div>
+          </div>
         </div>
         <div class="pf pf-note">
-          <label class="pf-label" title="Visible to union admins">Internal note</label>
-          <textarea rows="2" placeholder="Add an internal note about this club…">${esc(c.notes)}</textarea>
+          <label class="pf-label" title="Visible to union admins">Notes</label>
+          <textarea rows="2" placeholder="Add a note about this club…">${esc(c.notes)}</textarea>
         </div>
       </div>
     </div>`;
@@ -460,29 +462,31 @@ PAGES['activity/members/:nick'] = nick => {
       </div>
 
       <div class="profile-fields">
-        <div class="pf pf-alias">
-          <label class="pf-label" title="Written by the member; admins can overwrite it">Alias</label>
-          <input value="${esc(m.alias)}" placeholder="Not set">
+        <div class="pf-group">
+          <div class="pf pf-alias">
+            <label class="pf-label" title="Written by the member; admins can overwrite it">Alias</label>
+            <input value="${esc(m.alias)}" placeholder="Not set">
+          </div>
+          <div class="pf">
+            <label class="pf-label">Role</label>
+            <select><option>${esc(m.role)}</option>${ROLE_OPTIONS.slice(1).filter(r => r !== m.role).map(r => `<option>${esc(r)}</option>`).join('')}</select>
+          </div>
+          <div class="pf">
+            <label class="pf-label">Portal access</label>
+            <div class="pf-static">${toggle(m.bo, m.bo ? 'Granted' : 'Not granted')}</div>
+          </div>
+          <div class="pf">
+            <label class="pf-label">Chat</label>
+            <div class="pf-static">${toggle(true, 'Enabled')}</div>
+          </div>
+          <div class="pf">
+            <label class="pf-label">Membership</label>
+            <div class="pf-static">${btn('Remove from club', { sm: true, kind: 'danger' })}</div>
+          </div>
         </div>
         <div class="pf pf-note">
-          <label class="pf-label" title="Visible only to whoever wrote it">Private note</label>
+          <label class="pf-label" title="Visible only to whoever wrote it">Notes</label>
           <textarea rows="2" placeholder="Add a note…">${esc(m.notes)}</textarea>
-        </div>
-        <div class="pf">
-          <label class="pf-label">Role</label>
-          <select><option>${esc(m.role)}</option>${ROLE_OPTIONS.slice(1).filter(r => r !== m.role).map(r => `<option>${esc(r)}</option>`).join('')}</select>
-        </div>
-        <div class="pf">
-          <label class="pf-label">Portal access</label>
-          <div class="pf-static">${toggle(m.bo, m.bo ? 'Granted' : 'Not granted')}</div>
-        </div>
-        <div class="pf">
-          <label class="pf-label">Chat</label>
-          <div class="pf-static">${toggle(true, 'Enabled')}</div>
-        </div>
-        <div class="pf">
-          <label class="pf-label">Membership</label>
-          <div class="pf-static">${btn('Remove from club', { sm: true, kind: 'danger' })}</div>
         </div>
       </div>
     </div>`;

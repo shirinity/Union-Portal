@@ -1022,25 +1022,32 @@ table.data.confirm td:first-child { white-space: normal; width: 34%; }
 }
 a.fact-value.is-link { color: var(--accent); text-decoration: none; }
 a.fact-value.is-link:hover { text-decoration: underline; }
-.fact-sub { font-size: 11px; color: var(--text-3); }
+/* Part of the value, not a label — so it keeps the value's colour and is
+   made secondary by size alone. */
+.fact-sub { font-size: 11.5px; font-weight: 500; color: var(--text); }
 
-/* Controls cluster at the left rather than spreading to fill the row. */
+/* Short controls form one tight rectangle on the left; the taller notes
+   field sits on the right so nothing has to bottom-align around it. */
 .profile-fields {
+  display: flex;
+  align-items: center;
+  gap: 12px 22px;
+  flex-wrap: wrap;
+  padding: 11px 14px;
+  border-top: 1px solid var(--line-soft);
+}
+.pf-group {
   display: flex;
   align-items: flex-end;
   flex-wrap: wrap;
   gap: 12px 22px;
-  padding: 11px 14px;
-  border-top: 1px solid var(--line-soft);
 }
-.pf { min-width: 0; }
-.profile-fields .pf { flex: 0 0 auto; }
+.pf { min-width: 0; flex: 0 0 auto; }
 .profile-fields .pf select { min-width: 170px; }
-/* Sized to the content each field actually holds, not to the page width */
 .profile-fields .pf-alias { flex: 0 0 210px; }
-.profile-fields .pf-note  { flex: 0 0 340px; }
-@media (max-width: 720px) {
-  .profile-fields .pf-alias, .profile-fields .pf-note { flex: 1 1 100%; }
+.profile-fields .pf-note { flex: 0 0 320px; margin-left: auto; }
+@media (max-width: 900px) {
+  .profile-fields .pf-note { flex: 1 1 100%; margin-left: 0; }
 }
 .pf textarea {
   width: 100%;
