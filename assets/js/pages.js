@@ -15,20 +15,36 @@ const PAGES = {};
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── Club List — doubles as the portal home page ──────────────────── */
+/**
+ * Summary cards shared by the Clubs and Members overviews. Both read from
+ * UNION_TOTALS so the two pages can never state different numbers, and every
+ * card carries a real breakdown rather than a caption repeating "selected
+ * period" — the whole page is the selected period.
+ */
+const unionSummary = () => {
+  const T = UNION_TOTALS;
+  return stats([
+    { label: 'Clubs & members', value: n(T.clubs), meta: `${n(T.members)} members · ${n(CLUBS.filter(c => c.status === 'Suspended').length)} club suspended` },
+    { label: 'Outstanding', value: `<span class="gold">${n(T.credits)}</span>`, meta: `credits with clubs · ${n(T.chips)} chips with members` },
+    { label: 'Games', value: n(T.games), meta: `${n(T.gamesRing)} ring · ${n(T.gamesMtt)} tournament` },
+    { label: 'Hands', value: n(T.hands), meta: `${n(T.handsNlh)} NLH · ${n(T.handsPlo)} PLO` },
+    { label: 'Union total', value: n(T.unionTotal), meta: `${n(T.rake)} rake · ${n(T.fees)} fees` }
+  ]);
+};
+
 PAGES['activity/clubs'] = () => {
+  const T = UNION_TOTALS;
   const t = CLUBS.reduce((a, c) => ({
-    credits: a.credits + c.credits, managers: a.managers + c.managers,
-    superAgents: a.superAgents + c.superAgents, agents: a.agents + c.agents,
-    players: a.players + c.players, hands: a.hands + c.hands, rake: a.rake + c.rake,
-    fees: a.fees + c.fees, insurance: a.insurance + c.insurance,
-    evCashout: a.evCashout + c.evCashout, bbj: a.bbj + c.bbj, pnl: a.pnl + c.pnl
-  }), { credits: 0, managers: 0, superAgents: 0, agents: 0, players: 0, hands: 0, rake: 0, fees: 0, insurance: 0, evCashout: 0, bbj: 0, pnl: 0 });
+    managers: a.managers + c.managers, superAgents: a.superAgents + c.superAgents,
+    agents: a.agents + c.agents
+  }), { managers: 0, superAgents: 0, agents: 0 });
 
   const cols = [
     { label: 'Club' }, { label: 'Club ID' }, { label: 'Credits', cls: 'num' },
     { label: 'Mgr', cls: 'num' }, { label: 'S.Agent', cls: 'num' }, { label: 'Agent', cls: 'num' }, { label: 'Player', cls: 'num' },
     { label: 'Hands', cls: 'num' }, { label: 'Rake', cls: 'num' }, { label: 'Fees', cls: 'num' },
-    { label: 'Insurance', cls: 'num' }, { label: 'EV Cashout', cls: 'num' }, { label: 'BBJ', cls: 'num' },
+    { label: 'Insurance', cls: 'num' }, { label: 'EV Cashout', cls: 'num' },
+    { label: 'Fee', cls: 'num', group: 'BBJ' }, { label: 'Payout', cls: 'num', group: 'BBJ' },
     { label: 'P&L', cls: 'num' }, { label: 'Status', cls: 'mid' }
   ];
 
@@ -39,16 +55,18 @@ PAGES['activity/clubs'] = () => {
       primaryCell(esc(c.name) + (c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''), 'Owner · ' + esc(c.owner)),
       idCell(c.id), `<span class="gold">${n(c.credits)}</span>`,
       n(c.managers), n(c.superAgents), n(c.agents), n(c.players),
-      n(c.hands), num(c.rake), num(c.fees), num(c.insurance), money(c.evCashout), num(c.bbj),
+      n(c.hands), num(c.rake), num(c.fees), num(c.insurance), money(c.evCashout),
+      num(c.bbj), c.bbjPayout ? `<span class="gold">${n(c.bbjPayout)}</span>` : '<span class="muted">—</span>',
       money(c.pnl), statusBadge(c.status)
     ]
   }));
 
   const foot = [
     `<strong>Total · ${CLUBS.length} clubs</strong>`, '',
-    n(t.credits), n(t.managers), n(t.superAgents), n(t.agents), n(t.players),
-    n(t.hands), n(t.rake), n(t.fees), n(t.insurance), money(t.evCashout), n(t.bbj),
-    money(t.pnl), ''
+    n(T.credits), n(t.managers), n(t.superAgents), n(t.agents), n(T.players),
+    n(T.hands), n(T.rake), n(T.fees), n(T.insurance), money(T.evCashout),
+    n(T.bbj), n(T.bbjPayout),
+    money(T.pnl), ''
   ];
 
   const masterClub = clubById(UNION.masterClubId);
@@ -56,22 +74,10 @@ PAGES['activity/clubs'] = () => {
   return pageHead({
     title: UNION.name,
     badges: [badge(`Master club · ${masterClub.name}`, 'gold')],
-    sub: `Union overview — where the portal opens. Signed in as the Union Owner, so everything in the union is in scope.
-          Figures cover the selected period as of ${esc(UNION.asOf)}.`,
+    sub: `Union overview — where the portal opens. Signed in as the Union Owner, so everything in the union is in scope, for the period selected below.`,
     actions: [btn('Union settings')]
   })
-  /* Same shape as the Members page. Rake and fees are shown separately
-     because together they *are* union P&L — burying fees inside the rake
-     card hid half of that sum. The P&L column in the table below is the
-     club's own P&L, which is a different number. */
-  + stats([
-    { label: 'Clubs', value: n(CLUBS.length), meta: `${CLUBS.filter(c => c.status === 'Active').length} active · ${CLUBS.filter(c => c.status === 'Suspended').length} suspended` },
-    { label: 'Members', value: n(t.players + t.agents + t.superAgents + t.managers + CLUBS.length), meta: 'across all clubs' },
-    { label: 'Hands', value: n(t.hands), meta: 'selected period' },
-    { label: 'Rake', value: n(t.rake), meta: 'ring games' },
-    { label: 'Fees', value: n(t.fees), meta: 'tournaments' },
-    { label: 'Union P&L', value: money(t.rake + t.fees, { sign: false }), meta: 'rake + fees' }
-  ])
+  + unionSummary()
   + sectionHead('Clubs', 'Click a row to open a club')
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Club name or 6-digit ID…', grow: true },
@@ -81,9 +87,10 @@ PAGES['activity/clubs'] = () => {
   ])
   + card({
     actions: [exportBtn()],
-    hint: `Financial columns, member counts by role and a totals row — this list absorbs what ClubGG split out as <strong>Club Revenue</strong> under Report. Visible to <em>any</em> club's Owner or Manager, not only the master club's.`,
+    hint: `Absorbs what ClubGG split out as <strong>Club Revenue</strong> under Report.`,
     body: dataTable({ cols, rows, foot, chevron: true })
   })
+  + note(`<strong>Non-master clubs see a narrower version of this list.</strong> A club Owner or Manager outside the master club can see only club name, club ID, club owner, active players, hands, insurance, EV cashout and P&amp;L for other clubs — not credits, member counts by role, rake, fees or BBJ.`, 'warn', '⚠')
   + note(`<strong>Club ID</strong> is shown as 6 digits, numbers only — the format decided in Union Admin Features. Today's IDs are 8 characters mixing letters and numbers.`, 'info');
 };
 
@@ -256,15 +263,16 @@ PAGES['activity/members'] = () => {
   const t = MEMBERS.reduce((a, m) => ({
     credits: a.credits + m.credits, chips: a.chips + m.chips, games: a.games + m.games,
     hands: a.hands + m.hands, rake: a.rake + m.rake, fees: a.fees + m.fees,
-    bbj: a.bbj + m.bbj, pnl: a.pnl + m.pnl
-  }), { credits: 0, chips: 0, games: 0, hands: 0, rake: 0, fees: 0, bbj: 0, pnl: 0 });
+    bbj: a.bbj + m.bbj, bbjPayout: a.bbjPayout + m.bbjPayout, pnl: a.pnl + m.pnl
+  }), { credits: 0, chips: 0, games: 0, hands: 0, rake: 0, fees: 0, bbj: 0, bbjPayout: 0, pnl: 0 });
 
   const cols = [
     { label: 'Member' }, { label: 'Member ID' }, { label: 'Club' }, { label: 'Role' },
     { label: 'Credits', cls: 'num' }, { label: 'Chips', cls: 'num' },
     { label: 'Games', cls: 'num' }, { label: 'Hands', cls: 'num' }, { label: 'Rake', cls: 'num' },
-    { label: 'Fees', cls: 'num' }, { label: 'BBJ', cls: 'num' }, { label: 'P&L', cls: 'num' },
-    { label: 'Portal access', cls: 'mid' }
+    { label: 'Fees', cls: 'num' },
+    { label: 'Fee', cls: 'num', group: 'BBJ' }, { label: 'Payout', cls: 'num', group: 'BBJ' },
+    { label: 'P&L', cls: 'num' }, { label: 'Portal access', cls: 'mid' }
   ];
 
   const rows = MEMBERS.map(m => ({
@@ -276,31 +284,27 @@ PAGES['activity/members'] = () => {
       `<a class="rowlink" href="#/activity/clubs/${m.club}">${esc(clubName(m.club))}</a>`,
       roleTag(m.role),
       m.credits ? `<span class="gold">${n(m.credits)}</span>` : '<span class="muted">—</span>',
-      n(m.chips), n(m.games), n(m.hands), num(m.rake), num(m.fees), num(m.bbj), money(m.pnl),
-      toggle(m.bo)
+      n(m.chips), n(m.games), n(m.hands), num(m.rake), num(m.fees),
+      num(m.bbj), m.bbjPayout ? `<span class="gold">${n(m.bbjPayout)}</span>` : '<span class="muted">—</span>',
+      money(m.pnl), toggle(m.bo)
     ]
   }));
 
   const foot = [`<strong>Total · ${MEMBERS.length} shown</strong>`, '', '', '',
     `<span class="gold">${n(t.credits)}</span>`,
-    n(t.chips), n(t.games), n(t.hands), n(t.rake), n(t.fees), n(t.bbj), money(t.pnl), ''];
+    n(t.chips), n(t.games), n(t.hands), n(t.rake), n(t.fees),
+    n(t.bbj), n(t.bbjPayout), money(t.pnl), ''];
 
   return pageHead({
     title: 'Member List',
-    sub: `Every member across every club in the union. Filter by club and role; ClubGG's separate <strong>Agent Counter</strong> page is unnecessary once this role filter exists.
+    sub: `Every member across every club in the union, for the period selected below.
+          <em>Credits</em> are agent allowances — only agent-tier members hold them; club credits belong to the club.
           <em>Portal access</em> is ClubGG's "BO" column — whether the member can sign in to this admin portal.`,
   })
-  /* Deliberately the same six stats as the Clubs page, in the same order —
-     only the first two differ, because they are the ones that meaningfully
-     differ between a list of clubs and a list of members. */
-  + stats([
-    { label: 'Members', value: n(MEMBERS.length), meta: `of ${n(CLUBS.reduce((a, c) => a + c.players + c.agents + c.superAgents + c.managers + 1, 0))} in the union` },
-    { label: 'Chips', value: n(t.chips), meta: 'held by these members' },
-    { label: 'Hands', value: n(t.hands), meta: 'selected period' },
-    { label: 'Rake', value: n(t.rake), meta: 'ring games' },
-    { label: 'Fees', value: n(t.fees), meta: 'tournaments' },
-    { label: 'Union P&L', value: money(t.rake + t.fees, { sign: false }), meta: 'rake + fees' }
-  ])
+  /* Identical cards to the Clubs overview, from the same source, so the two
+     pages can never disagree. The table below is a 12-row sample, and its
+     totals row says so. */
+  + unionSummary()
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Nickname, alias or member ID…', grow: true },
     { label: 'Club', type: 'select', options: clubOptions() },
@@ -601,12 +605,7 @@ PAGES['restrictions/club-stop-limits'] = () => {
     actions: [btn('Set limits for a club', { kind: 'primary' })]
   })
   + note(`<strong>Visibility fix.</strong> A club's own Owner and Manager can see their limits here — <em>including non-master clubs</em>. ClubGG restricts this view to the Union Owner and Manager, which forces every other club to ask for their own numbers off-product.`, 'accent', '✓')
-  + stats([
-    { label: 'Clubs with limits', value: `${n(CLUB_STOP_LIMITS.filter(s => s.winLimit != null).length)} / ${n(CLUB_STOP_LIMITS.length)}` },
-    { label: 'Suspended now', value: `<span class="neg">${n(CLUB_STOP_LIMITS.filter(s => s.status === 'Suspended').length)}</span>`, meta: 'awaiting re-approval' },
-    { label: 'Tournament fees counted', value: `${n(CLUB_STOP_LIMITS.filter(s => s.tourneyCounts).length)} clubs` },
-    { label: 'Week resets', value: 'Mon 00:00 PT', meta: 'in 2d 9h' }
-  ])
+  + stats([{ label: 'Week resets', value: 'Mon 00:00 PT', meta: 'in 2d 9h' }])
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Club name or ID…', grow: true },
     { label: 'Status', type: 'select', options: ['All statuses', 'Active', 'Suspended', 'No limit'] },
@@ -637,7 +636,7 @@ PAGES['restrictions/club-stakes'] = () => {
         primaryCell(`<a class="rowlink" href="#/activity/clubs/${r.club}">${esc(c.name)}</a>${c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''}`, 'Club ID ' + esc(r.club)),
         ...RING_TYPES.map(g => rangeCell(r.blinds[g], { unit: 'BB' })),
         rangeCell(r.mtt, { group: true }),
-        editCell()
+        editCell(btn('Reset', { sm: true, kind: 'danger' }))
       ]
     };
   });
@@ -693,12 +692,7 @@ PAGES['restrictions/member-stop-limits'] = () => {
     actions: [btn('Set a limit', { kind: 'primary' })]
   })
   + note(`<strong>A genuinely new capability.</strong> ClubGG has stop limits at club tier only, so this cannot be done today at all. Adding the member tier is what makes this symmetrical — every control now exists at both tiers, in one place.`, 'new', '✦')
-  + stats([
-    { label: 'Members with limits', value: n(MEMBER_STOP_LIMITS.length), meta: 'across 4 clubs' },
-    { label: 'Suspended now', value: `<span class="neg">${n(MEMBER_STOP_LIMITS.filter(s => s.status === 'Suspended').length)}</span>` },
-    { label: 'Near limit', value: `<span class="warn">${n(MEMBER_STOP_LIMITS.filter(s => s.status === 'Near limit').length)}</span>`, meta: 'over 80% of cap' },
-    { label: 'Members affected', value: n(MEMBER_STOP_LIMITS.reduce((a, s) => a + s.cascades, 0) + MEMBER_STOP_LIMITS.length), meta: 'including cascaded downlines' }
-  ])
+  + stats([{ label: 'Week resets', value: 'Mon 00:00 PT', meta: 'in 2d 9h' }])
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Nickname or member ID…', grow: true },
     { label: 'Club', type: 'select', options: clubOptions() },
@@ -734,7 +728,7 @@ PAGES['restrictions/member-stakes'] = () => {
       roleCell(r),
       ...RING_TYPES.map((g, i) => rangeCell(r.blinds[g], { unit: 'BB', ceiling: i === 0 ? r.ceiling : '' })),
       rangeCell(r.mtt, { group: true }),
-      editCell()
+      editCell(btn('Reset', { sm: true, kind: 'danger' }))
     ]
   }));
 
@@ -1125,7 +1119,7 @@ PAGES['games/ring'] = () => {
           esc(g.seats), n(g.players), n(g.hands),
           g.rake == null ? '<span class="muted">N/A</span>' : num(g.rake),
           num(g.insurance), money(g.ev), num(g.bbj), statusBadge(g.status),
-          g.status === 'Live' || g.status === 'Waiting' ? actionCell('View', 'Disband') : actionCell('View')]
+          g.status === 'Live' || g.status === 'Waiting' ? actionCell('Disband') : '']
       }))
     })
   })
@@ -1170,9 +1164,9 @@ PAGES['games/mtt'] = () => {
           t.guarantee ? n(t.guarantee) : '<span class="muted">—</span>', t.prize ? n(t.prize) : '<span class="muted">—</span>',
           statusBadge(t.status),
           t.status === 'Pending approval' ? `<span class="inline-actions">${btn('Approve', { sm: true, kind: 'primary' })}${btn('Deny', { sm: true, kind: 'danger' })}</span>`
-            : t.status === 'Running' ? actionCell('View', 'Pause')
-            : t.status === 'Completed' ? actionCell('View')
-            : actionCell('View', 'Cancel')]
+            : t.status === 'Running' ? actionCell('Pause')
+            : t.status === 'Completed' ? ''
+            : actionCell('Cancel')]
       }))
     })
   })
@@ -1212,7 +1206,7 @@ PAGES['games/sng'] = () => pageHead({
         `<span class="id">${esc(s.entries)}</span>`, esc(s.structure), n(s.prize),
         s.winner === '—' ? '<span class="muted">—</span>' : `<a class="rowlink" href="#/activity/members/${esc(s.winner)}">${esc(s.winner)}</a>`,
         statusBadge(s.status),
-        s.status === 'Completed' ? actionCell('View') : actionCell('View', 'Cancel')]
+        s.status === 'Completed' ? '' : actionCell('Cancel')]
     }))
   })
 });
@@ -1399,12 +1393,11 @@ PAGES['promos/announcements'] = () => pageHead({
   sub: `Post a message to clubs — content, display period, and which clubs see it. Was <strong>Notice Setting</strong> in ClubGG.`,
   actions: [btn('New announcement', { kind: 'primary' })]
 })
-+ note(`This is for union and club heads to post promos and announcements <strong>to their members</strong>. It is not the same thing as the app messaging mechanisms we have as the product for reaching app users — worth keeping the two clearly apart.`, 'warn', '⚠')
++ note(`This is for union and club heads to post promos and announcements <strong>to their members</strong>. Not the same thing as the app messaging mechanisms we have as the product for reaching app users.`, 'warn', '⚠')
 + stats([
   { label: 'Live now', value: n(ANNOUNCEMENTS.filter(a => a.status === 'Live').length) },
   { label: 'Scheduled', value: n(ANNOUNCEMENTS.filter(a => a.status === 'Scheduled').length) },
-  { label: 'Views', value: n(ANNOUNCEMENTS.reduce((a, x) => a + x.views, 0)), meta: 'all announcements' },
-  { label: 'Delivery', value: 'TBD', meta: 'ClubGG uses a full-screen interstitial' }
+  { label: 'Views', value: n(ANNOUNCEMENTS.reduce((a, x) => a + x.views, 0)), meta: 'all announcements' }
 ])
 + filters([
   { label: 'Search', type: 'search', placeholder: 'Title or content…', grow: true },

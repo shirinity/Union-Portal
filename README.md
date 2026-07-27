@@ -42,7 +42,7 @@ Based on
 with the nav changes noted underneath.
 
 - **Activity** — Clubs → *Club Detail*, Members → *Member Detail*
-- **Restrictions** — Club Stop Limits, Club Stakes **(New)**, Member Stop Limits **(New)**, Member Stakes
+- **Restrictions** — Club Stakes **(New)**, Member Stakes, Club Stop Limits, Member Stop Limits **(New)**
 - **Chips & Credits** — Club & Agent Credits, Member Chips
 - **Games** — Ring Games, Tournaments, SNGs, Templates, Recurring Games
 - **Promotions** — Leaderboards, Bad Beat Jackpot, Announcements
@@ -95,6 +95,14 @@ These are the points flagged as load-bearing in the brief and the nav doc:
 - **A union has no credit balance.** It can issue as many credits as it likes, so there is no treasury
   figure anywhere — ClubGG's prominent union balance is a red herring. What the page reports instead is
   what is *outstanding*: credits sitting with clubs, and chips sitting with members.
+- **Credits belong to clubs and to agents, never to members generally.** A club Owner does not
+  personally hold their club's credits; showing them on both the club and its Owner counted the same
+  money twice. Only agent-tier members carry a credit figure, and it is their allowance.
+- **Clubs and Members share one summary block, computed from one source.** `UNION_TOTALS` is derived
+  from `CLUBS`, and both overviews read it, so the two pages cannot state different numbers. The member
+  table is a 12-row sample of 801, and its totals row says "12 shown" rather than pretending otherwise.
+- **BBJ is two columns, not one.** *Fee* is what clubs and members contribute; *Payout* is what was won.
+  They sit under a shared BBJ header on both overviews.
 - **Clubs and Agents are the same view twice.** Both recipient tables read Name · (Status | Role) ·
   (Members | Downline) · Credits dispersed, so switching tabs costs no re-reading. "Dispersed" and
   "allocated" are one bar with one label, not two columns repeating the same number.

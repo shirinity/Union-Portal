@@ -206,15 +206,41 @@ const figure = (label, value, sub) => `
  * rows: [{ cells: [...], href, title }]
  * foot: [ ...cells ] (optional totals row)
  */
+/**
+ * Builds the thead. When any column declares a `group`, consecutive columns
+ * sharing that group get a spanning header above them and everything else
+ * spans both rows — e.g. BBJ over Fee and Payout.
+ */
+const tableHead = (cols, chevron) => {
+  if (!cols.some(c => c.group)) {
+    return `<tr>
+      ${cols.map(c => `<th class="${c.cls || ''}">${c.label}</th>`).join('')}
+      ${chevron ? '<th></th>' : ''}
+    </tr>`;
+  }
+  let top = '', bottom = '';
+  for (let i = 0; i < cols.length; i++) {
+    const c = cols[i];
+    if (!c.group) {
+      top += `<th class="${c.cls || ''}" rowspan="2">${c.label}</th>`;
+      continue;
+    }
+    let j = i;
+    while (j + 1 < cols.length && cols[j + 1].group === c.group) j++;
+    top += `<th class="group" colspan="${j - i + 1}">${c.group}</th>`;
+    for (let k = i; k <= j; k++) bottom += `<th class="${cols[k].cls || ''}">${cols[k].label}</th>`;
+    i = j;
+  }
+  if (chevron) top += '<th rowspan="2"></th>';
+  return `<tr>${top}</tr><tr>${bottom}</tr>`;
+};
+
 const dataTable = ({ cols, rows, foot, chevron = false, empty = 'Nothing to show.' }) => {
   if (!rows.length) return `<div class="empty">${esc(empty)}</div>`;
   return `
   <div class="table-scroll">
     <table class="data">
-      <thead><tr>
-        ${cols.map(c => `<th class="${c.cls || ''}">${c.label}</th>`).join('')}
-        ${chevron ? '<th></th>' : ''}
-      </tr></thead>
+      <thead>${tableHead(cols, chevron)}</thead>
       <tbody>
         ${rows.map(r => `
           <tr${r.href ? ` class="clickable" data-href="${esc(r.href)}" tabindex="0"` : ''}${r.title ? ` title="${esc(r.title)}"` : ''}>

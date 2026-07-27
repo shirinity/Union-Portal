@@ -29,56 +29,56 @@ const CLUBS = [
   {
     id: '104829', name: 'Bellota Labs Home Game', owner: 'kurtis_c', isMasterClub: true,
     joined: '2025-11-04', credits: 1_240_000, chipsOut: 292_560, managers: 3, superAgents: 4, agents: 11, players: 214,
-    hands: 148_920, rake: 62_480, fees: 9_240, insurance: 4_110, evCashout: -1_860, bbj: 3_720,
+    hands: 148_920, rake: 62_480, fees: 9_240, insurance: 4_110, evCashout: -1_860, bbj: 3_720, bbjPayout: 148_200, gamesRing: 876, gamesMtt: 142, handsNlh: 104_244,
     pnl: 58_210, status: 'Active', unionGameAuthority: true, rakePct: '4% · 3 BB cap',
     notes: 'Master club. Highest-volume NLH traffic in the union — flagged as the reference club for the new stop-limit rollout.'
   },
   {
     id: '218847', name: 'Vegas Rail Room', owner: 'd_moreno', isMasterClub: false,
     joined: '2025-12-18', credits: 486_500, chipsOut: 128_500, managers: 2, superAgents: 3, agents: 8, players: 137,
-    hands: 92_340, rake: 38_760, fees: 6_180, insurance: 2_940, evCashout: -1_120, bbj: 2_310,
+    hands: 92_340, rake: 38_760, fees: 6_180, insurance: 2_940, evCashout: -1_120, bbj: 2_310, bbjPayout: 96_400, gamesRing: 543, gamesMtt: 88, handsNlh: 61_868,
     pnl: 34_890, status: 'Active', unionGameAuthority: true, rakePct: '4% · 3 BB cap',
     notes: 'Requested union-game authority in Feb; granted. Runs the Tuesday PLO series.'
   },
   {
     id: '337102', name: 'High Tide Poker', owner: 'a_tanaka', isMasterClub: false,
     joined: '2026-01-09', credits: 312_000, chipsOut: 94_700, managers: 1, superAgents: 2, agents: 6, players: 98,
-    hands: 61_070, rake: 24_120, fees: 4_460, insurance: 1_780, evCashout: -640, bbj: 1_530,
+    hands: 61_070, rake: 24_120, fees: 4_460, insurance: 1_780, evCashout: -640, bbj: 1_530, bbjPayout: 0, gamesRing: 359, gamesMtt: 58, handsNlh: 42_749,
     pnl: 22_180, status: 'Active', unionGameAuthority: false, rakePct: '3.5% · 3 BB cap',
     notes: 'Short-deck heavy roster. No union-game authority — all tables run by the master club.'
   },
   {
     id: '415663', name: 'Riverboat Social', owner: 'j_beaumont', isMasterClub: false,
     joined: '2026-02-02', credits: 268_400, chipsOut: 71_200, managers: 2, superAgents: 1, agents: 5, players: 86,
-    hands: 47_650, rake: 18_940, fees: 3_120, insurance: 1_240, evCashout: -410, bbj: 1_180,
+    hands: 47_650, rake: 18_940, fees: 3_120, insurance: 1_240, evCashout: -410, bbj: 1_180, bbjPayout: 0, gamesRing: 280, gamesMtt: 45, handsNlh: 33_355,
     pnl: 17_360, status: 'Active', unionGameAuthority: false, rakePct: '4% · 3 BB cap',
     notes: ''
   },
   {
     id: '552918', name: 'Neon Sunset Club', owner: 'm_kovacs', isMasterClub: false,
     joined: '2026-02-21', credits: 194_800, chipsOut: 58_300, managers: 1, superAgents: 2, agents: 4, players: 71,
-    hands: 38_210, rake: 15_380, fees: 2_640, insurance: 980, evCashout: -300, bbj: 940,
+    hands: 38_210, rake: 15_380, fees: 2_640, insurance: 980, evCashout: -300, bbj: 940, bbjPayout: 0, gamesRing: 225, gamesMtt: 36, handsNlh: 26_747,
     pnl: 13_970, status: 'Suspended', unionGameAuthority: false, rakePct: '4% · 3 BB cap',
     notes: 'Weekly loss limit tripped 24 Jul — buy-ins blocked pending union re-approval.'
   },
   {
     id: '671245', name: 'Backdoor Straight', owner: 'r_singh', isMasterClub: false,
     joined: '2026-03-14', credits: 148_200, chipsOut: 39_600, managers: 1, superAgents: 1, agents: 3, players: 58,
-    hands: 29_480, rake: 11_640, fees: 1_980, insurance: 720, evCashout: -180, bbj: 690,
+    hands: 29_480, rake: 11_640, fees: 1_980, insurance: 720, evCashout: -180, bbj: 690, bbjPayout: 0, gamesRing: 173, gamesMtt: 28, handsNlh: 20_636,
     pnl: 10_540, status: 'Active', unionGameAuthority: false, rakePct: '3% · 2 BB cap',
     notes: ''
   },
   {
     id: '780331', name: 'Chip & Chair', owner: 'l_chen', isMasterClub: false,
     joined: '2026-04-28', credits: 96_400, chipsOut: 22_800, managers: 1, superAgents: 0, agents: 2, players: 41,
-    hands: 18_760, rake: 7_240, fees: 1_180, insurance: 430, evCashout: -90, bbj: 410,
+    hands: 18_760, rake: 7_240, fees: 1_180, insurance: 430, evCashout: -90, bbj: 410, bbjPayout: 0, gamesRing: 110, gamesMtt: 18, handsNlh: 13_132,
     pnl: 6_580, status: 'Active', unionGameAuthority: false, rakePct: '3% · 2 BB cap',
     notes: ''
   },
   {
     id: '896074', name: 'Aces Over Kings', owner: 't_okafor', isMasterClub: false,
     joined: '2026-06-11', credits: 42_800, chipsOut: 8_100, managers: 1, superAgents: 0, agents: 1, players: 23,
-    hands: 8_140, rake: 3_180, fees: 520, insurance: 190, evCashout: -40, bbj: 170,
+    hands: 8_140, rake: 3_180, fees: 520, insurance: 190, evCashout: -40, bbj: 170, bbjPayout: 0, gamesRing: 48, gamesMtt: 8, handsNlh: 5_698,
     pnl: 2_840, status: 'Active', unionGameAuthority: false, rakePct: 'No rake',
     notes: 'Newest club in the union. Rake set to 0 while they build a roster.'
   }
@@ -87,80 +87,113 @@ const CLUBS = [
 const clubById = id => CLUBS.find(c => c.id === id);
 const clubName = id => (clubById(id) || {}).name || '—';
 
+/**
+ * Union-wide totals, derived from CLUBS — the only authoritative source.
+ * MEMBERS below is a 12-row sample of an 801-member union, so summing it
+ * would disagree with the club figures. Both overview pages read from here
+ * so their summary cards always state the same numbers.
+ */
+const UNION_TOTALS = CLUBS.reduce((a, c) => ({
+  clubs: a.clubs + 1,
+  members: a.members + c.managers + c.superAgents + c.agents + c.players + 1,
+  players: a.players + c.players,
+  credits: a.credits + c.credits,
+  chips: a.chips + c.chipsOut,
+  games: a.games + c.gamesRing + c.gamesMtt,
+  gamesRing: a.gamesRing + c.gamesRing,
+  gamesMtt: a.gamesMtt + c.gamesMtt,
+  hands: a.hands + c.hands,
+  handsNlh: a.handsNlh + c.handsNlh,
+  handsPlo: a.handsPlo + (c.hands - c.handsNlh),
+  rake: a.rake + c.rake,
+  fees: a.fees + c.fees,
+  insurance: a.insurance + c.insurance,
+  evCashout: a.evCashout + c.evCashout,
+  bbj: a.bbj + c.bbj,
+  bbjPayout: a.bbjPayout + c.bbjPayout,
+  pnl: a.pnl + c.pnl
+}), {
+  clubs: 0, members: 0, players: 0, credits: 0, chips: 0, games: 0, gamesRing: 0,
+  gamesMtt: 0, hands: 0, handsNlh: 0, handsPlo: 0, rake: 0, fees: 0,
+  insurance: 0, evCashout: 0, bbj: 0, bbjPayout: 0, pnl: 0
+});
+/** Rake plus tournament fees — what the union actually takes. */
+UNION_TOTALS.unionTotal = UNION_TOTALS.rake + UNION_TOTALS.fees;
+
 /* ── Members ──────────────────────────────────────────────────────── */
 const MEMBERS = [
   {
     id: '48120973', nick: 'kurtis_c', alias: 'Kurtis (union head)', club: '104829', role: 'Owner',
-    credits: 1_240_000, chips: 86_400, games: 412, hands: 9_840, rake: 4_120, fees: 680, bbj: 240,
+    credits: 0, chips: 86_400, games: 412, hands: 9_840, rake: 4_120, fees: 680, bbj: 240, bbjPayout: 0,
     pnl: 18_460, bo: true, lastLogin: '26 Jul 2026, 13:52', devices: 3, linked: 0, upline: '—',
     downline: 214, joined: '2025-11-04',
     notes: 'Union owner. Do not modify role — union ownership derives from master-club ownership.'
   },
   {
     id: '48211044', nick: 'd_moreno', alias: 'Diego — Rail Room', club: '218847', role: 'Owner',
-    credits: 486_500, chips: 41_200, games: 288, hands: 7_120, rake: 2_980, fees: 470, bbj: 180,
+    credits: 0, chips: 41_200, games: 288, hands: 7_120, rake: 2_980, fees: 470, bbj: 180, bbjPayout: 0,
     pnl: 11_240, bo: true, lastLogin: '26 Jul 2026, 12:08', devices: 2, linked: 0, upline: '—',
     downline: 137, joined: '2025-12-18', notes: ''
   },
   {
     id: '48304517', nick: 'a_tanaka', alias: 'Aiko T.', club: '337102', role: 'Owner',
-    credits: 312_000, chips: 28_900, games: 196, hands: 5_240, rake: 1_940, fees: 320, bbj: 120,
+    credits: 0, chips: 28_900, games: 196, hands: 5_240, rake: 1_940, fees: 320, bbj: 120, bbjPayout: 118_600,
     pnl: 7_880, bo: true, lastLogin: '25 Jul 2026, 21:41', devices: 1, linked: 0, upline: '—',
     downline: 98, joined: '2026-01-09', notes: ''
   },
   {
     id: '48119288', nick: 'mgr_wallace', alias: 'Sam W. — day shift', club: '104829', role: 'Manager',
-    credits: 0, chips: 32_600, games: 341, hands: 8_120, rake: 3_410, fees: 540, bbj: 210,
+    credits: 0, chips: 32_600, games: 341, hands: 8_120, rake: 3_410, fees: 540, bbj: 210, bbjPayout: 0,
     pnl: -4_280, bo: true, lastLogin: '26 Jul 2026, 14:02', devices: 2, linked: 0, upline: 'kurtis_c',
     downline: 214, joined: '2025-11-19',
     notes: 'Master-club Manager — has Back Office access by default. Union-level parity except Manager creation.'
   },
   {
     id: '48412660', nick: 'sa_delacruz', alias: 'Nina D.', club: '104829', role: 'Super Agent',
-    credits: 0, chips: 118_400, games: 264, hands: 6_480, rake: 2_720, fees: 410, bbj: 160,
+    credits: 150_000, chips: 118_400, games: 264, hands: 6_480, rake: 2_720, fees: 410, bbj: 160, bbjPayout: 0,
     pnl: 9_140, bo: false, lastLogin: '26 Jul 2026, 11:37', devices: 2, linked: 1, upline: 'mgr_wallace',
     downline: 34, joined: '2025-12-02', notes: 'Largest downline in the master club.'
   },
   {
     id: '48520381', nick: 'sa_ferreira', alias: 'Bruno F.', club: '218847', role: 'Super Agent',
-    credits: 0, chips: 74_900, games: 188, hands: 4_610, rake: 1_880, fees: 290, bbj: 110,
+    credits: 100_000, chips: 74_900, games: 188, hands: 4_610, rake: 1_880, fees: 290, bbj: 110, bbjPayout: 0,
     pnl: -6_320, bo: false, lastLogin: '26 Jul 2026, 09:14', devices: 4, linked: 2, upline: 'd_moreno',
     downline: 22, joined: '2026-01-22',
     notes: 'Two linked accounts surfaced 18 Jul — under review, not actioned.'
   },
   {
     id: '48633905', nick: 'ag_novak', alias: 'Petr N.', club: '104829', role: 'Agent',
-    credits: 0, chips: 46_200, games: 142, hands: 3_280, rake: 1_240, fees: 190, bbj: 70,
+    credits: 60_000, chips: 46_200, games: 142, hands: 3_280, rake: 1_240, fees: 190, bbj: 70, bbjPayout: 0,
     pnl: 3_410, bo: false, lastLogin: '25 Jul 2026, 23:58', devices: 1, linked: 0, upline: 'sa_delacruz',
     downline: 9, joined: '2026-02-11', notes: ''
   },
   {
     id: '48701244', nick: 'ag_haddad', alias: 'Yusuf H.', club: '337102', role: 'Agent',
-    credits: 0, chips: 21_800, games: 96, hands: 2_140, rake: 780, fees: 120, bbj: 40,
+    credits: 0, chips: 21_800, games: 96, hands: 2_140, rake: 780, fees: 120, bbj: 40, bbjPayout: 0,
     pnl: -2_180, bo: false, lastLogin: '26 Jul 2026, 08:20', devices: 2, linked: 0, upline: 'a_tanaka',
     downline: 6, joined: '2026-03-08', notes: ''
   },
   {
     id: '48818702', nick: 'riverking22', alias: 'Marcus — Diego\'s friend', club: '218847', role: 'Player',
-    credits: 0, chips: 12_400, games: 214, hands: 5_920, rake: 2_180, fees: 340, bbj: 130,
+    credits: 0, chips: 12_400, games: 214, hands: 5_920, rake: 2_180, fees: 340, bbj: 130, bbjPayout: 96_400,
     pnl: 14_680, bo: false, lastLogin: '26 Jul 2026, 13:44', devices: 1, linked: 0, upline: 'sa_ferreira',
     downline: 0, joined: '2026-01-30', notes: 'Consistent winner — flagged for stop-limit review.'
   },
   {
     id: '48904113', nick: 'quadqueen', alias: '', club: '104829', role: 'Player',
-    credits: 0, chips: 8_960, games: 178, hands: 4_820, rake: 1_940, fees: 280, bbj: 110,
+    credits: 0, chips: 8_960, games: 178, hands: 4_820, rake: 1_940, fees: 280, bbj: 110, bbjPayout: 148_200,
     pnl: -9_240, bo: false, lastLogin: '26 Jul 2026, 12:51', devices: 3, linked: 1, upline: 'ag_novak',
     downline: 0, joined: '2026-02-14', notes: ''
   },
   {
     id: '49011876', nick: 'donkbet_dan', alias: 'Dan', club: '415663', role: 'Player',
-    credits: 0, chips: 3_240, games: 88, hands: 2_010, rake: 720, fees: 110, bbj: 40,
+    credits: 0, chips: 3_240, games: 88, hands: 2_010, rake: 720, fees: 110, bbj: 40, bbjPayout: 0,
     pnl: -3_860, bo: false, lastLogin: '24 Jul 2026, 19:03', devices: 1, linked: 0, upline: 'j_beaumont',
     downline: 0, joined: '2026-03-19', notes: ''
   },
   {
     id: '49188420', nick: 'shortdeck_sy', alias: 'Sylvie', club: '552918', role: 'Player',
-    credits: 0, chips: 0, games: 62, hands: 1_480, rake: 520, fees: 80, bbj: 30,
+    credits: 0, chips: 0, games: 62, hands: 1_480, rake: 520, fees: 80, bbj: 30, bbjPayout: 0,
     pnl: 6_920, bo: false, lastLogin: '24 Jul 2026, 22:17', devices: 2, linked: 0, upline: 'm_kovacs',
     downline: 0, joined: '2026-04-02',
     notes: 'Buy-ins blocked — club-level loss limit tripped, not a member-level restriction.'
@@ -236,16 +269,16 @@ const MEMBER_RESTRICTIONS = [
 
 /* ── Games: ring ──────────────────────────────────────────────────── */
 const RING_GAMES = [
-  { table: "Kurtis's Table 4", club: '104829', game: 'NLH',  blinds: '5 / 10',   buyin: '300–1,000', seats: '6-max', players: 6, hands: 412, rake: 1_840, insurance: 210, ev: -60, bbj: 92,  status: 'Live',      opened: '26 Jul 12:04', created: 'Manual' },
-  { table: 'Rail Room PLO',    club: '218847', game: 'PLO4', blinds: '2 / 4',    buyin: '120–400',   seats: '6-max', players: 5, hands: 268, rake: 980,   insurance: 140, ev: -40, bbj: 49,  status: 'Live',      opened: '26 Jul 13:18', created: 'Template' },
-  { table: 'Friday Night NLH', club: '104829', game: 'NLH',  blinds: '1 / 2',    buyin: '60–200',    seats: '9-max', players: 9, hands: 604, rake: 1_240, insurance: 90,  ev: -20, bbj: 62,  status: 'Live',      opened: '26 Jul 09:40', created: 'Recurring' },
-  { table: 'High Tide Short',  club: '337102', game: 'NLH',  blinds: '5 / 5',    buyin: '250–800',   seats: '6-max', players: 4, hands: 188, rake: 720,   insurance: 60,  ev: -10, bbj: 36,  status: 'Live',      opened: '26 Jul 13:52', created: 'Manual' },
-  { table: 'Deep Stack 5-10',  club: '104829', game: 'NLH',  blinds: '5 / 10',   buyin: '1,000–3,000', seats: '6-max', players: 0, hands: 892, rake: 3_640, insurance: 410, ev: -120, bbj: 182, status: 'Closed',   opened: '25 Jul 20:10', created: 'Manual' },
-  { table: 'PLO5 Splash',      club: '218847', game: 'PLO5', blinds: '1 / 2',    buyin: '80–400',    seats: '8-max', players: 0, hands: 476, rake: 1_420, insurance: 180, ev: -50, bbj: 71,  status: 'Closed',    opened: '25 Jul 18:22', created: 'Template' },
-  { table: 'Riverboat Micros', club: '415663', game: 'NLH',  blinds: '0.5 / 1',  buyin: '30–100',    seats: '9-max', players: 0, hands: 318, rake: 410,   insurance: 30,  ev: -10, bbj: 21,  status: 'Closed',    opened: '25 Jul 16:05', created: 'Recurring' },
-  { table: 'Chair Game 1',     club: '780331', game: 'NLH',  blinds: '0.25 / 0.5', buyin: '20–60',   seats: '6-max', players: 0, hands: 142, rake: 120,   insurance: 0,   ev: 0,   bbj: 6,   status: 'Closed',    opened: '24 Jul 21:30', created: 'Manual' },
-  { table: 'Aces NLH (no rake)', club: '896074', game: 'NLH', blinds: '1 / 2',   buyin: '50–200',    seats: '6-max', players: 3, hands: 96,  rake: null,  insurance: 0,   ev: 0,   bbj: 0,   status: 'Live',      opened: '26 Jul 14:10', created: 'Manual' },
-  { table: 'Waiting — PLO6',   club: '104829', game: 'PLO6', blinds: '2 / 4',    buyin: '120–400',   seats: '7-max', players: 1, hands: 0,   rake: 0,     insurance: 0,   ev: 0,   bbj: 0,   status: 'Waiting',   opened: '26 Jul 14:16', created: 'Auto-waiting' }
+  { table: "Kurtis's Table 4", club: '104829', game: 'NLH',  blinds: '5 / 10',   buyin: '300–1,000', seats: '6-max', players: 6, hands: 412, rake: 1_840, insurance: 210, ev: -60, bbj: 92, bbjPayout: 0,  status: 'Live',      opened: '26 Jul 12:04', created: 'Manual' },
+  { table: 'Rail Room PLO',    club: '218847', game: 'PLO4', blinds: '2 / 4',    buyin: '120–400',   seats: '6-max', players: 5, hands: 268, rake: 980,   insurance: 140, ev: -40, bbj: 49, bbjPayout: 0,  status: 'Live',      opened: '26 Jul 13:18', created: 'Template' },
+  { table: 'Friday Night NLH', club: '104829', game: 'NLH',  blinds: '1 / 2',    buyin: '60–200',    seats: '9-max', players: 9, hands: 604, rake: 1_240, insurance: 90,  ev: -20, bbj: 62, bbjPayout: 0,  status: 'Live',      opened: '26 Jul 09:40', created: 'Recurring' },
+  { table: 'High Tide Short',  club: '337102', game: 'NLH',  blinds: '5 / 5',    buyin: '250–800',   seats: '6-max', players: 4, hands: 188, rake: 720,   insurance: 60,  ev: -10, bbj: 36, bbjPayout: 0,  status: 'Live',      opened: '26 Jul 13:52', created: 'Manual' },
+  { table: 'Deep Stack 5-10',  club: '104829', game: 'NLH',  blinds: '5 / 10',   buyin: '1,000–3,000', seats: '6-max', players: 0, hands: 892, rake: 3_640, insurance: 410, ev: -120, bbj: 182, bbjPayout: 0, status: 'Closed',   opened: '25 Jul 20:10', created: 'Manual' },
+  { table: 'PLO5 Splash',      club: '218847', game: 'PLO5', blinds: '1 / 2',    buyin: '80–400',    seats: '8-max', players: 0, hands: 476, rake: 1_420, insurance: 180, ev: -50, bbj: 71, bbjPayout: 0,  status: 'Closed',    opened: '25 Jul 18:22', created: 'Template' },
+  { table: 'Riverboat Micros', club: '415663', game: 'NLH',  blinds: '0.5 / 1',  buyin: '30–100',    seats: '9-max', players: 0, hands: 318, rake: 410,   insurance: 30,  ev: -10, bbj: 21, bbjPayout: 0,  status: 'Closed',    opened: '25 Jul 16:05', created: 'Recurring' },
+  { table: 'Chair Game 1',     club: '780331', game: 'NLH',  blinds: '0.25 / 0.5', buyin: '20–60',   seats: '6-max', players: 0, hands: 142, rake: 120,   insurance: 0,   ev: 0,   bbj: 6, bbjPayout: 0,   status: 'Closed',    opened: '24 Jul 21:30', created: 'Manual' },
+  { table: 'Aces NLH (no rake)', club: '896074', game: 'NLH', blinds: '1 / 2',   buyin: '50–200',    seats: '6-max', players: 3, hands: 96,  rake: null,  insurance: 0,   ev: 0,   bbj: 0, bbjPayout: 0,   status: 'Live',      opened: '26 Jul 14:10', created: 'Manual' },
+  { table: 'Waiting — PLO6',   club: '104829', game: 'PLO6', blinds: '2 / 4',    buyin: '120–400',   seats: '7-max', players: 1, hands: 0,   rake: 0,     insurance: 0,   ev: 0,   bbj: 0, bbjPayout: 0,   status: 'Waiting',   opened: '26 Jul 14:16', created: 'Auto-waiting' }
 ];
 
 /* ── Games: tournaments (MTT) ─────────────────────────────────────── */
