@@ -42,16 +42,16 @@ Based on
 with the nav changes noted underneath.
 
 - **Activity** — Clubs → *Club Detail*, Members → *Member Detail*
-- **Restrictions** — Club Stakes **(New)**, Member Stakes, Club Stop Limits, Member Stop Limits **(New)**
+- **Game Restrictions** — Club Stakes **(New)**, Member Stakes, Club Stop Limits, Member Stop Limits **(New)**
 - **Chips & Credits** — Club & Agent Credits, Member Chips, Tournament Tickets
-- **Games** — Ring Games, Tournaments, SNGs, Templates, Recurring Games
+- **Game Setup** — Ring Games, Tournaments, SNGs, Templates, Recurring Games
 - **Promotions** — Leaderboards, Bad Beat Jackpot, Announcements
 
 Differences from the nav doc, all deliberate:
 
-- **Activity History → Activity** and **Policing & Restrictions → Restrictions.** Shorter, and
-  "policing" carried more enforcement connotation than the pages warrant. Route paths follow
-  (`#/restrictions/…`).
+- **Activity History → Activity**, **Policing & Restrictions → Game Restrictions**, **Games → Game
+  Setup.** "Policing" carried more enforcement connotation than the pages warrant, and "Game Setup" says
+  that category configures games rather than reporting on them. Route paths follow (`#/restrictions/…`).
 - **Restrict Game & Access → Stakes.** Both pages set min/max blinds and buy-ins, so "Club Stakes" and
   "Member Stakes" say it in a third of the characters.
 - **Chips & Credits splits by how far the value reaches.** *Club & Agent Credits* covers ClubGG's Union
@@ -112,7 +112,7 @@ These are the points flagged as load-bearing in the brief and the nav doc:
 
 - The portal opens on the **union overview** — the club list, titled with the union name. Clicking
   *Union Admin Portal* top-left returns there from anywhere, and every breadcrumb is rooted in it.
-  Categories (Activity, Games, …) organise the left nav only; they never appear in breadcrumbs.
+  Categories (Activity, Game Setup, …) organise the left nav only; they never appear in breadcrumbs.
 - Row-click drill-down: Clubs → Club Detail, Members → Member Detail
 - **Detail pages** put identity, current-state figures and the editable fields in a **persistent header**
   — nothing about who a member is sits behind a tab. Below it, one date range governs the summary *and*
@@ -193,3 +193,13 @@ In fact ClubGG lets the union restrict both clubs and members, and lets a club r
 That matters because it was the stated basis for marking Club Stakes as New — which is why
 this prototype now describes that page as a new *place* for existing controls rather than a new
 capability.
+
+## Summary cards
+
+Overview cards state a figure with its own unit rather than a big number plus a caption explaining what
+it counts — `8 clubs · 801 members`, not `8` over "801 members". No card repeats "selected period"; the
+whole page is the selected period, and saying it on one card implies it does not apply to the others.
+
+Export CSV sits inside the filter row on list pages and beside the date range on detail pages. Both are
+the same rule: next to the controls that scope what would be exported, never floating at the far right
+where it goes unread.

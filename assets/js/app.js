@@ -2,17 +2,16 @@
    Nav structure, hash router, and the delegated interaction layer.
 
    Based on "Union Admin Portal: Navigation Hierarchy & Terminology", with
-   category names shortened since (Activity History → Activity, Policing &
-   Restrictions → Restrictions) and Chips & Credits split into a club link
-   and a member link instead of one page with tabs.
+   category names revised since: Activity History → Activity, Policing &
+   Restrictions → Game Restrictions, Games → Game Setup. Chips & Credits is
+   split three ways by how far each value travels.
 
    Club Detail and Member Detail have no left-nav entry — both are row-click
    only, which is the fix for ClubGG's two unopenable nav items.
    =================================================================== */
 
-/* Category headings are plain labels — not numbered, not collapsible, no
-   bullets on the links. Chips & Credits is a standalone link, not a
-   clickable category. */
+/* Category headings are plain labels — not numbered, not collapsible, and
+   the links carry no bullets. */
 const NAV = [
   {
     title: 'Activity', items: [
@@ -21,7 +20,7 @@ const NAV = [
     ]
   },
   {
-    title: 'Restrictions', items: [
+    title: 'Game Restrictions', items: [
       { label: 'Club Stakes', route: 'restrictions/club-stakes', isNew: true },
       { label: 'Member Stakes', route: 'restrictions/member-stakes' },
       { label: 'Club Stop Limits', route: 'restrictions/club-stop-limits' },
@@ -38,7 +37,7 @@ const NAV = [
     ]
   },
   {
-    title: 'Games', items: [
+    title: 'Game Setup', items: [
       { label: 'Ring Games', route: 'games/ring' },
       { label: 'Tournaments', route: 'games/mtt' },
       { label: 'SNGs', route: 'games/sng' },

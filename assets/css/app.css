@@ -487,6 +487,25 @@ body {
 }
 .stat-meta { font-size: 11px; color: var(--text-3); margin-top: 1px; }
 
+/* Two figures, each with its own unit, when one big number would be
+   ambiguous without a caption explaining what it counts. */
+.stat-pair {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 3px 7px;
+  margin-top: 3px;
+}
+.pair { display: inline-flex; align-items: baseline; gap: 4px; }
+.pair-n {
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -.3px;
+  font-variant-numeric: tabular-nums;
+}
+.pair-u { font-size: 11px; color: var(--text-2); }
+.pair-sep { color: var(--text-3); }
+
 /* ── Filter bar ───────────────────────────────────────────────────── */
 .filters {
   display: flex;
@@ -523,7 +542,8 @@ body {
 .field select:focus, .field input:focus { border-color: var(--accent-line); }
 .field-grow { flex: 1 1 190px; }
 .field-grow input { width: 100%; min-width: 0; }
-.filters-end { margin-left: auto; display: flex; gap: 7px; align-items: flex-end; }
+/* Sits with the fields, not pushed to the far edge where it goes unseen */
+.filters-end { display: flex; gap: 7px; align-items: flex-end; }
 
 /* segmented control */
 .seg {

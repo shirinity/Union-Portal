@@ -85,9 +85,22 @@ const stats = items => `
     ${items.map(s => `
       <div class="stat">
         <div class="stat-label">${esc(s.label)}</div>
-        <div class="stat-value">${s.value}</div>
+        ${s.pair ? statPair(s.pair) : `<div class="stat-value">${s.value}</div>`}
         ${s.meta ? `<div class="stat-meta">${s.meta}</div>` : ''}
       </div>`).join('')}
+  </div>`;
+
+/**
+ * Two figures in one card, each carrying its own unit — for cards where a
+ * single big number would be ambiguous without reading a caption to find
+ * out what it counts. `parts` is [{ value, unit, gold }].
+ */
+const statPair = parts => `
+  <div class="stat-pair">
+    ${parts.map(p => `<span class="pair">
+        <span class="pair-n${p.gold ? ' gold' : ''}">${n(p.value)}</span>
+        <span class="pair-u">${esc(p.unit)}</span>
+      </span>`).join('<span class="pair-sep" aria-hidden="true">·</span>')}
   </div>`;
 
 const note = (body, kind = 'info', icon = 'ℹ') => `

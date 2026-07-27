@@ -24,8 +24,9 @@ const PAGES = {};
 const unionSummary = () => {
   const T = UNION_TOTALS;
   return stats([
-    { label: 'Clubs & members', value: n(T.clubs), meta: `${n(T.members)} members · ${n(CLUBS.filter(c => c.status === 'Suspended').length)} club suspended` },
-    { label: 'Outstanding', value: `<span class="gold">${n(T.credits)}</span>`, meta: `credits with clubs · ${n(T.chips)} chips with members` },
+    { label: 'Union', pair: [{ value: T.clubs, unit: 'clubs' }, { value: T.members, unit: 'members' }],
+      meta: `${n(CLUBS.filter(c => c.status === 'Suspended').length)} club suspended` },
+    { label: 'Outstanding', pair: [{ value: T.credits, unit: 'club credits', gold: true }, { value: T.chips, unit: 'member chips' }] },
     { label: 'Games', value: n(T.games), meta: `${n(T.gamesRing)} ring · ${n(T.gamesMtt)} tournament` },
     { label: 'Hands', value: n(T.hands), meta: `${n(T.handsNlh)} NLH · ${n(T.handsPlo)} PLO` },
     { label: 'Union total', value: n(T.unionTotal), meta: `${n(T.rake)} rake · ${n(T.fees)} fees` }
@@ -74,22 +75,19 @@ PAGES['activity/clubs'] = () => {
   return pageHead({
     title: UNION.name,
     badges: [badge(`Master club · ${masterClub.name}`, 'gold')],
-    sub: `Union overview — where the portal opens. Signed in as the Union Owner, so everything in the union is in scope, for the period selected below.`,
+    sub: `Union overview — where the portal opens. Signed in as the Union Owner, so everything in the union
+          is in scope, for the period selected below. This list absorbs what ClubGG split out as
+          <strong>Club Revenue</strong> under Report.`,
     actions: [btn('Union settings')]
   })
   + unionSummary()
-  + sectionHead('Clubs', 'Click a row to open a club')
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Club name or 6-digit ID…', grow: true },
     { label: 'Date range', type: 'select', options: DATE_PRESETS },
     { label: 'Status', type: 'select', options: ['All statuses', 'Active', 'Suspended'] },
     { label: 'Union game authority', type: 'select', options: ['Any', 'Granted', 'Not granted'] }
-  ])
-  + card({
-    actions: [exportBtn()],
-    hint: `Absorbs what ClubGG split out as <strong>Club Revenue</strong> under Report.`,
-    body: dataTable({ cols, rows, foot, chevron: true })
-  })
+  ], [exportBtn()])
+  + card({ body: dataTable({ cols, rows, foot, chevron: true }) })
   + note(`<strong>Non-master clubs see a narrower version of this list.</strong> A club Owner or Manager outside the master club can see only club name, club ID, club owner, active players, hands, insurance, EV cashout and P&amp;L for other clubs — not credits, member counts by role, rake, fees or BBJ.`, 'warn', '⚠')
   + note(`<strong>Club ID</strong> is shown as 6 digits, numbers only — the format decided in Union Admin Features. Today's IDs are 8 characters mixing letters and numbers.`, 'info');
 };
@@ -311,13 +309,8 @@ PAGES['activity/members'] = () => {
     { label: 'Role', type: 'select', options: ROLE_OPTIONS },
     { label: 'Date range', type: 'select', options: DATE_PRESETS },
     { label: 'Portal access', type: 'select', options: ['Any', 'Granted', 'Not granted'] }
-  ])
-  + card({
-    title: 'All members',
-    hint: 'Click a row to open Member Detail',
-    actions: [exportBtn()],
-    body: dataTable({ cols, rows, foot, chevron: true })
-  });
+  ], [exportBtn()])
+  + card({ body: dataTable({ cols, rows, foot, chevron: true }) });
 };
 
 /* ── Member Detail ────────────────────────────────────────────────── */
