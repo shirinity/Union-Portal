@@ -22,7 +22,7 @@ const NAV = [
   {
     title: 'Game Restrictions', items: [
       { label: 'Club Stakes', route: 'restrictions/club-stakes', isNew: true },
-      { label: 'Member Stakes', route: 'restrictions/member-stakes' },
+      { label: 'Member Stakes', route: 'restrictions/member-stakes', isNew: true },
       { label: 'Club Stop Limits', route: 'restrictions/club-stop-limits' },
       { label: 'Member Stop Limits', route: 'restrictions/member-stop-limits', isNew: true }
     ]

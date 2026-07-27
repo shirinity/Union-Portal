@@ -42,7 +42,7 @@ Based on
 with the nav changes noted underneath.
 
 - **Activity** — Clubs → *Club Detail*, Members → *Member Detail*
-- **Game Restrictions** — Club Stakes **(New)**, Member Stakes, Club Stop Limits, Member Stop Limits **(New)**
+- **Game Restrictions** — Club Stakes **(New)**, Member Stakes **(New)**, Club Stop Limits, Member Stop Limits **(New)**
 - **Chips & Credits** — Club & Agent Credits, Member Chips, Tournament Tickets
 - **Game Setup** — Ring Games, Tournaments, SNGs, Templates, Recurring Games
 - **Promotions** — Leaderboards, Bad Beat Jackpot, Announcements
@@ -71,13 +71,13 @@ shell; Member Information throws "Oh snap! Please click the specific member on t
 
 These are the points flagged as load-bearing in the brief and the nav doc:
 
-- **The two "New" badges do not mean the same thing, and each page says which it is.**
-  *Member Stop Limits* is a new **capability** — ClubGG has stop limits at club tier only, so this cannot
-  be done today at all. *Club Stakes* is a new **page**, not a new capability: ClubGG
-  already lets a union restrict clubs and members, and lets a club restrict its own members. What changes
-  is where those controls live — pulled out of buried detail pages onto one standalone, cross-club page.
-  Worth deciding whether one badge should cover both cases. Everything else in the nav is a rename, a
-  merge, or a straight port.
+- **The "New" badges do not all mean the same thing, and each page says which it is.**
+  *Member Stop Limits* is a new **capability** — ClubGG has stop limits at club tier only, so it cannot be
+  done today at all. *Club Stakes* and *Member Stakes* are new **pages**, not new capabilities: ClubGG
+  already lets a union restrict clubs and members, and a club restrict its own members, but only from
+  inside a detail view, one at a time. What changes is that every club's or member's stakes can now be
+  seen and set side by side. Worth deciding whether one badge should cover both cases. Everything else in
+  the nav is a rename, a merge, or a straight port.
 - **Detail pages carry no restriction controls.** Club Detail and Member Detail are scoped to activity,
   history and security. Both show a callout linking out to Restrictions, so a reviewer can
   see the move was intentional rather than an omission.

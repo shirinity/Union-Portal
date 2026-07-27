@@ -644,7 +644,7 @@ PAGES['restrictions/club-stakes'] = () => {
     isNew: true,
     sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, set per club. The Union Owner sets a <strong>ceiling</strong>; the club's own Owner or Manager then narrows within it — they can never widen it.`
   })
-  + note(`<strong>New page, not a new capability.</strong> ClubGG already does all of this — the union can restrict clubs and members, and a club can restrict its own members. What is new is <em>where it lives</em>: these controls are pulled out of buried detail pages and given one standalone, cross-club page. Contrast <a href="#/restrictions/member-stop-limits">Member Stop Limits</a>, which is a capability ClubGG genuinely lacks.`, 'new', '✦')
+  + note(`<strong>New page, not a new capability.</strong> ClubGG already does all of this — the union can restrict clubs and members, and a club can restrict its own members. What is new is <em>where it lives</em>: pulled out of buried detail views into one standalone, cross-club page. Same story as <a href="#/restrictions/member-stakes">Member Stakes</a>; contrast <a href="#/restrictions/member-stop-limits">Member Stop Limits</a>, which is a capability ClubGG genuinely lacks.`, 'new', '✦')
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Club name or ID…', grow: true },
     { label: 'Ceiling', type: 'select', options: ['Any', 'Set', 'Not set'] }
@@ -730,8 +730,10 @@ PAGES['restrictions/member-stakes'] = () => {
 
   return pageHead({
     title: 'Member Stakes',
+    isNew: true,
     sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, per member. ClubGG calls this <strong>Restrict Access to Game</strong>. Every range is narrowed within whatever ceiling the club — or the member's own upline — has already set.`
   })
+  + note(`<strong>New page, not a new capability.</strong> ClubGG already lets a club restrict its own members — but only from inside that member's detail view, one member at a time. What is new is pulling it out into a standalone page where every member's stakes can be seen and set side by side. Same story as <a href="#/restrictions/club-stakes">Club Stakes</a>; contrast <a href="#/restrictions/member-stop-limits">Member Stop Limits</a>, which is a capability ClubGG genuinely lacks.`, 'new', '✦')
   + note(`A Super Agent or Agent can set these for their own downline only, and <strong>never looser than their own upline's ceiling</strong>. The ceiling in force is shown under each member's NLH range, and how far a setting cascades is shown under their role.`, 'info')
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Nickname or member ID…', grow: true },
