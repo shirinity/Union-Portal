@@ -92,6 +92,12 @@ These are the points flagged as load-bearing in the brief and the nav doc:
 - **Chips & Credits is two pages, not four.** They replace Union Counter, Agent Counter, Member Counter
   and Send Ticket, which all shared the same pattern: filterable recipient list, multi-select, send
   action, running total, History tab.
+- **A union has no credit balance.** It can issue as many credits as it likes, so there is no treasury
+  figure anywhere — ClubGG's prominent union balance is a red herring. What the page reports instead is
+  what is *outstanding*: credits sitting with clubs, and chips sitting with members.
+- **Clubs and Agents are the same view twice.** Both recipient tables read Name · (Status | Role) ·
+  (Members | Downline) · Credits dispersed, so switching tabs costs no re-reading. "Dispersed" and
+  "allocated" are one bar with one label, not two columns repeating the same number.
 
 ## What works when you click
 
@@ -107,6 +113,11 @@ These are the points flagged as load-bearing in the brief and the nav doc:
   grouped by device to show multi-accounting. Nicknames in the popup navigate to that member.
 - Tabs on the detail pages and on both Chips & Credits pages
 - Cross-links — club names, member nicknames and the restriction callouts all navigate
+- **Settings tables render read-only.** On Stop Limits and Stakes, the value fields are locked until you
+  press **Edit** on that row; Edit becomes **Confirm** and a **Cancel** appears, which restores the
+  original values. The action column stays pinned to the right so it never scrolls out of reach.
+- **Transfers show before-and-after.** Every send flow lists each selected recipient's current balance,
+  the change, and the resulting balance, rather than only a running total.
 - Toggle switches, segmented controls and checkboxes flip visually
 - Light / dark theme toggle (persists; defaults to your OS preference)
 - Breadcrumbs, deep-linkable URLs, browser back/forward

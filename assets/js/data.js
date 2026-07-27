@@ -14,12 +14,13 @@
      the role and the club's owner account, not the union's primary club.
    =================================================================== */
 
+/* A union has no finite pot of credits to hand out — it can issue as many as
+   it likes. What matters is what is *outstanding*: credits sitting with clubs
+   and chips sitting with members. So there is no union balance here. */
 const UNION = {
   name: 'Bellota Labs Union',
   masterClubId: '104829',
   unionOwner: 'kurtis_c',
-  unionCredits: 4_820_000,
-  creditsIssued: 3_147_500,
   asOf: '26 Jul 2026, 14:20 PT'
 };
 
@@ -27,56 +28,56 @@ const UNION = {
 const CLUBS = [
   {
     id: '104829', name: 'Bellota Labs Home Game', owner: 'kurtis_c', isMasterClub: true,
-    joined: '2025-11-04', credits: 1_240_000, managers: 3, superAgents: 4, agents: 11, players: 214,
+    joined: '2025-11-04', credits: 1_240_000, chipsOut: 292_560, managers: 3, superAgents: 4, agents: 11, players: 214,
     hands: 148_920, rake: 62_480, fees: 9_240, insurance: 4_110, evCashout: -1_860, bbj: 3_720,
     pnl: 58_210, status: 'Active', unionGameAuthority: true, rakePct: '4% · 3 BB cap',
     notes: 'Master club. Highest-volume NLH traffic in the union — flagged as the reference club for the new stop-limit rollout.'
   },
   {
     id: '218847', name: 'Vegas Rail Room', owner: 'd_moreno', isMasterClub: false,
-    joined: '2025-12-18', credits: 486_500, managers: 2, superAgents: 3, agents: 8, players: 137,
+    joined: '2025-12-18', credits: 486_500, chipsOut: 128_500, managers: 2, superAgents: 3, agents: 8, players: 137,
     hands: 92_340, rake: 38_760, fees: 6_180, insurance: 2_940, evCashout: -1_120, bbj: 2_310,
     pnl: 34_890, status: 'Active', unionGameAuthority: true, rakePct: '4% · 3 BB cap',
     notes: 'Requested union-game authority in Feb; granted. Runs the Tuesday PLO series.'
   },
   {
     id: '337102', name: 'High Tide Poker', owner: 'a_tanaka', isMasterClub: false,
-    joined: '2026-01-09', credits: 312_000, managers: 1, superAgents: 2, agents: 6, players: 98,
+    joined: '2026-01-09', credits: 312_000, chipsOut: 94_700, managers: 1, superAgents: 2, agents: 6, players: 98,
     hands: 61_070, rake: 24_120, fees: 4_460, insurance: 1_780, evCashout: -640, bbj: 1_530,
     pnl: 22_180, status: 'Active', unionGameAuthority: false, rakePct: '3.5% · 3 BB cap',
     notes: 'Short-deck heavy roster. No union-game authority — all tables run by the master club.'
   },
   {
     id: '415663', name: 'Riverboat Social', owner: 'j_beaumont', isMasterClub: false,
-    joined: '2026-02-02', credits: 268_400, managers: 2, superAgents: 1, agents: 5, players: 86,
+    joined: '2026-02-02', credits: 268_400, chipsOut: 71_200, managers: 2, superAgents: 1, agents: 5, players: 86,
     hands: 47_650, rake: 18_940, fees: 3_120, insurance: 1_240, evCashout: -410, bbj: 1_180,
     pnl: 17_360, status: 'Active', unionGameAuthority: false, rakePct: '4% · 3 BB cap',
     notes: ''
   },
   {
     id: '552918', name: 'Neon Sunset Club', owner: 'm_kovacs', isMasterClub: false,
-    joined: '2026-02-21', credits: 194_800, managers: 1, superAgents: 2, agents: 4, players: 71,
+    joined: '2026-02-21', credits: 194_800, chipsOut: 58_300, managers: 1, superAgents: 2, agents: 4, players: 71,
     hands: 38_210, rake: 15_380, fees: 2_640, insurance: 980, evCashout: -300, bbj: 940,
     pnl: 13_970, status: 'Suspended', unionGameAuthority: false, rakePct: '4% · 3 BB cap',
     notes: 'Weekly loss limit tripped 24 Jul — buy-ins blocked pending union re-approval.'
   },
   {
     id: '671245', name: 'Backdoor Straight', owner: 'r_singh', isMasterClub: false,
-    joined: '2026-03-14', credits: 148_200, managers: 1, superAgents: 1, agents: 3, players: 58,
+    joined: '2026-03-14', credits: 148_200, chipsOut: 39_600, managers: 1, superAgents: 1, agents: 3, players: 58,
     hands: 29_480, rake: 11_640, fees: 1_980, insurance: 720, evCashout: -180, bbj: 690,
     pnl: 10_540, status: 'Active', unionGameAuthority: false, rakePct: '3% · 2 BB cap',
     notes: ''
   },
   {
     id: '780331', name: 'Chip & Chair', owner: 'l_chen', isMasterClub: false,
-    joined: '2026-04-28', credits: 96_400, managers: 1, superAgents: 0, agents: 2, players: 41,
+    joined: '2026-04-28', credits: 96_400, chipsOut: 22_800, managers: 1, superAgents: 0, agents: 2, players: 41,
     hands: 18_760, rake: 7_240, fees: 1_180, insurance: 430, evCashout: -90, bbj: 410,
     pnl: 6_580, status: 'Active', unionGameAuthority: false, rakePct: '3% · 2 BB cap',
     notes: ''
   },
   {
     id: '896074', name: 'Aces Over Kings', owner: 't_okafor', isMasterClub: false,
-    joined: '2026-06-11', credits: 42_800, managers: 1, superAgents: 0, agents: 1, players: 23,
+    joined: '2026-06-11', credits: 42_800, chipsOut: 8_100, managers: 1, superAgents: 0, agents: 1, players: 23,
     hands: 8_140, rake: 3_180, fees: 520, insurance: 190, evCashout: -40, bbj: 170,
     pnl: 2_840, status: 'Active', unionGameAuthority: false, rakePct: 'No rake',
     notes: 'Newest club in the union. Rake set to 0 while they build a roster.'
@@ -444,6 +445,10 @@ const CHIP_BUDGET = {
   clubBudget: 400_000,
   clubSpent: 268_400,
   agentAllocations: [
+    /* creditLimit = how far this agent's balance may go negative before
+       buy-ins are cut off. Real per the Chip Management spec, but shown as a
+       bare negative number it reads as a mistake, so it is not surfaced as a
+       column. Give it an unambiguous label before bringing it back. */
     { nick: 'sa_delacruz', role: 'Super Agent', budget: 150_000, spent: 118_400, creditLimit: -25_000 },
     { nick: 'ag_novak',    role: 'Agent',       budget: 60_000,  spent: 46_200,  creditLimit: -10_000 },
     { nick: 'sa_ferreira', role: 'Super Agent', budget: 100_000, spent: 74_900,  creditLimit: -20_000 }

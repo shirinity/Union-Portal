@@ -265,11 +265,46 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && $modal.innerHTML) closeModal();
 });
 
+/* ── Row edit / confirm ───────────────────────────────────────────── */
+/* Settings tables render read-only. Edit unlocks the row's fields and turns
+   itself into Confirm; Cancel restores the original values. */
+function setRowEditing(tr, on) {
+  tr.classList.toggle('is-editing', on);
+  tr.querySelectorAll('input:not([type="checkbox"])').forEach(i => { i.readOnly = !on; });
+  const edit = tr.querySelector('[data-edit-row]');
+  const cancel = tr.querySelector('[data-cancel-row]');
+  if (edit) {
+    edit.textContent = on ? 'Confirm' : 'Edit';
+    edit.classList.toggle('btn-primary', on);
+  }
+  if (cancel) cancel.hidden = !on;
+}
+
+$page.addEventListener('click', e => {
+  const edit = e.target.closest('[data-edit-row]');
+  if (edit) {
+    const tr = edit.closest('tr');
+    const wasEditing = tr.classList.contains('is-editing');
+    setRowEditing(tr, !wasEditing);
+    if (!wasEditing) tr.querySelector('input:not([type="checkbox"])')?.focus();
+    else toast('Saved — in a real build. Nothing persists in the prototype.');
+    return;
+  }
+
+  const cancel = e.target.closest('[data-cancel-row]');
+  if (cancel) {
+    const tr = cancel.closest('tr');
+    /* defaultValue is the value the row rendered with */
+    tr.querySelectorAll('input:not([type="checkbox"])').forEach(i => { i.value = i.defaultValue; });
+    setRowEditing(tr, false);
+  }
+});
+
 /* Mock buttons: say plainly that nothing is wired up rather than
-   looking broken. Real navigation and filters are unaffected. */
+   looking broken. Real navigation, filters and row editing are unaffected. */
 $page.addEventListener('click', e => {
   const b = e.target.closest('.btn');
-  if (!b) return;
+  if (!b || b.hasAttribute('data-edit-row') || b.hasAttribute('data-cancel-row')) return;
   toast(`“${b.textContent.trim()}” isn't wired up — this is a click-through prototype.`);
 });
 

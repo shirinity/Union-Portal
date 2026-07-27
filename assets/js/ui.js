@@ -244,13 +244,25 @@ const idCell = v => `<span class="id">${esc(v)}</span>`;
 const rangeCell = (range, { unit = '', ceiling = '', group = false } = {}) => {
   if (!range) return '<span class="muted">Not set</span>';
   const fmt = v => group ? Number(v).toLocaleString('en-US') : v;
+  /* readonly by default — the row's Edit button unlocks it. */
   return `<span class="range-cell${group ? ' is-wide' : ''}">
-      <input value="${esc(fmt(range[0]))}" aria-label="Minimum">
+      <input value="${esc(fmt(range[0]))}" aria-label="Minimum" readonly>
       <span class="to">–</span>
-      <input value="${esc(fmt(range[1]))}" aria-label="Maximum">
+      <input value="${esc(fmt(range[1]))}" aria-label="Maximum" readonly>
       ${unit ? `<span class="to">${esc(unit)}</span>` : ''}
     </span>${ceiling ? `<span class="ceiling">${esc(ceiling)}</span>` : ''}`;
 };
+
+/**
+ * Row-level edit affordance. Fields in the row stay read-only until Edit is
+ * pressed; Edit then becomes Confirm and a Cancel appears beside it.
+ * `extra` takes any additional per-row action, e.g. Reset.
+ */
+const editCell = (extra = '') => `<span class="inline-actions">
+    <button class="btn btn-sm" data-edit-row>Edit</button>
+    <button class="btn btn-sm" data-cancel-row hidden>Cancel</button>
+    ${extra}
+  </span>`;
 
 const meter = (used, cap, label) => {
   const p = pct(used, cap);

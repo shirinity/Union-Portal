@@ -403,6 +403,8 @@ body {
   white-space: nowrap;
 }
 .btn:hover { border-color: var(--accent-line); background: var(--surface-2); }
+/* display:inline-flex would otherwise beat the UA [hidden] rule */
+.btn[hidden] { display: none; }
 .btn-primary {
   background: var(--accent);
   border-color: var(--accent);
@@ -772,6 +774,32 @@ input[type="checkbox"].chk {
 }
 .range-cell input:focus { border-color: var(--accent-line); }
 .range-cell.is-wide input { width: 76px; }
+
+/* Read-only until the row is put into edit mode — a settings table should
+   not look like a form full of live inputs. */
+.range-cell input[readonly] {
+  border-color: transparent;
+  background: none;
+  cursor: default;
+  color: var(--text);
+}
+/* On wide settings tables the Edit control must stay reachable. */
+table.data th.sticky-end,
+table.data td.sticky-end {
+  position: sticky;
+  right: 0;
+  background: var(--surface);
+  box-shadow: -1px 0 0 var(--line-soft);
+}
+table.data thead th.sticky-end { background: var(--surface-2); z-index: 2; }
+table.data tbody tr:hover td.sticky-end { background: var(--surface-2); }
+
+tr.is-editing { background: var(--accent-soft); }
+tr.is-editing td.sticky-end { background: var(--accent-soft); }
+tr.is-editing .range-cell input {
+  border-color: var(--accent-line);
+  background: var(--surface);
+}
 .ceiling { font-size: 10.5px; color: var(--text-3); display: block; margin-top: 1px; font-family: var(--sans); }
 
 /* ── Meter bar ────────────────────────────────────────────────────── */
@@ -791,7 +819,18 @@ input[type="checkbox"].chk {
 .meter-text { font-size: 10.5px; color: var(--text-3); margin-top: 3px; font-family: var(--mono); }
 
 /* ── Recipient picker (Chips & Credits) ───────────────────────────── */
-.picker { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 14px; align-items: start; }
+.picker { display: grid; grid-template-columns: minmax(0, 1fr) 372px; gap: 14px; align-items: start; }
+
+/* Compact before/after table inside the transfer rail */
+table.data.confirm { font-size: 11.5px; }
+table.data.confirm th, table.data.confirm td { padding: 5px 7px; }
+table.data.confirm thead th { font-size: 9px; }
+table.data.confirm td.num { font-size: 11.5px; }
+table.data.confirm tbody tr:hover { background: none; }
+table.data.confirm { width: 100%; table-layout: fixed; }
+/* Let the name wrap so Now / Change / After always fit in the rail */
+table.data.confirm th:first-child,
+table.data.confirm td:first-child { white-space: normal; width: 34%; }
 @media (max-width: 1080px) { .picker { grid-template-columns: 1fr; } }
 
 .scope-strip {
@@ -923,12 +962,36 @@ input[type="checkbox"].chk {
 }
 .profile-top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 13px;
   flex-wrap: wrap;
   padding: 13px 14px;
 }
 .profile-actions { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.profile-ident { flex: 1 1 420px; min-width: 0; }
+
+/* Alias (short) + private note (paragraph) sit under the name. */
+.ident-fields {
+  display: grid;
+  grid-template-columns: minmax(140px, 210px) minmax(0, 1fr);
+  gap: 10px 14px;
+  margin-top: 10px;
+}
+@media (max-width: 720px) { .ident-fields { grid-template-columns: 1fr; } }
+.ident-fields textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.45;
+  resize: vertical;
+  outline: 0;
+}
+.ident-fields textarea:focus { border-color: var(--accent-line); }
 
 /* Key figures strip — current state, not period activity. */
 .profile-figures {
@@ -1006,7 +1069,6 @@ a.figure-value.is-link:hover { text-decoration: underline; }
   margin-bottom: 14px;
 }
 .daterange-note { font-size: 11.5px; color: var(--text-3); align-self: center; }
-.daterange-end { margin-left: auto; display: flex; gap: 7px; align-items: flex-end; }
 
 /* ── Modals ───────────────────────────────────────────────────────── */
 .modal-backdrop {

@@ -137,8 +137,7 @@ PAGES['activity/clubs/:id'] = id => {
       { label: 'Direction', type: 'select', options: ['Sent & reclaimed', 'Sent only', 'Reclaimed only'] }
     ])
     + card({
-      title: 'Chip & credit log',
-      hint: 'Sent shows red — it is a debt to the club; reclaimed shows green',
+            hint: 'Sent shows red — it is a debt to the club; reclaimed shows green',
       body: dataTable({
         cols: [{ label: 'Date / time' }, { label: 'Sender' }, { label: 'Recipient' }, { label: 'Type' },
           { label: 'Amount', cls: 'num' }, { label: 'Starting', cls: 'num' }, { label: 'Ending', cls: 'num' }],
@@ -230,8 +229,8 @@ PAGES['activity/clubs/:id'] = id => {
         <label class="field-label">Date range</label>
         <select>${DATE_PRESETS.map(d => `<option>${esc(d)}</option>`).join('')}</select>
       </div>
-      <span class="daterange-note">Applies to the summary and every tab below</span>
-      <div class="daterange-end">${exportBtn()}</div>
+      <div class="pf-static">${exportBtn()}</div>
+      <span class="daterange-note">Date range applies to the summary and every tab below</span>
     </div>`;
 
   return profile
@@ -318,7 +317,7 @@ PAGES['activity/members/:nick'] = nick => {
       { label: 'Stakes', type: 'select', options: ['All stakes', '0.5 / 1', '1 / 2', '2 / 4', '5 / 10'] }
     ])
     + card({
-      title: 'Ring game history', hint: 'One row per session — a buy-in-to-cash-out cycle',
+      hint: 'One row per session — a buy-in-to-cash-out cycle',
       body: dataTable({
         cols: [{ label: 'Date' }, { label: 'Table' }, { label: 'Stakes' }, { label: 'Game' },
           { label: 'Hands', cls: 'num' }, { label: 'Buy-in', cls: 'num' }, { label: 'Cash-out', cls: 'num' },
@@ -338,8 +337,7 @@ PAGES['activity/members/:nick'] = nick => {
     });
 
   const tourneyHistory = card({
-    title: 'Tournament history',
-    body: dataTable({
+        body: dataTable({
       cols: [{ label: 'Date' }, { label: 'Tournament' }, { label: 'Game' }, { label: 'Buy-in' },
         { label: 'Entries', cls: 'num' }, { label: 'Finish' }, { label: 'Prize', cls: 'num' }, { label: 'P&L', cls: 'num' }],
       rows: MEMBER_TOURNEY_HISTORY.map(r => ({
@@ -353,8 +351,7 @@ PAGES['activity/members/:nick'] = nick => {
   });
 
   const balanceHistory = card({
-    title: 'Balance history',
-    hint: 'Every change to this member\'s chip balance',
+        hint: 'Every change to this member\'s chip balance',
     body: dataTable({
       cols: [{ label: 'Date / time' }, { label: 'Actioned by' }, { label: 'Direction', cls: 'mid' },
         { label: 'Amount', cls: 'num' }, { label: 'Starting', cls: 'num' }, { label: 'Ending', cls: 'num' }, { label: 'Note' }],
@@ -368,8 +365,7 @@ PAGES['activity/members/:nick'] = nick => {
   }) + note(`From the member's point of view chips <em>sent</em> to them are green (credited) and <em>reclaimed</em> is red — the inverse of the club-side log, where a send is a debt to the club.`, 'info');
 
   const ticketHistory = card({
-    title: 'Ticket history',
-    hint: 'Tournament Tickets can arrive from any club in the union',
+        hint: 'Tournament Tickets can arrive from any club in the union',
     body: dataTable({
       cols: [{ label: 'Date / time' }, { label: 'Ticket' }, { label: 'Specified by' },
         { label: 'Value', cls: 'num' }, { label: 'Sent by' }, { label: 'Expires' }, { label: 'Status', cls: 'mid' }],
@@ -382,8 +378,7 @@ PAGES['activity/members/:nick'] = nick => {
 
   const loginHistory =
     card({
-      title: 'Login history',
-      body: dataTable({
+            body: dataTable({
         cols: [{ label: 'Date / time' }, { label: 'Device' }, { label: 'Platform' },
           { label: 'IP address' }, { label: 'Location' }, { label: 'Result', cls: 'mid' }],
         rows: MEMBER_LOGIN_HISTORY.map(r => ({
@@ -421,7 +416,7 @@ PAGES['activity/members/:nick'] = nick => {
     <div class="profile">
       <div class="profile-top">
         <div class="entity-avatar">${esc(initials)}</div>
-        <div>
+        <div class="profile-ident">
           <div class="entity-name">${esc(m.nick)}${roleTag(m.role)}${m.linked ? badge(`${m.linked} linked`, 'warn') : ''}</div>
           <div class="entity-meta">
             Member ID ${esc(m.id)} ·
@@ -429,10 +424,18 @@ PAGES['activity/members/:nick'] = nick => {
             joined ${esc(m.joined)} ·
             upline ${m.upline === '—' ? '<span class="muted">none</span>' : `<a class="rowlink" href="#/activity/members/${esc(m.upline)}">${esc(m.upline)}</a>`}
           </div>
-        </div>
-        <div class="profile-actions">
-          ${btn('Ban chat', { sm: true })}
-          ${btn('Remove from club', { sm: true, kind: 'danger' })}
+          <!-- Alias and note sit with the name: together they are the answer
+               to "who is this person", which is what the header is for. -->
+          <div class="ident-fields">
+            <div class="pf">
+              <label class="pf-label">Alias — member-written</label>
+              <input value="${esc(m.alias)}" placeholder="Not set">
+            </div>
+            <div class="pf">
+              <label class="pf-label">Private note — only you see this</label>
+              <textarea rows="2" placeholder="Add a note…">${esc(m.notes)}</textarea>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -442,7 +445,6 @@ PAGES['activity/members/:nick'] = nick => {
         ${figure('Last login', esc(m.lastLogin.split(',')[0]), m.lastLogin.split(', ')[1])}
         ${linkedFigure('Devices used', n(MEMBER_DEVICES.length), 'devices', 'view device IDs')}
         ${linkedFigure('Linked accounts', m.linked ? `<span class="neg">${n(m.linked)}</span>` : '0', 'linked', m.linked ? 'shared device' : 'none detected')}
-        ${figure('Chat', badge('Not banned', 'pos'))}
       </div>
 
       <div class="profile-fields">
@@ -454,13 +456,13 @@ PAGES['activity/members/:nick'] = nick => {
           <label class="pf-label">Portal access</label>
           <div class="pf-static">${toggle(m.bo, m.bo ? 'Granted' : 'Not granted')}</div>
         </div>
-        <div class="pf pf-wide">
-          <label class="pf-label">Alias — member-written</label>
-          <input value="${esc(m.alias)}" placeholder="Not set by the member">
+        <div class="pf">
+          <label class="pf-label">Chat</label>
+          <div class="pf-static">${toggle(true, 'Enabled')}</div>
         </div>
-        <div class="pf pf-wide">
-          <label class="pf-label">Private note — only you see this</label>
-          <input value="${esc(m.notes)}" placeholder="Add a note…">
+        <div class="pf">
+          <label class="pf-label">Membership</label>
+          <div class="pf-static">${btn('Remove from club', { sm: true, kind: 'danger' })}</div>
         </div>
       </div>
     </div>`;
@@ -480,8 +482,8 @@ PAGES['activity/members/:nick'] = nick => {
         <label class="field-label">Date range</label>
         <select>${DATE_PRESETS.map(d => `<option>${esc(d)}</option>`).join('')}</select>
       </div>
-      <span class="daterange-note">Applies to the summary and every tab below</span>
-      <div class="daterange-end">${exportBtn()}</div>
+      <div class="pf-static">${exportBtn()}</div>
+      <span class="daterange-note">Date range applies to the summary and every tab below</span>
     </div>`;
 
   return profile
@@ -575,7 +577,7 @@ PAGES['restrictions/club-stop-limits'] = () => {
         esc(s.updated),
         s.status === 'Suspended'
           ? `<span class="inline-actions">${btn('Re-approve', { sm: true, kind: 'primary' })}${btn('Reset', { sm: true })}</span>`
-          : actionCell('Edit', 'Reset')
+          : editCell(btn('Reset', { sm: true, kind: 'danger' }))
       ]
     };
   });
@@ -605,7 +607,7 @@ PAGES['restrictions/club-stop-limits'] = () => {
       cols: [
         { label: 'Club' }, { label: 'Win – loss limit' }, { label: 'Ring P&L, week', cls: 'num' },
         { label: 'Tourney, week', cls: 'num' }, { label: 'Fees count', cls: 'mid' },
-        { label: 'Progress' }, { label: 'Status', cls: 'mid' }, { label: 'Set by' }, { label: 'Updated' }, { label: '' }
+        { label: 'Progress' }, { label: 'Status', cls: 'mid' }, { label: 'Set by' }, { label: 'Updated' }, { label: '', cls: 'sticky-end' }
       ],
       rows
     })
@@ -622,24 +624,19 @@ PAGES['restrictions/club-stakes'] = () => {
         primaryCell(`<a class="rowlink" href="#/activity/clubs/${r.club}">${esc(c.name)}</a>${c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''}`, 'Club ID ' + esc(r.club)),
         ...RING_TYPES.map(g => rangeCell(r.blinds[g], { unit: 'BB' })),
         rangeCell(r.mtt, { group: true }),
-        actionCell('Edit', 'Reset')
+        editCell()
       ]
     };
   });
 
+  /* No summary cards: this is a settings table, not a report. Nothing here
+     is a number worth aggregating. */
   return pageHead({
     title: 'Club Stakes',
     isNew: true,
-    sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, set per club. The Union Owner sets a <strong>ceiling</strong>; the club's own Owner or Manager then narrows within it — they can never widen it.`,
-    actions: [exportBtn(), btn('Set stakes for a club', { kind: 'primary' })]
+    sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, set per club. The Union Owner sets a <strong>ceiling</strong>; the club's own Owner or Manager then narrows within it — they can never widen it.`
   })
   + note(`<strong>New page, not a new capability.</strong> ClubGG already does all of this — the union can restrict clubs and members, and a club can restrict its own members. What is new is <em>where it lives</em>: these controls are pulled out of buried detail pages and given one standalone, cross-club page. Contrast <a href="#/restrictions/member-stop-limits">Member Stop Limits</a>, which is a capability ClubGG genuinely lacks.`, 'new', '✦')
-  + stats([
-    { label: 'Clubs with a ceiling', value: `${n(CLUB_RESTRICTIONS.filter(r => r.mtt).length)} / ${n(CLUB_RESTRICTIONS.length)}` },
-    { label: 'Highest NLH blind', value: '50 BB', meta: 'Bellota Labs Home Game' },
-    { label: 'Unrestricted clubs', value: n(CLUB_RESTRICTIONS.filter(r => !r.mtt).length), meta: 'no union ceiling set' },
-    { label: 'Set by', value: 'Union Owner', meta: 'kurtis_c' }
-  ])
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Club name or ID…', grow: true },
     { label: 'Ceiling', type: 'select', options: ['Any', 'Set', 'Not set'] }
@@ -648,7 +645,7 @@ PAGES['restrictions/club-stakes'] = () => {
     title: 'Stakes ceilings',
     hint: 'Ring games in big blinds · tournaments in buy-in. Blank means no union ceiling — the club sets its own',
     body: dataTable({
-      cols: [{ label: 'Club' }, ...RING_TYPES.map(g => ({ label: g })), { label: 'MTT buy-in' }, { label: '' }],
+      cols: [{ label: 'Club' }, ...RING_TYPES.map(g => ({ label: g })), { label: 'MTT buy-in' }, { label: '', cls: 'sticky-end' }],
       rows
     })
   });
@@ -671,7 +668,7 @@ PAGES['restrictions/member-stop-limits'] = () => {
         esc(s.setBy),
         s.status === 'Suspended'
           ? `<span class="inline-actions">${btn('Re-approve', { sm: true, kind: 'primary' })}${btn('Reset', { sm: true })}</span>`
-          : actionCell('Edit', 'Reset')
+          : editCell(btn('Reset', { sm: true, kind: 'danger' }))
       ]
     };
   });
@@ -703,7 +700,7 @@ PAGES['restrictions/member-stop-limits'] = () => {
       cols: [
         { label: 'Member' }, { label: 'Role' }, { label: 'Win – loss limit' }, { label: 'P&L, week', cls: 'num' },
         { label: 'Progress' }, { label: 'Cascades to' }, { label: 'Club ceiling', cls: 'num' },
-        { label: 'Status', cls: 'mid' }, { label: 'Set by' }, { label: '' }
+        { label: 'Status', cls: 'mid' }, { label: 'Set by' }, { label: '', cls: 'sticky-end' }
       ],
       rows
     })
@@ -723,22 +720,15 @@ PAGES['restrictions/member-stakes'] = () => {
       roleCell(r),
       ...RING_TYPES.map((g, i) => rangeCell(r.blinds[g], { unit: 'BB', ceiling: i === 0 ? r.ceiling : '' })),
       rangeCell(r.mtt, { group: true }),
-      actionCell('Edit', 'Reset')
+      editCell()
     ]
   }));
 
   return pageHead({
     title: 'Member Stakes',
-    sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, per member. ClubGG calls this <strong>Restrict Access to Game</strong>. Every range is narrowed within whatever ceiling the club — or the member's own upline — has already set.`,
-    actions: [exportBtn(), btn('Set stakes', { kind: 'primary' })]
+    sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, per member. ClubGG calls this <strong>Restrict Access to Game</strong>. Every range is narrowed within whatever ceiling the club — or the member's own upline — has already set.`
   })
   + note(`A Super Agent or Agent can set these for their own downline only, and <strong>never looser than their own upline's ceiling</strong>. The ceiling in force is shown under each member's NLH range, and how far a setting cascades is shown under their role.`, 'info')
-  + stats([
-    { label: 'Members restricted', value: n(MEMBER_RESTRICTIONS.length), meta: 'across 4 clubs' },
-    { label: 'Agent-tier', value: n(MEMBER_RESTRICTIONS.filter(r => r.role !== 'Player').length), meta: 'cascade downstream' },
-    { label: 'Members affected', value: n(MEMBER_RESTRICTIONS.reduce((a, r) => a + r.cascades, 0) + MEMBER_RESTRICTIONS.length), meta: 'including cascaded downlines' },
-    { label: 'Buy-in authorization', value: 'On', meta: 'host approves every buy-in' }
-  ])
   + filters([
     { label: 'Search', type: 'search', placeholder: 'Nickname or member ID…', grow: true },
     { label: 'Club', type: 'select', options: clubOptions() },
@@ -749,7 +739,7 @@ PAGES['restrictions/member-stakes'] = () => {
     hint: 'Ring games in big blinds · tournaments in buy-in. Set independently per variant',
     body: dataTable({
       cols: [{ label: 'Member' }, { label: 'Role' }, ...RING_TYPES.map(g => ({ label: g })),
-        { label: 'MTT buy-in' }, { label: '' }],
+        { label: 'MTT buy-in' }, { label: '', cls: 'sticky-end' }],
       rows
     })
   });
@@ -759,26 +749,49 @@ PAGES['restrictions/member-stakes'] = () => {
    3 · CHIPS & CREDITS  (standalone, no category)
    ═══════════════════════════════════════════════════════════════════ */
 
-/** Right-hand summary rail shared by all three send flows. */
-const sendRail = ({ selected, total, valueLabel, action = 'Send', extra = '' }) => card({
-  title: 'This transfer',
+/**
+ * Amount + confirmation rail. Before committing a transfer you need three
+ * numbers per recipient: what they hold now, what is changing, and what
+ * they will hold after. A bare running total does not tell you that.
+ * `recipients` is [{ name, current }].
+ */
+const transferPanel = ({ unit, amount, recipients, action = 'Send' }) => card({
+  title: 'Amount',
   body: `
-    <div class="summary-line"><span class="k">Recipients selected</span><span class="v">${n(selected)}</span></div>
-    <div class="summary-line"><span class="k">${esc(valueLabel)} each</span><span class="v">${esc(String(total.each))}</span></div>
-    ${extra}
-    <div class="summary-total"><span>Running total</span><span class="v">${esc(String(total.sum))}</span></div>
-    <div style="display:flex;gap:7px;margin-top:13px">
-      ${btn(action, { kind: 'primary' })}
-      ${btn('Reclaim', {})}
+    <div class="field" style="margin-bottom:10px">
+      <label class="field-label">${esc(unit)} per recipient</label>
+      <input value="${n(amount)}">
     </div>
-    <div class="card-hint" style="margin-top:9px">Multi-select the list, set a value, then send or reclaim in one action. Nothing here persists in the prototype.</div>`
+    ${seg(['Add', 'Subtract', 'Set to'], 0)}
+    <div class="card-hint" style="margin-top:7px">Add or subtract a specific amount, rather than only overwriting an absolute balance.</div>
+
+    <hr class="hr">
+    <div class="dl-label" style="margin-bottom:6px">Confirm — ${n(recipients.length)} selected</div>
+    <div class="table-scroll"><table class="data confirm">
+      <thead><tr><th>Recipient</th><th class="num">Now</th><th class="num">Change</th><th class="num">After</th></tr></thead>
+      <tbody>
+        ${recipients.map(r => `<tr>
+          <td>${esc(r.name)}</td>
+          <td class="num muted">${n(r.current)}</td>
+          <td class="num pos">+${n(amount)}</td>
+          <td class="num"><strong>${n(r.current + amount)}</strong></td>
+        </tr>`).join('')}
+      </tbody>
+      <tfoot><tr>
+        <td><strong>Total change</strong></td><td></td>
+        <td class="num pos">+${n(amount * recipients.length)}</td><td></td>
+      </tr></tfoot>
+    </table></div>
+
+    <div style="display:flex;gap:7px;margin-top:12px">
+      ${btn(action, { kind: 'primary' })}${btn('Reclaim', {})}
+    </div>
+    <div class="card-hint" style="margin-top:8px">Reclaim flips the change negative and recalculates. Nothing here persists in the prototype.</div>`
 });
 
-const amountField = (label, value) => `
-  <div class="field" style="margin-bottom:11px">
-    <label class="field-label">${esc(label)}</label>
-    <input value="${esc(value)}">
-  </div>`;
+/** Dispersed-of-allocated in one cell — the two numbers are one idea. */
+const dispersedCell = (out, total) =>
+  meter(out, total, `${n(out)} of ${n(total)} dispersed`);
 
 const AGENT_TIER = ['Super Agent', 'Agent'];
 const isAgentTier = nick => AGENT_TIER.includes(((memberByNick(nick) || {}).role));
@@ -837,32 +850,24 @@ PAGES['chips/credits'] = () => {
     ])}
     <div class="picker">
       ${card({
-        title: 'Clubs in the union',
-        hint: `${n(CLUBS.length)} recipients`,
+        hint: `${n(CLUBS.length)} clubs · credits dispersed is what the club has pushed out to its own members`,
         body: dataTable({
-          cols: [{ label: '', cls: 'mid' }, { label: 'Club' }, { label: 'Club ID' },
-            { label: 'Current credits', cls: 'num' }, { label: 'Members', cls: 'num' }, { label: 'Status', cls: 'mid' }],
+          cols: [{ label: '', cls: 'mid' }, { label: 'Club' }, { label: 'Status', cls: 'mid' },
+            { label: 'Members', cls: 'num' }, { label: 'Credits dispersed' }],
           rows: CLUBS.map((c, i) => ({
-            cells: [checkbox(i < 2), primaryCell(esc(c.name) + (c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''), 'Owner · ' + esc(c.owner)),
-              idCell(c.id), `<span class="gold">${n(c.credits)}</span>`,
-              n(c.managers + c.superAgents + c.agents + c.players + 1), statusBadge(c.status)]
+            cells: [checkbox(i < 2),
+              primaryCell(esc(c.name) + (c.isMasterClub ? ' ' + badge('Master club', 'gold') : ''), 'Club ID ' + esc(c.id) + ' · owner ' + esc(c.owner)),
+              statusBadge(c.status),
+              n(c.managers + c.superAgents + c.agents + c.players + 1),
+              dispersedCell(c.chipsOut, c.credits)]
           }))
         }),
         flush: true
       })}
       <div>
-        ${card({
-          title: 'Amount',
-          body: amountField('Credits per club', '250,000')
-            + seg(['Add', 'Subtract', 'Set to'], 0)
-            + `<div class="card-hint" style="margin-top:8px">Add or subtract a specific amount, rather than only overwriting an absolute balance.</div>`
-        })}
-        ${sendRail({ selected: 2, total: { each: '250,000', sum: '500,000' }, valueLabel: 'Credits' })}
-        ${card({
-          title: 'Union treasury',
-          body: `<div class="summary-line"><span class="k">Available union credits</span><span class="v gold">${n(UNION.unionCredits)}</span></div>
-                 <div class="summary-line"><span class="k">Issued to clubs</span><span class="v">${n(UNION.creditsIssued)}</span></div>
-                 <div class="summary-line"><span class="k">After this transfer</span><span class="v">${n(UNION.unionCredits - 500000)}</span></div>`
+        ${transferPanel({
+          unit: 'Credits', amount: 250_000, action: 'Send credits',
+          recipients: CLUBS.slice(0, 2).map(c => ({ name: c.name, current: c.credits }))
         })}
       </div>
     </div>`;
@@ -884,21 +889,18 @@ PAGES['chips/credits'] = () => {
     ])}
     <div class="picker">
       ${card({
-        title: 'Agent tier',
-        hint: `${n(agents.length)} agents in ${esc(ownClub.name)}`,
+        hint: `${n(agents.length)} agents in ${esc(ownClub.name)} · same columns as Clubs, with role in place of status and downline in place of members`,
         body: dataTable({
-          cols: [{ label: '', cls: 'mid' }, { label: 'Agent' }, { label: 'Role' }, { label: 'Upline' },
-            { label: 'Allocated', cls: 'num' }, { label: 'Dispersed', cls: 'num' }, { label: 'Credit limit', cls: 'num' }],
+          cols: [{ label: '', cls: 'mid' }, { label: 'Agent' }, { label: 'Role', cls: 'mid' },
+            { label: 'Downline', cls: 'num' }, { label: 'Credits dispersed' }],
           rows: agents.map((m, i) => {
             const a = alloc(m.nick);
             return {
               cells: [checkbox(i === 0),
-                primaryCell(esc(m.nick), m.alias ? esc(m.alias) : '<span class="muted">no alias</span>'),
-                roleTag(m.role) + `<span class="cell-sub">${n(m.downline)} downstream</span>`,
-                esc(m.upline),
-                a.budget ? n(a.budget) : '<span class="muted">—</span>',
-                a.spent ? meter(a.spent, a.budget) : '<span class="muted">—</span>',
-                `<span class="muted">${a.creditLimit != null ? n(a.creditLimit) : '—'}</span>`]
+                primaryCell(esc(m.nick), (m.alias ? esc(m.alias) : 'no alias') + ' · upline ' + esc(m.upline)),
+                roleTag(m.role),
+                n(m.downline),
+                a.budget ? dispersedCell(a.spent, a.budget) : '<span class="muted">no allocation</span>']
             };
           }),
           empty: 'No agent-tier members in this club.'
@@ -906,36 +908,31 @@ PAGES['chips/credits'] = () => {
         flush: true
       })}
       <div>
-        ${card({
-          title: 'Amount',
-          body: amountField('Credits per agent', '50,000')
-            + seg(['Add', 'Subtract', 'Set to'], 0)
+        ${transferPanel({
+          unit: 'Credits', amount: 50_000, action: 'Send credits',
+          recipients: agents.slice(0, 1).map(m => ({ name: m.nick, current: (alloc(m.nick).budget || 0) }))
         })}
-        ${sendRail({ selected: 1, total: { each: '50,000', sum: '50,000' }, valueLabel: 'Credits' })}
         ${card({
-          title: 'Chip budget',
           hint: 'Allowance model',
           body: `
-            <div class="dl-label">Club budget from the union</div>
-            ${meter(CHIP_BUDGET.clubSpent, CHIP_BUDGET.clubBudget, `${n(CHIP_BUDGET.clubSpent)} of ${n(CHIP_BUDGET.clubBudget)} dispersed`)}
-            <div class="card-hint" style="margin-top:9px">A union grants each club a budget; Owners and Managers allocate a slice of it to Agents and Super Agents, capping how much they can send to their own downline. Credit limits set how far negative a downstream balance may go before cut-off.</div>`
+            <div class="dl-label">${esc(ownClub.name)} — budget from the union</div>
+            ${dispersedCell(CHIP_BUDGET.clubSpent, CHIP_BUDGET.clubBudget)}
+            <div class="card-hint" style="margin-top:9px">A union grants each club a budget; Owners and Managers allocate a slice of it to Agents and Super Agents, capping how much each can send to their own downline.</div>`
         })}
       </div>
     </div>`;
-
-  const biggest = [...CLUBS].sort((a, b) => b.credits - a.credits)[0];
 
   return pageHead({
     title: 'Club & Agent Credits',
     sub: `Issue or reclaim credits — to a club from the union, or to an agent from their club. Replaces ClubGG's <strong>Union Counter</strong> and <strong>Agent Counter</strong>, which are the same flow at two tiers.`,
     actions: [btn('Union settings')]
   })
-  + note(`<strong>Union Credits are the only value that crosses club lines.</strong> Credits to agents stay inside their own club, and chips to ordinary members are handled on <a href="#/chips/members">Member Chips</a>.`, 'accent', '⇄')
+  + note(`<strong>Union Credits are the only value that crosses club lines.</strong> Credits to agents stay inside their own club, and chips to ordinary members are handled on <a href="#/chips/members">Member Chips</a>. A union can issue as many credits as it likes — what matters is what is outstanding, below.`, 'accent', '⇄')
   + stats([
-    { label: 'Union credits', value: `<span class="gold">${n(UNION.unionCredits)}</span>`, meta: 'available to issue' },
-    { label: 'Issued to clubs', value: n(UNION.creditsIssued), meta: `across ${n(CLUBS.length)} clubs` },
-    { label: 'Largest balance', value: n(biggest.credits), meta: esc(biggest.name) },
-    { label: 'Allocated to agents', value: n(CHIP_BUDGET.agentAllocations.reduce((a, x) => a + x.budget, 0)), meta: `${n(CHIP_BUDGET.agentAllocations.length)} agents union-wide` }
+    { label: 'Outstanding club credits', value: `<span class="gold">${n(CLUBS.reduce((a, c) => a + c.credits, 0))}</span>`, meta: `held by ${n(CLUBS.length)} clubs` },
+    { label: 'Outstanding member chips', value: n(CLUBS.reduce((a, c) => a + c.chipsOut, 0)), meta: 'dispersed by clubs to members' },
+    { label: 'Allocated to agents', value: n(CHIP_BUDGET.agentAllocations.reduce((a, x) => a + x.budget, 0)), meta: `${n(CHIP_BUDGET.agentAllocations.length)} agents union-wide` },
+    { label: 'Suspended clubs', value: `<span class="neg">${n(CLUBS.filter(c => c.status === 'Suspended').length)}</span>`, meta: 'cannot be issued credits' }
   ])
   + tabs([
     { label: 'Clubs', html: clubsPanel },
@@ -961,31 +958,30 @@ PAGES['chips/members'] = () => {
     ])}
     <div class="picker">
       ${card({
-        title: `${esc(ownClub.name)} roster`,
-        hint: `${n(ownRoster.length)} of ${n(ownClub.players + ownClub.agents + ownClub.superAgents + ownClub.managers + 1)} shown`,
+        hint: `${n(ownRoster.length)} of ${n(ownClub.players + ownClub.agents + ownClub.superAgents + ownClub.managers + 1)} in ${esc(ownClub.name)}`,
         body: dataTable({
-          cols: [{ label: '', cls: 'mid' }, { label: 'Member' }, { label: 'Role' }, { label: 'Upline' },
-            { label: 'Current chips', cls: 'num' }, { label: 'Credit limit', cls: 'num' }, { label: 'Last active' }],
+          cols: [{ label: '', cls: 'mid' }, { label: 'Member' }, { label: 'Role', cls: 'mid' },
+            { label: 'Downline', cls: 'num' }, { label: 'Current chips', cls: 'num' }, { label: 'Last active' }],
           rows: ownRoster.map((m, i) => ({
-            cells: [checkbox(i === 1 || i === 4), primaryCell(esc(m.nick), m.alias ? esc(m.alias) : '<span class="muted">no alias</span>'),
-              roleTag(m.role), m.upline === '—' ? '<span class="muted">—</span>' : esc(m.upline),
-              n(m.chips), '<span class="muted">−10,000</span>', esc(m.lastLogin.split(',')[0])]
+            cells: [checkbox(i === 1 || i === 4),
+              primaryCell(esc(m.nick), (m.alias ? esc(m.alias) : 'no alias') + (m.upline === '—' ? '' : ' · upline ' + esc(m.upline))),
+              roleTag(m.role),
+              m.downline ? n(m.downline) : '<span class="muted">—</span>',
+              n(m.chips), esc(m.lastLogin.split(',')[0])]
           }))
         }),
         flush: true
       })}
       <div>
-        ${card({
-          title: 'Amount',
-          body: amountField('Chips per member', '5,000')
-            + seg(['Add', 'Subtract', 'Set to'], 0)
+        ${transferPanel({
+          unit: 'Chips', amount: 5_000, action: 'Send chips',
+          recipients: [ownRoster[1], ownRoster[4]].filter(Boolean).map(m => ({ name: m.nick, current: m.chips }))
         })}
-        ${sendRail({ selected: 2, total: { each: '5,000', sum: '10,000' }, valueLabel: 'Chips' })}
         ${card({
-          title: 'Chip budget',
+          hint: 'Allowance model',
           body: `
-            <div class="dl-label">Club budget from the union</div>
-            ${meter(CHIP_BUDGET.clubSpent, CHIP_BUDGET.clubBudget, `${n(CHIP_BUDGET.clubSpent)} of ${n(CHIP_BUDGET.clubBudget)} dispersed`)}
+            <div class="dl-label">${esc(ownClub.name)} — budget from the union</div>
+            ${dispersedCell(CHIP_BUDGET.clubSpent, CHIP_BUDGET.clubBudget)}
             <div class="card-hint" style="margin-top:9px">Sends here draw down the club's budget. How that budget is carved up between agents is set on <a class="rowlink" href="#/chips/credits">Club &amp; Agent Credits</a>.</div>`
         })}
       </div>
@@ -1028,15 +1024,27 @@ PAGES['chips/members'] = () => {
                 <label class="field-label">Tournament</label>
                 <select>${TOURNAMENTS.filter(t => t.status !== 'Completed').map(t => `<option>${esc(t.name)} · ${esc(t.buyin)}</option>`).join('')}</select>
               </div>
-              ${amountField('— or — value good at any tournament at or under it', '110')}
+              <div class="field">
+                <label class="field-label">— or — value good at any tournament at or under it</label>
+                <input value="110">
+              </div>
             </div>
-            <div class="card-hint">Ticket and Voucher are the same object in ClubGG, specified two different ways. One object, one send flow.</div>`
-        })}
-        ${sendRail({
-          selected: 2, valueLabel: 'Ticket value', action: 'Send tickets',
-          total: { each: '550', sum: '1,100' },
-          extra: `<div class="summary-line"><span class="k">Tournament</span><span class="v">Sunday Major</span></div>
-                  <div class="summary-line"><span class="k">Recipient clubs</span><span class="v">2</span></div>`
+            <div class="card-hint" style="margin-top:8px">Ticket and Voucher are the same object in ClubGG, specified two different ways. One object, one send flow.</div>
+
+            <hr class="hr">
+            <div class="dl-label" style="margin-bottom:6px">Confirm — 2 selected</div>
+            <div class="table-scroll"><table class="data confirm">
+              <thead><tr><th>Recipient</th><th>Club</th><th class="num">Tickets held</th><th class="num">After</th></tr></thead>
+              <tbody>
+                <tr><td>riverking22</td><td class="muted">Vegas Rail Room</td><td class="num muted">2</td><td class="num"><strong>3</strong></td></tr>
+                <tr><td>shortdeck_sy</td><td class="muted">Neon Sunset Club</td><td class="num muted">0</td><td class="num"><strong>1</strong></td></tr>
+              </tbody>
+              <tfoot><tr><td><strong>Total value</strong></td><td></td><td></td><td class="num">1,100</td></tr></tfoot>
+            </table></div>
+            <div class="card-hint" style="margin-top:8px">Two clubs — tickets are the one value that reaches members outside your own club.</div>
+            <div style="display:flex;gap:7px;margin-top:12px">
+              ${btn('Send tickets', { kind: 'primary' })}${btn('Revoke', {})}
+            </div>`
         })}
       </div>
     </div>`;
