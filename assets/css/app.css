@@ -487,29 +487,13 @@ body {
   letter-spacing: -.4px;
   font-variant-numeric: tabular-nums;
 }
-.stat-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; }
-
-/* Breakdown rows. Two columns so every number right-aligns on the same
-   edge; units are body colour, never the grey reserved for labels. */
-.stat-rows {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  align-items: baseline;
-  gap: 1px 8px;
-  margin-top: 4px;
-}
-.sr-n {
-  text-align: right;
-  font-size: 12.5px;
-  font-weight: 620;
+/* One line, one size, one colour. Any breakdown lives here as plain text. */
+.stat-meta {
+  font-size: 11.5px;
+  color: var(--text-2);
+  margin-top: 3px;
   font-variant-numeric: tabular-nums;
 }
-.sr-u { font-size: 11.5px; color: var(--text-2); }
-
-/* With no headline above them the rows carry the card, so they scale up. */
-.stat-rows.is-lead { gap: 2px 9px; margin-top: 3px; }
-.stat-rows.is-lead .sr-n { font-size: 17px; font-weight: 650; letter-spacing: -.3px; }
-.stat-rows.is-lead .sr-u { font-size: 12px; }
 
 /* ── Filter bar ───────────────────────────────────────────────────── */
 .filters {

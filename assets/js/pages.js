@@ -25,29 +25,16 @@ const unionSummary = () => {
   const T = UNION_TOTALS;
   const suspended = CLUBS.filter(c => c.status === 'Suspended').length;
   return stats([
-    /* Clubs and members do not sum to anything, so neither leads. */
-    { label: 'Union', rows: [
-      { value: T.clubs, unit: 'clubs' },
-      { value: T.members, unit: 'members' },
-      { value: suspended, unit: suspended === 1 ? 'club suspended' : 'clubs suspended' }
-    ] },
-    { label: 'Outstanding', rows: [
-      { value: T.credits, unit: 'club credits', gold: true },
-      { value: T.chips, unit: 'member chips' }
-    ] },
-    { label: 'Games', value: n(T.games), rows: [
-      { value: T.gamesRing, unit: 'ring' },
-      { value: T.gamesMtt, unit: 'tournament' }
-    ] },
-    { label: 'Hands', value: n(T.hands), rows: [
-      { value: T.handsNlh, unit: 'NLH' },
-      { value: T.handsPlo, unit: 'PLO' },
-      { value: T.handsOther, unit: 'other' }
-    ] },
-    { label: 'Union total', value: n(T.unionTotal), rows: [
-      { value: T.rake, unit: 'rake' },
-      { value: T.fees, unit: 'fees' }
-    ] }
+    { label: 'Union', value: n(T.clubs),
+      meta: `clubs · ${n(T.members)} members · ${n(suspended)} suspended` },
+    { label: 'Outstanding', value: `<span class="gold">${n(T.credits)}</span>`,
+      meta: `club credits · ${n(T.chips)} member chips` },
+    { label: 'Games', value: n(T.games),
+      meta: `${n(T.gamesRing)} ring · ${n(T.gamesMtt)} tournament` },
+    { label: 'Hands', value: n(T.hands),
+      meta: `${n(T.handsNlh)} NLH · ${n(T.handsPlo)} PLO · ${n(T.handsOther)} other` },
+    { label: 'Union total', value: n(T.unionTotal),
+      meta: `${n(T.rake)} rake · ${n(T.fees)} fees` }
   ]);
 };
 
