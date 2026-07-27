@@ -161,7 +161,6 @@ PAGES['activity/clubs/:id'] = id => {
       { label: 'Direction', type: 'select', options: ['Sent & reclaimed', 'Sent only', 'Reclaimed only'] }
     ])
     + card({
-            hint: 'Sent shows red — it is a debt to the club; reclaimed shows green',
       body: dataTable({
         cols: [{ label: 'Date / time' }, { label: 'Sender' }, { label: 'Recipient' }, { label: 'Type' },
           { label: 'Amount', cls: 'num' }, { label: 'Starting', cls: 'num' }, { label: 'Ending', cls: 'num' }],
@@ -348,7 +347,6 @@ PAGES['activity/members/:nick'] = nick => {
       { label: 'Stakes', type: 'select', options: ['All stakes', '0.5 / 1', '1 / 2', '2 / 4', '5 / 10'] }
     ])
     + card({
-      hint: 'One row per session — a buy-in-to-cash-out cycle',
       body: dataTable({
         cols: [{ label: 'Date' }, { label: 'Table' }, { label: 'Stakes' }, { label: 'Game' },
           { label: 'Hands', cls: 'num' }, { label: 'Buy-in', cls: 'num' }, { label: 'Cash-out', cls: 'num' },
@@ -382,7 +380,6 @@ PAGES['activity/members/:nick'] = nick => {
   });
 
   const balanceHistory = tabFilters() + card({
-        hint: 'Every change to this member\'s chip balance',
     body: dataTable({
       cols: [{ label: 'Date / time' }, { label: 'Actioned by' }, { label: 'Direction', cls: 'mid' },
         { label: 'Amount', cls: 'num' }, { label: 'Starting', cls: 'num' }, { label: 'Ending', cls: 'num' }, { label: 'Note' }],
@@ -396,7 +393,6 @@ PAGES['activity/members/:nick'] = nick => {
   }) + note(`From the member's point of view chips <em>sent</em> to them are green (credited) and <em>reclaimed</em> is red — the inverse of the club-side log, where a send is a debt to the club.`, 'info');
 
   const ticketHistory = tabFilters() + card({
-        hint: 'Tournament Tickets can arrive from any club in the union',
     body: dataTable({
       cols: [{ label: 'Date / time' }, { label: 'Ticket' }, { label: 'Specified by' },
         { label: 'Value', cls: 'num' }, { label: 'Sent by' }, { label: 'Expires' }, { label: 'Status', cls: 'mid' }],
@@ -423,7 +419,6 @@ PAGES['activity/members/:nick'] = nick => {
       `<strong>Downline</strong> is everyone beneath this member in the hierarchy — the people whose chips they control, whose game data they see, and whose stakes they can set. Always scoped to their own club.`, 'info')
     + card({
       title: `Downline · ${n(m.downline)} members`,
-      hint: m.role === 'Owner' || m.role === 'Manager' ? 'Owners and Managers have the whole club downstream' : 'Only members personally recruited or assigned',
       body: dataTable({
         cols: [{ label: 'Member' }, { label: 'Role' }, { label: 'Chips', cls: 'num' },
           { label: 'Hands', cls: 'num' }, { label: 'P&L', cls: 'num' }, { label: 'Own downline', cls: 'num' }, { label: 'Last active' }],
@@ -611,7 +606,7 @@ PAGES['restrictions/club-stop-limits'] = () => {
   });
 
   return pageHead({
-    title: 'Club Stop Limits',
+    title: 'Weekly Club Stop Limits',
     sub: `Every club's weekly win and loss limit in one editable list — ClubGG's <strong>Weekly Club Stop Limit</strong>, minus the "Weekly" now that the same control exists at member tier.
           When a limit trips, the club is suspended: no new buy-ins or rebuys until the union re-approves it. Players already in a session may finish.`,
     actions: [btn('Set limits for a club', { kind: 'primary' })]
@@ -624,7 +619,6 @@ PAGES['restrictions/club-stop-limits'] = () => {
     { label: 'Week', type: 'select', options: ['This week', 'Last week', '2 weeks ago'] }
   ])
   + card({
-    hint: 'Every figure is for the selected week',
     body: dataTable({
       cols: [
         { label: 'Club' }, { label: 'Loss – win limit' }, { label: 'Ring P&L', cls: 'num' },
@@ -656,7 +650,7 @@ PAGES['restrictions/club-stakes'] = () => {
   return pageHead({
     title: 'Club Stakes Restrictions',
     flag: 'moved',
-    sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, set per club. The Union Owner sets a <strong>ceiling</strong>; the club's own Owner or Manager then narrows within it — they can never widen it.`
+    sub: `Min and max blinds per ring-game type, and min/max tournament buy-in, set per club — ring games in big blinds, tournaments in buy-in, <em>Any</em> meaning no union ceiling. The Union Owner sets a <strong>ceiling</strong>; the club's own Owner or Manager then narrows within it, and can never widen it.`
   })
   + note(`<strong>Moved, not new.</strong> ClubGG already does all of this — the union can restrict clubs and members, and a club can restrict its own members. What changed is <em>where it lives</em>: pulled out of buried detail views into one standalone, cross-club page. Same story as <a href="#/restrictions/member-stakes">Member Stakes</a>; contrast <a href="#/restrictions/member-stop-limits">Member Stop Limits</a>, badged <strong>New</strong> because ClubGG cannot do it at all.`, 'moved', '⇱')
   + filters([
@@ -664,7 +658,6 @@ PAGES['restrictions/club-stakes'] = () => {
     { label: 'Ceiling', type: 'select', options: ['All clubs', 'Restricted', 'Unrestricted'] }
   ])
   + card({
-    hint: 'Ring games in big blinds · tournaments in buy-in. "Any" means no union ceiling — the club sets its own',
     body: dataTable({
       cols: [{ label: 'Club' }, ...RING_TYPES.map(g => ({ label: g })), { label: 'MTT buy-in' }, { label: '', cls: 'sticky-end' }],
       rows
@@ -693,9 +686,9 @@ PAGES['restrictions/member-stop-limits'] = () => {
   });
 
   return pageHead({
-    title: 'Member Stop Limits',
+    title: 'Weekly Member Stop Limits',
     flag: 'new',
-    sub: `Weekly win and loss limits for individual members, agents and super agents. A limit set here <strong>cascades to that person's whole downstream funnel</strong>, and is always narrowed within their club's limit if one exists.`,
+    sub: `Weekly win and loss limits for individual members, agents and super agents; only those with a limit set appear below, for the selected week. A limit set here <strong>cascades to that person's whole downstream funnel</strong>, and is always narrowed within their club's limit if one exists.`,
     actions: [btn('Set a limit', { kind: 'primary' })]
   })
   + note(`<strong>Genuinely new.</strong> ClubGG has stop limits at club tier only, so this cannot be done today at all — unlike the two <strong>Moved</strong> pages above, which surface controls that already exist. Adding the member tier makes policing symmetrical: every control exists at both tiers, in one place.`, 'new', '✦')
@@ -708,7 +701,6 @@ PAGES['restrictions/member-stop-limits'] = () => {
     { label: 'Week', type: 'select', options: ['This week', 'Last week', '2 weeks ago'] }
   ])
   + card({
-    hint: 'Only members with a limit set appear here · every figure is for the selected week',
     body: dataTable({
       cols: [
         { label: 'Member' }, { label: 'Role', cls: 'mid' }, { label: 'Loss – win limit' }, { label: 'P&L', cls: 'num' },
@@ -750,7 +742,6 @@ PAGES['restrictions/member-stakes'] = () => {
     { label: 'Role', type: 'select', options: ROLE_OPTIONS }
   ])
   + card({
-    hint: 'Ring games in big blinds · tournaments in buy-in. Set independently per variant',
     body: dataTable({
       cols: [{ label: 'Member' }, { label: 'Role' }, ...RING_TYPES.map(g => ({ label: g })),
         { label: 'MTT buy-in' }, { label: '', cls: 'sticky-end' }],
@@ -820,19 +811,16 @@ const HISTORY_MODES = {
   credits: {
     match: r => r.type !== 'Tournament Ticket' && (r.scope === 'Club' || isAgentTier(r.recipient)),
     types: ['All types', 'Credits', 'Chips'],
-    hint: 'Credits issued to clubs and down to agents',
     people: () => [...CLUBS.map(c => c.name), ...MEMBERS.filter(m => AGENT_TIER.includes(m.role)).map(m => m.nick)]
   },
   chips: {
     match: r => r.type === 'Chips' && r.scope === 'Member' && !isAgentTier(r.recipient),
     types: ['All types', 'Chips'],
-    hint: 'Chips sent to or reclaimed from members of this club',
     people: () => MEMBERS.filter(m => !AGENT_TIER.includes(m.role)).map(m => m.nick)
   },
   tickets: {
     match: r => r.type === 'Tournament Ticket',
     types: ['All types', 'Specific tournament', 'Value'],
-    hint: 'Tickets issued across every club in the union',
     people: () => MEMBERS.map(m => m.nick)
   }
 };
@@ -849,7 +837,6 @@ const chipHistory = mode => {
     { label: 'Direction', type: 'select', options: ['Sent & reclaimed', 'Sent only', 'Reclaimed only'] }
   ], [exportBtn()])
   + card({
-    hint: cfg.hint,
     body: dataTable({
       cols: [{ label: 'Date / time' }, { label: 'Sender' }, { label: 'Recipient' }, { label: 'Type' },
         { label: 'Direction', cls: 'mid' }, { label: 'Amount', cls: 'num' },
@@ -885,7 +872,6 @@ PAGES['chips/credits'] = () => {
     ])}
     <div class="picker">
       ${card({
-        hint: `${n(CLUBS.length)} clubs · credits dispersed is what the club has pushed out to its own members`,
         body: dataTable({
           cols: [{ label: '', cls: 'mid' }, { label: 'Club' }, { label: 'Status', cls: 'mid' },
             { label: 'Members', cls: 'num' }, { label: 'Credits dispersed' }],
@@ -924,7 +910,6 @@ PAGES['chips/credits'] = () => {
     ])}
     <div class="picker">
       ${card({
-        hint: `${n(agents.length)} agents in ${esc(ownClub.name)} · same columns as Clubs, with role in place of status and downline in place of members`,
         body: dataTable({
           cols: [{ label: '', cls: 'mid' }, { label: 'Agent' }, { label: 'Role', cls: 'mid' },
             { label: 'Downline', cls: 'num' }, { label: 'Credits dispersed' }],
@@ -948,7 +933,6 @@ PAGES['chips/credits'] = () => {
           recipients: agents.slice(0, 1).map(m => ({ name: m.nick, current: (alloc(m.nick).budget || 0) }))
         })}
         ${card({
-          hint: 'Allowance model',
           body: `
             <div class="dl-label">${esc(ownClub.name)} — budget from the union</div>
             ${dispersedCell(CHIP_BUDGET.clubSpent, CHIP_BUDGET.clubBudget)}
@@ -992,7 +976,6 @@ PAGES['chips/members'] = () => {
     ])}
     <div class="picker">
       ${card({
-        hint: `${n(ownRoster.length)} of ${n(ownClub.players + ownClub.agents + ownClub.superAgents + ownClub.managers + 1)} in ${esc(ownClub.name)}`,
         body: dataTable({
           cols: [{ label: '', cls: 'mid' }, { label: 'Member' }, { label: 'Role', cls: 'mid' },
             { label: 'Downline', cls: 'num' }, { label: 'Current chips', cls: 'num' }, { label: 'Last active' }],
@@ -1012,7 +995,6 @@ PAGES['chips/members'] = () => {
           recipients: [ownRoster[1], ownRoster[4]].filter(Boolean).map(m => ({ name: m.nick, current: m.chips }))
         })}
         ${card({
-          hint: 'Allowance model',
           body: `
             <div class="dl-label">${esc(ownClub.name)} — budget from the union</div>
             ${dispersedCell(CHIP_BUDGET.clubSpent, CHIP_BUDGET.clubBudget)}
@@ -1056,7 +1038,6 @@ PAGES['chips/tickets'] = () => {
     ])}
     <div class="picker">
       ${card({
-        hint: `${n(MEMBERS.length)} members from ${n(CLUBS.length)} clubs`,
         body: dataTable({
           cols: [{ label: '', cls: 'mid' }, { label: 'Member' }, { label: 'Club' }, { label: 'Role' },
             { label: 'Tickets held', cls: 'num' }, { label: 'Last active' }],
@@ -1129,7 +1110,7 @@ PAGES['games/ring'] = () => {
   const live = RING_GAMES.filter(g => g.status === 'Live');
   return pageHead({
     title: 'Ring Games',
-    sub: `Cash tables across the union. Create, monitor and disband tables directly from the portal — not only from inside a club on mobile.`,
+    sub: `Cash tables across the union. Create, monitor and disband tables directly from the portal — not only from inside a club on mobile. Live rows refresh automatically in the real product.`,
     actions: [btn('Create table', { kind: 'primary' })]
   })
   + stats([
@@ -1149,7 +1130,6 @@ PAGES['games/ring'] = () => {
     { label: 'Created by', type: 'select', options: ['Any', 'Manual', 'Template', 'Recurring', 'Auto-waiting'] }
   ], [exportBtn()])
   + card({
-    hint: 'Live rows refresh automatically in the real product',
     body: dataTable({
       cols: [{ label: 'Table' }, { label: 'Club' }, { label: 'Game' }, { label: 'Blinds' }, { label: 'Buy-in' },
         { label: 'Seats' }, { label: 'Players', cls: 'num' }, { label: 'Hands', cls: 'num' }, { label: 'Rake', cls: 'num' },

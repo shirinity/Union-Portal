@@ -294,20 +294,24 @@ const idCell = v => `<span class="id">${esc(v)}</span>`;
  * wrong for blind levels like 0.5–10.
  */
 const rangeCell = (range, { unit = '', group = false } = {}) => {
-  if (!range) return '<span class="muted">Any</span>';
   const fmt = v => group ? Number(v).toLocaleString('en-US') : v;
   /* Inputs are sized to their content so the pair hugs the left edge of the
      cell and lines up under the column header. Fixed-width boxes with
      right-aligned text pushed short values far off their heading. */
   const box = (v, label) => {
-    const t = String(fmt(v));
-    return `<input value="${esc(t)}" size="${Math.max(t.length, 2)}" aria-label="${label}" readonly>`;
+    const t = v == null ? '' : String(fmt(v));
+    return `<input value="${esc(t)}" size="${Math.max(t.length, 3)}" aria-label="${label}" readonly>`;
   };
-  return `<span class="range-cell${group ? ' is-wide' : ''}">
-      ${box(range[0], 'Minimum')}
-      <span class="to">–</span>
-      ${box(range[1], 'Maximum')}
-      ${unit ? `<span class="to">${esc(unit)}</span>` : ''}
+  /* An unset range still renders its inputs, hidden behind "Any" until the
+     row is unlocked — otherwise there is nothing to type a new limit into. */
+  return `<span class="range-cell${group ? ' is-wide' : ''}${range ? '' : ' is-empty'}">
+      ${range ? '' : '<span class="range-any">Any</span>'}
+      <span class="range-inputs">
+        ${box(range ? range[0] : null, 'Minimum')}
+        <span class="to">–</span>
+        ${box(range ? range[1] : null, 'Maximum')}
+        ${unit ? `<span class="to">${esc(unit)}</span>` : ''}
+      </span>
     </span>`;
 };
 
@@ -318,15 +322,19 @@ const rangeCell = (range, { unit = '', group = false } = {}) => {
  * which, or which direction the range ran.
  */
 const limitRange = (loss, win) => {
-  if (loss == null && win == null) return '<span class="muted">Any</span>';
+  const unset = loss == null && win == null;
   const box = (v, sign, cls) => {
-    const t = sign + Number(v).toLocaleString('en-US');
-    return `<input class="is-${cls}" value="${esc(t)}" size="${t.length}" aria-label="${cls === 'neg' ? 'Loss' : 'Win'} limit" readonly>`;
+    const t = v == null ? '' : sign + Number(v).toLocaleString('en-US');
+    return `<input class="is-${cls}" value="${esc(t)}" size="${Math.max(t.length, 3)}" aria-label="${cls === 'neg' ? 'Loss' : 'Win'} limit" readonly>`;
   };
-  return `<span class="range-cell is-wide">
-      ${box(loss, '−', 'neg')}
-      <span class="to">–</span>
-      ${box(win, '+', 'pos')}
+  /* Same as rangeCell: "Any" is a display state, not an absence of fields. */
+  return `<span class="range-cell is-wide${unset ? ' is-empty' : ''}">
+      ${unset ? '<span class="range-any">Any</span>' : ''}
+      <span class="range-inputs">
+        ${box(loss, '−', 'neg')}
+        <span class="to">–</span>
+        ${box(win, '+', 'pos')}
+      </span>
     </span>`;
 };
 

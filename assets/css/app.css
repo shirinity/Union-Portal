@@ -772,6 +772,14 @@ input[type="checkbox"].chk {
 
 .range-cell { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 12px; }
 .range-cell .to { color: var(--text-3); font-family: var(--sans); }
+.range-inputs { display: inline-flex; align-items: center; gap: 5px; }
+
+/* An unset range shows "Any" until its row is unlocked, then reveals empty
+   inputs so a limit can actually be typed in. */
+.range-any { color: var(--text-3); font-family: var(--sans); }
+.range-cell.is-empty .range-inputs { display: none; }
+tr.is-editing .range-cell.is-empty .range-any { display: none; }
+tr.is-editing .range-cell.is-empty .range-inputs { display: inline-flex; }
 .range-cell input {
   width: auto;
   min-width: 30px;
